@@ -209,26 +209,6 @@
     }
     .nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.05); }
     .nav-links a.active { color: var(--cyan); }
-    .nav-pill {
-      background: rgba(56,217,245,0.10);
-      color: var(--cyan) !important;
-      border: 1px solid rgba(56,217,245,0.22);
-      border-radius: 20px !important;
-      padding: 5px 14px !important;
-      font-size: 0.82rem !important;
-    }
-    .nav-pill:hover { background: rgba(56,217,245,0.18) !important; }
-    #auth-btn {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text-dim);
-      padding: 5px 14px;
-      border-radius: 20px;
-      font-size: 0.82rem;
-      font-family: 'Outfit', sans-serif;
-      cursor: pointer;
-    }
-    #auth-btn:hover { border-color: var(--cyan); color: var(--cyan); }
 
     /* ─── Main ─────────────────────────────────────────── */
     main { position: relative; z-index: 1; }
@@ -553,81 +533,6 @@
     .faq-item p { font-size: 0.88rem; color: var(--text-dim); line-height: 1.6; }
 
     /* ─── Auth Modal ───────────────────────────────────── */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(2,3,12,0.88);
-      backdrop-filter: blur(6px);
-      z-index: 2000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      pointer-events: none;
-    }
-    .modal-overlay.open { opacity: 1; pointer-events: all; }
-    .modal {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 36px 32px;
-      width: 100%;
-      max-width: 400px;
-      position: relative;
-    }
-    .modal h2 {
-      font-family: 'Playfair Display', serif;
-      color: var(--cyan-lt);
-      margin-bottom: 22px;
-      font-size: 1.4rem;
-    }
-    .modal-close {
-      position: absolute; top: 14px; right: 18px;
-      background: none; border: none;
-      color: var(--text-dim); font-size: 1.4rem;
-      cursor: pointer; line-height: 1;
-    }
-    .modal-close:hover { color: var(--text); }
-    .modal label { display: block; font-size: 0.85rem; color: var(--text-dim); margin-bottom: 5px; }
-    .modal input {
-      width: 100%;
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 10px 14px;
-      border-radius: 8px;
-      font-family: 'Outfit', sans-serif;
-      font-size: 0.92rem;
-      outline: none;
-      margin-bottom: 16px;
-    }
-    .modal input:focus { border-color: var(--cyan); }
-    .modal-tabs { display: flex; gap: 0; margin-bottom: 24px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
-    .modal-tab {
-      flex: 1; padding: 9px; text-align: center;
-      font-size: 0.88rem; cursor: pointer;
-      background: var(--bg3); color: var(--text-dim); border: none;
-      font-family: 'Outfit', sans-serif;
-    }
-    .modal-tab.active { background: rgba(56,217,245,0.12); color: var(--cyan); }
-    .btn-modal-submit {
-      width: 100%;
-      background: var(--cyan);
-      color: #0a0c1a;
-      border: none;
-      padding: 11px;
-      border-radius: 8px;
-      font-family: 'Outfit', sans-serif;
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 4px;
-    }
-    .btn-modal-submit:hover { background: var(--cyan-lt); }
-    .modal-msg { font-size: 0.83rem; margin-top: 12px; text-align: center; min-height: 20px; }
-    .modal-msg.error   { color: #e06060; }
-    .modal-msg.success { color: #48c78e; }
-
     /* ─── ManaPool Banner ──────────────────────────────── */
     .manapool-banner {
       background: linear-gradient(135deg, rgba(10,20,50,0.95) 0%, rgba(5,30,40,0.95) 100%);
@@ -700,7 +605,6 @@
 
     /* ─── Responsive ───────────────────────────────────── */
     @media (max-width: 600px) {
-      .nav-links a:not(.nav-pill):not(#auth-btn) { display: none; }
       .form-box, .question-form, #confirmation { padding: 22px 16px; }
       .tracking-row { flex-direction: column; }
     }
@@ -725,9 +629,8 @@
     <div class="nav-links">
       <a href="#how-it-works">How It Works</a>
       <a href="#submit">Submit List</a>
+      <a href="#ask">Contact</a>
       <a href="#faq">FAQ</a>
-      <a href="shop.html" class="nav-pill">Buy Cards</a>
-      <button id="auth-btn">Sign In</button>
     </div>
   </nav>
 
@@ -846,6 +749,10 @@
             <label for="seller-email">Email Address</label>
             <input type="email" id="seller-email" placeholder="you@example.com" />
           </div>
+        </div>
+        <div class="form-row">
+          <label for="seller-phone">Phone <span style="color:var(--text-dim);font-size:0.78rem">(optional)</span></label>
+          <input type="tel" id="seller-phone" placeholder="(555) 555-5555" />
         </div>
 
         <!-- Payout info -->
@@ -983,33 +890,6 @@
 
   </main>
 
-  <!-- ── Auth Modal ── -->
-  <div class="modal-overlay" id="auth-modal">
-    <div class="modal">
-      <button class="modal-close" id="modal-close">&times;</button>
-      <h2 id="modal-title">Welcome Back</h2>
-      <div class="modal-tabs">
-        <button class="modal-tab active" data-tab="signin">Sign In</button>
-        <button class="modal-tab" data-tab="signup">Create Account</button>
-      </div>
-      <div id="tab-signin">
-        <label>Email</label>
-        <input type="email" id="signin-email" placeholder="you@example.com" />
-        <label>Password</label>
-        <input type="password" id="signin-pass" placeholder="••••••••" />
-        <button class="btn-modal-submit" id="signin-btn">Sign In</button>
-      </div>
-      <div id="tab-signup" style="display:none">
-        <label>Email</label>
-        <input type="email" id="signup-email" placeholder="you@example.com" />
-        <label>Password</label>
-        <input type="password" id="signup-pass" placeholder="At least 6 characters" />
-        <button class="btn-modal-submit" id="signup-btn">Create Account</button>
-      </div>
-      <p class="modal-msg" id="modal-msg"></p>
-    </div>
-  </div>
-
   <script>
     // ── Supabase ─────────────────────────────────────────
     const { createClient } = supabase;
@@ -1023,73 +903,11 @@
 
     // ── State ─────────────────────────────────────────────
     const PAYOUT_RATE  = 0.60;   // fixed 60% cash payout
-    let currentUser    = null;
     let activeTab      = 'paste';  // 'paste' | 'upload'
     let uploadedText   = '';
     let lastEstimate   = null;   // { low, high, included, skipped, notFound }
     let submissionId   = null;
     let submissionDbId = null;
-
-    // ── DOM ───────────────────────────────────────────────
-    const authBtn   = document.getElementById('auth-btn');
-    const modal     = document.getElementById('auth-modal');
-    const modalMsg  = document.getElementById('modal-msg');
-
-    // ── Auth ──────────────────────────────────────────────
-    sb.auth.onAuthStateChange((_e, session) => {
-      currentUser = session?.user ?? null;
-      updateAuthUI();
-      if (currentUser) {
-        const emailField = document.getElementById('seller-email');
-        if (emailField && !emailField.value) emailField.value = currentUser.email;
-      }
-    });
-
-    function updateAuthUI() {
-      authBtn.textContent = currentUser ? 'Sign Out' : 'Sign In';
-    }
-
-    authBtn.addEventListener('click', async () => {
-      if (currentUser) await sb.auth.signOut();
-      else openAuthModal();
-    });
-
-    // Modal tabs
-    document.querySelectorAll('.modal-tab').forEach(t => {
-      t.addEventListener('click', () => {
-        document.querySelectorAll('.modal-tab').forEach(x => x.classList.remove('active'));
-        t.classList.add('active');
-        const which = t.dataset.tab;
-        document.getElementById('tab-signin').style.display = which === 'signin' ? '' : 'none';
-        document.getElementById('tab-signup').style.display = which === 'signup' ? '' : 'none';
-        document.getElementById('modal-title').textContent = which === 'signin' ? 'Welcome Back' : 'Create Account';
-        modalMsg.textContent = '';
-      });
-    });
-
-    document.getElementById('signin-btn').addEventListener('click', async () => {
-      const email = document.getElementById('signin-email').value.trim();
-      const pass  = document.getElementById('signin-pass').value;
-      modalMsg.className = 'modal-msg';
-      modalMsg.textContent = 'Signing in…';
-      const { error } = await sb.auth.signInWithPassword({ email, password: pass });
-      if (error) { modalMsg.className = 'modal-msg error'; modalMsg.textContent = error.message; }
-      else { modal.classList.remove('open'); }
-    });
-
-    document.getElementById('signup-btn').addEventListener('click', async () => {
-      const email = document.getElementById('signup-email').value.trim();
-      const pass  = document.getElementById('signup-pass').value;
-      modalMsg.className = 'modal-msg';
-      modalMsg.textContent = 'Creating account…';
-      const { error } = await sb.auth.signUp({ email, password: pass });
-      if (error) { modalMsg.className = 'modal-msg error'; modalMsg.textContent = error.message; }
-      else { modalMsg.className = 'modal-msg success'; modalMsg.textContent = 'Check your email to confirm your account.'; }
-    });
-
-    function openAuthModal() { modal.classList.add('open'); }
-    document.getElementById('modal-close').addEventListener('click', () => modal.classList.remove('open'));
-    modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('open'); });
 
     // ── Input Tabs ─────────────────────────────────────────
     document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -1122,6 +940,7 @@
         cardListText: document.getElementById('card-list-text').value,
         sellerName:   document.getElementById('seller-name').value,
         sellerEmail:  document.getElementById('seller-email').value,
+        sellerPhone:  document.getElementById('seller-phone').value,
         activeTab,
         qName:  document.getElementById('q-name').value,
         qEmail: document.getElementById('q-email').value,
@@ -1136,6 +955,7 @@
         if (data.cardListText) document.getElementById('card-list-text').value = data.cardListText;
         if (data.sellerName)   document.getElementById('seller-name').value   = data.sellerName;
         if (data.sellerEmail)  document.getElementById('seller-email').value  = data.sellerEmail;
+        if (data.sellerPhone)  document.getElementById('seller-phone').value  = data.sellerPhone;
         if (data.qName)        document.getElementById('q-name').value        = data.qName;
         if (data.qEmail)       document.getElementById('q-email').value       = data.qEmail;
         if (data.qText)        document.getElementById('q-text').value        = data.qText;
@@ -1151,7 +971,7 @@
     }
 
     // Auto-save on change
-    ['card-list-text','seller-name','seller-email','q-name','q-email','q-text'].forEach(id => {
+    ['card-list-text','seller-name','seller-email','seller-phone','q-name','q-email','q-text'].forEach(id => {
       document.getElementById(id)?.addEventListener('input', saveLocal);
     });
 
@@ -1344,7 +1164,9 @@
         card_list: rawText.trim(),
         status: 'pending'
       };
-      if (currentUser) payload.user_id = currentUser.id;
+      // Anonymous insert — no accounts in the funnel (spec §1.1 / §3.2).
+      // NOTE: optional phone is collected + persisted locally but not written to
+      // Supabase (no `phone` column on `submissions`; adding one is a §8 schema change).
 
       const { data, error } = await sb.from('submissions').insert([payload]).select().single();
 

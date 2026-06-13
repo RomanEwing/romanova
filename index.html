@@ -578,73 +578,90 @@
       font-weight: 600;
     }
     .faq-item p { font-size: 0.88rem; color: var(--text-dim); line-height: 1.6; }
+    .faq-group { display: flex; flex-direction: column; gap: 14px; margin-bottom: 28px; }
+    .faq-group-label {
+      font-family: 'Playfair Display', serif; color: var(--cyan-lt);
+      font-size: 1.2rem; margin-bottom: 2px; padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
 
-    /* ─── Auth Modal ───────────────────────────────────── */
-    /* ─── ManaPool Banner ──────────────────────────────── */
-    .manapool-banner {
-      background: linear-gradient(135deg, rgba(10,20,50,0.95) 0%, rgba(5,30,40,0.95) 100%);
-      border: 1px solid rgba(56,217,245,0.20);
-      border-radius: 16px;
-      padding: 28px 32px;
-      display: flex;
-      align-items: center;
-      gap: 22px;
+    /* ─── Contact channels ─────────────────────────────── */
+    .section-sub { color: var(--text-dim); font-size: 0.95rem; margin: -16px 0 24px; }
+    .channel-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      margin-bottom: 36px;
+    }
+    .channel-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
       text-decoration: none;
-      position: relative;
-      overflow: hidden;
+      display: block;
+      color: inherit;
+    }
+    a.channel-card:hover { border-color: rgba(56,217,245,0.35); }
+    .channel-icon { font-size: 1.4rem; margin-bottom: 8px; }
+    .channel-name {
+      font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--cyan); font-weight: 600; margin-bottom: 4px;
+    }
+    .channel-value { font-size: 0.9rem; color: var(--text); word-break: break-word; }
+    .channel-note { font-size: 0.76rem; color: var(--text-dim); margin-top: 4px; }
+    .channel-card.pigeon { border-style: dashed; opacity: 0.85; }
+
+    /* honeypot (spam trap) — visually hidden, off-screen */
+    .hp-field { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+    /* ─── ManaPool footer block (secondary weight) ─────── */
+    .manapool-footer {
       max-width: 860px;
-      margin: 0 auto;
-    }
-    .manapool-banner::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse at 80% 50%, rgba(56,217,245,0.06) 0%, transparent 65%);
-      pointer-events: none;
-    }
-    .manapool-banner:hover {
-      border-color: rgba(56,217,245,0.42);
-      box-shadow: 0 0 32px rgba(56,217,245,0.10);
-    }
-    .manapool-logo {
-      width: 52px; height: 52px;
-      border-radius: 10px;
-      background: #0a1a2a;
-      border: 1px solid rgba(56,217,245,0.20);
-      flex-shrink: 0;
+      margin: 8px auto 0;
+      padding: 28px 24px 0;
+      border-top: 1px solid var(--border);
       display: flex;
-      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
       justify-content: center;
-      overflow: hidden;
     }
-    .manapool-logo img { width: 36px; height: 36px; object-fit: contain; }
-    .manapool-text { flex: 1; }
-    .manapool-eyebrow {
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--cyan);
-      margin-bottom: 3px;
-      font-weight: 600;
+    .mp-link {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      text-decoration: none;
+      flex: 1 1 320px;
+      max-width: 410px;
     }
-    .manapool-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.15rem;
+    .mp-link:hover { border-color: rgba(56,217,245,0.30); }
+    .mp-qr {
+      width: 54px; height: 54px; border-radius: 8px; flex-shrink: 0;
+      background: var(--bg3); border: 1px solid var(--border); object-fit: contain;
+    }
+    .mp-text { flex: 1; }
+    .mp-eyebrow { font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--cyan); font-weight: 600; }
+    .mp-title { font-size: 0.9rem; color: var(--text); margin: 2px 0; }
+    .mp-sub { font-size: 0.76rem; color: var(--text-dim); }
+
+    /* ─── Misc humor-hook slots ────────────────────────── */
+    .estimate-empty { color: var(--text-dim); font-size: 0.85rem; margin-top: 10px; font-style: italic; }
+    .confirm-signoff { margin-top: 22px; color: var(--text-dim); font-size: 0.9rem; font-style: italic; }
+    .contact-form-heading { font-family: 'Playfair Display', serif; color: var(--cyan-lt); font-size: 1.2rem; margin-bottom: 16px; }
+    .question-form select {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
       color: var(--text);
-      margin-bottom: 4px;
+      padding: 11px 14px;
+      border-radius: 8px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem;
+      outline: none;
     }
-    .manapool-sub { font-size: 0.82rem; color: var(--text-dim); }
-    .manapool-arrow {
-      font-size: 1.3rem;
-      color: var(--cyan);
-      flex-shrink: 0;
-      opacity: 0.7;
-    }
-    .manapool-banner:hover .manapool-arrow { opacity: 1; }
-    @media (max-width: 560px) {
-      .manapool-banner { flex-wrap: wrap; padding: 20px; }
-      .manapool-arrow { display: none; }
-    }
+    .question-form select:focus { border-color: var(--cyan); }
 
     /* ─── Scroll reveal ────────────────────────────────── */
     .reveal { opacity: 0; transform: translateY(20px); }
@@ -688,24 +705,6 @@
       <h1>Sell Your Cards</h1>
       <p>Get 60% cash for your Magic cards — paid digitally via Venmo, Zelle, or PayPal. Submit your list, ship your cards, get paid.</p>
       <a href="#submit" class="hero-cta">Submit Your List</a>
-    </div>
-
-    <!-- ── ManaPool Referral ── -->
-    <div style="padding: 0 24px 48px; position:relative; z-index:1;">
-      <a class="manapool-banner reveal"
-         href="https://manapool.com/auth?action=signup&next=%2Fsettings%2Freferrals%3Freferrer_code%3DMP-jShpKmJcoYpfBFeANvMT6D"
-         target="_blank" rel="noopener noreferrer">
-        <div class="manapool-logo">
-          <img src="https://manapool.com/favicon.ico" alt="ManaPool"
-               onerror="this.style.display='none';this.parentElement.innerHTML='<span style=\'font-size:1.4rem\'>🌊</span>'" />
-        </div>
-        <div class="manapool-text">
-          <div class="manapool-eyebrow">Also available on</div>
-          <div class="manapool-title">Buy Cards on ManaPool</div>
-          <div class="manapool-sub">Browse thousands of cards from sellers across the marketplace — including cards from Romanova.</div>
-        </div>
-        <div class="manapool-arrow">→</div>
-      </a>
     </div>
 
     <!-- ── How It Works ── -->
@@ -815,6 +814,8 @@
 
         <!-- Estimate -->
         <button class="btn-primary" id="estimate-btn" style="margin-top:4px">Get my estimate</button>
+        <!-- TODO-HUMOR: empty estimate state (before any cards entered) -->
+        <div class="estimate-empty" id="estimate-empty">TODO-HUMOR</div>
         <div class="estimate-box" id="estimate-box" style="display:none">
           <h4>Price Estimate</h4>
           <div class="estimate-range" id="estimate-range"></div>
@@ -901,12 +902,49 @@
             Thanks — we've saved your tracking number and we'll watch for your package. We'll be in touch once it arrives and your cards are verified.
           </div>
         </div>
+
+        <!-- TODO-HUMOR: confirmation screen sign-off line -->
+        <p class="confirm-signoff">TODO-HUMOR</p>
       </div>
     </section>
 
-    <!-- ── Ask a Question ── -->
+    <!-- ── Contact ── -->
     <section id="ask" class="reveal">
-      <h2 class="section-heading">Ask a Question</h2>
+      <h2 class="section-heading">Contact</h2>
+      <p class="section-sub">Reach Roman directly through any of these — or send a question with the form below.</p>
+
+      <div class="channel-grid">
+        <div class="channel-card">
+          <div class="channel-icon">✉️</div>
+          <div class="channel-name">Email</div>
+          <div class="channel-value">[ROMAN: address]@romanova.cards</div>
+        </div>
+        <div class="channel-card">
+          <div class="channel-icon">💬</div>
+          <div class="channel-name">Discord — chat or call</div>
+          <div class="channel-value">lombax_roman</div>
+          <div class="channel-note">[ROMAN: DM directly, or provide a server invite link?]</div>
+        </div>
+        <div class="channel-card">
+          <div class="channel-icon">📞</div>
+          <div class="channel-name">Phone — call or text</div>
+          <div class="channel-value">[ROMAN: number]</div>
+          <div class="channel-note">[ROMAN: consider a Google Voice number instead of personal]</div>
+        </div>
+        <div class="channel-card">
+          <div class="channel-icon">🎥</div>
+          <div class="channel-name">Video call</div>
+          <div class="channel-value">[ROMAN: Discord video, or a Google Meet scheduling link]</div>
+        </div>
+        <!-- TODO-HUMOR: carrier pigeon channel card -->
+        <div class="channel-card pigeon">
+          <div class="channel-icon">🕊️</div>
+          <div class="channel-name">Carrier pigeon</div>
+          <div class="channel-value">TODO-HUMOR</div>
+        </div>
+      </div>
+
+      <h3 class="contact-form-heading">Send a question</h3>
       <div class="question-form">
         <div class="form-row-2">
           <div>
@@ -914,15 +952,29 @@
             <input type="text" id="q-name" placeholder="Jane Smith" />
           </div>
           <div>
-            <label for="q-email">Email Address</label>
-            <input type="email" id="q-email" placeholder="you@example.com" />
+            <label for="q-channel">Preferred channel</label>
+            <select id="q-channel">
+              <option value="Email">Email</option>
+              <option value="Discord">Discord</option>
+              <option value="Phone / text">Phone / text</option>
+              <option value="Video call">Video call</option>
+            </select>
           </div>
+        </div>
+        <div class="form-row">
+          <label for="q-handle">How to reach you <span style="color:var(--text-dim);font-size:0.78rem">(email, Discord, or phone)</span></label>
+          <input type="text" id="q-handle" placeholder="you@example.com  ·  lombax_roman  ·  (555) 555-5555" />
         </div>
         <div class="form-row">
           <label for="q-text">Your Question</label>
           <textarea id="q-text" placeholder="What would you like to know?" style="min-height:100px"></textarea>
         </div>
-        <button class="btn-primary" id="q-submit">Send Question</button>
+        <!-- Honeypot: real people leave this empty; bots fill it and get silently dropped. -->
+        <div class="hp-field" aria-hidden="true">
+          <label for="q-company">Company</label>
+          <input type="text" id="q-company" name="company" tabindex="-1" autocomplete="off" />
+        </div>
+        <button class="btn-primary" id="q-submit">Send my question</button>
         <div class="form-msg" id="q-msg"></div>
       </div>
     </section>
@@ -934,6 +986,28 @@
         <div style="color:var(--text-dim);font-size:0.9rem">Loading…</div>
       </div>
     </section>
+
+    <!-- ── ManaPool block (trust + referral, secondary weight) ── -->
+    <div class="manapool-footer">
+      <a class="mp-link" href="[ROMAN: ManaPool store URL]" target="_blank" rel="noopener noreferrer">
+        <img class="mp-qr" src="assets/manapool-store-qr.png" alt="ManaPool store QR"
+             onerror="this.style.visibility='hidden'" />
+        <div class="mp-text">
+          <div class="mp-eyebrow">On ManaPool</div>
+          <div class="mp-title">See our live inventory &amp; seller ratings</div>
+          <div class="mp-sub">[ROMAN: store URL + QR file → assets/manapool-store-qr.png]</div>
+        </div>
+      </a>
+      <a class="mp-link" href="https://manapool.com/auth?action=signup&next=%2Fsettings%2Freferrals%3Freferrer_code%3DMP-jShpKmJcoYpfBFeANvMT6D" target="_blank" rel="noopener noreferrer">
+        <img class="mp-qr" src="assets/manapool-referral-qr.png" alt="ManaPool referral QR"
+             onerror="this.style.visibility='hidden'" />
+        <div class="mp-text">
+          <div class="mp-eyebrow">New to ManaPool?</div>
+          <div class="mp-title">Sign up &amp; support Romanova</div>
+          <div class="mp-sub">Uses Roman's referral link. [ROMAN: QR file → assets/manapool-referral-qr.png]</div>
+        </div>
+      </a>
+    </div>
 
   </main>
 
@@ -989,9 +1063,10 @@
         sellerEmail:  document.getElementById('seller-email').value,
         sellerPhone:  document.getElementById('seller-phone').value,
         activeTab,
-        qName:  document.getElementById('q-name').value,
-        qEmail: document.getElementById('q-email').value,
-        qText:  document.getElementById('q-text').value,
+        qName:    document.getElementById('q-name').value,
+        qChannel: document.getElementById('q-channel').value,
+        qHandle:  document.getElementById('q-handle').value,
+        qText:    document.getElementById('q-text').value,
       };
       localStorage.setItem(LS_KEY, JSON.stringify(data));
     }
@@ -1003,9 +1078,10 @@
         if (data.sellerName)   document.getElementById('seller-name').value   = data.sellerName;
         if (data.sellerEmail)  document.getElementById('seller-email').value  = data.sellerEmail;
         if (data.sellerPhone)  document.getElementById('seller-phone').value  = data.sellerPhone;
-        if (data.qName)        document.getElementById('q-name').value        = data.qName;
-        if (data.qEmail)       document.getElementById('q-email').value       = data.qEmail;
-        if (data.qText)        document.getElementById('q-text').value        = data.qText;
+        if (data.qName)    document.getElementById('q-name').value    = data.qName;
+        if (data.qChannel) document.getElementById('q-channel').value = data.qChannel;
+        if (data.qHandle)  document.getElementById('q-handle').value  = data.qHandle;
+        if (data.qText)    document.getElementById('q-text').value    = data.qText;
         if (data.activeTab && data.activeTab !== 'paste') {
           activeTab = data.activeTab;
           document.querySelectorAll('.tab-btn').forEach(b => {
@@ -1018,7 +1094,7 @@
     }
 
     // Auto-save on change
-    ['card-list-text','seller-name','seller-email','seller-phone','q-name','q-email','q-text'].forEach(id => {
+    ['card-list-text','seller-name','seller-email','seller-phone','q-name','q-channel','q-handle','q-text'].forEach(id => {
       document.getElementById(id)?.addEventListener('input', saveLocal);
     });
 
@@ -1208,6 +1284,9 @@
     }
 
     async function runEstimate() {
+      const emptyEl = document.getElementById('estimate-empty');
+      if (emptyEl) emptyEl.style.display = 'none';   // hide empty-state slot once an estimate is attempted
+
       const rawText = activeTab === 'paste'
         ? document.getElementById('card-list-text').value
         : uploadedText;
@@ -1225,6 +1304,7 @@
       const btn = document.getElementById('estimate-btn');
       document.getElementById('estimate-box').style.display = '';
       document.getElementById('estimate-range').textContent = '';
+      // TODO-HUMOR: estimate loading state copy
       document.getElementById('estimate-detail').innerHTML =
         `<div class="estimate-loading">Looking up ${rows.length} card${rows.length !== 1 ? 's' : ''} on Scryfall…</div>`;
       btn.disabled = true; btn.textContent = 'Getting estimate…';
@@ -1301,6 +1381,7 @@
 
       // 3. Unmatched (manual review)
       if (est.unmatched.length) {
+        // TODO-HUMOR: unmatched-cards bucket copy
         html += `<div class="bucket-label warn">Unmatched — ${est.unmatched.length}</div>`;
         html += `<div class="bucket-note">We couldn’t auto-match these. We’ll review them by hand and include them in your payout if we can identify them.</div>`;
         est.unmatched.forEach(r => {
@@ -1439,37 +1520,53 @@
       document.getElementById('tracking-success').style.display = 'block';
     }
 
-    // ── Ask a Question (Formspree) ─────────────────────────
-    document.getElementById('q-submit').addEventListener('click', async () => {
-      const name  = document.getElementById('q-name').value.trim();
-      const email = document.getElementById('q-email').value.trim();
-      const text  = document.getElementById('q-text').value.trim();
-      const msg   = document.getElementById('q-msg');
+    // ── Contact form (Formspree / Web3Forms — both work on static GitHub Pages) ──
+    // [ROMAN: create the form account and paste the endpoint URL that delivers to the
+    // romanova.cards inbox.]
+    const FORM_ENDPOINT = '';
 
-      if (!name || !email || !text) {
+    document.getElementById('q-submit').addEventListener('click', async () => {
+      const name    = document.getElementById('q-name').value.trim();
+      const channel = document.getElementById('q-channel').value;
+      const handle  = document.getElementById('q-handle').value.trim();
+      const text    = document.getElementById('q-text').value.trim();
+      const honey   = document.getElementById('q-company').value.trim();
+      const msg     = document.getElementById('q-msg');
+
+      // Honeypot: real people leave this empty. If it's filled, treat as spam — show success, drop it.
+      if (honey) { msg.className = 'form-msg success'; msg.textContent = 'Thanks — your message is on its way.'; return; }
+
+      if (!name || !handle || !text) {
         msg.className = 'form-msg error';
-        msg.textContent = 'Please fill in all fields.';
+        msg.textContent = 'Add your name, how to reach you, and a question, then send.';
+        return;
+      }
+
+      if (!FORM_ENDPOINT) {
+        msg.className = 'form-msg error';
+        msg.textContent = 'The contact form isn’t connected yet — reach Roman through one of the channels above for now.';
         return;
       }
 
       msg.className = 'form-msg';
       msg.textContent = 'Sending…';
-
-      // ── PLACEHOLDER: Replace with your real Formspree endpoint ──
-      // const res = await fetch('https://formspree.io/f/YOUR_FORM_ID', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      //   body: JSON.stringify({ name, email, message: text })
-      // });
-
-      // Simulate success for now
-      await new Promise(r => setTimeout(r, 600));
-      msg.className = 'form-msg success';
-      msg.textContent = 'Message sent! We\'ll be in touch within 1–2 business days.';
-      document.getElementById('q-name').value  = '';
-      document.getElementById('q-email').value = '';
-      document.getElementById('q-text').value  = '';
-      saveLocal();
+      try {
+        const res = await fetch(FORM_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ name, preferred_channel: channel, contact: handle, message: text })
+        });
+        if (!res.ok) throw new Error('bad status');
+        msg.className = 'form-msg success';
+        msg.textContent = 'Sent. Roman will get back to you within 1–2 business days.';
+        document.getElementById('q-name').value   = '';
+        document.getElementById('q-handle').value = '';
+        document.getElementById('q-text').value   = '';
+        saveLocal();
+      } catch (e) {
+        msg.className = 'form-msg error';
+        msg.textContent = 'That didn’t go through. Try again, or reach Roman through a channel above.';
+      }
     });
 
     // ── Load FAQ ───────────────────────────────────────────
@@ -1478,13 +1575,26 @@
       try {
         const res  = await fetch('faq.json');
         const faqs = await res.json();
-        list.innerHTML = faqs.map(item => `
-          <div class="faq-item">
-            <h3>${escHtml(item.question)}</h3>
-            <p>${escHtml(item.answer)}</p>
+        // Group by category (first-appearance order); entries without one fall under "General".
+        // Every question renders fully expanded — no accordion.
+        const order = [];
+        const byCat = {};
+        faqs.forEach(item => {
+          const cat = item.category || 'General';
+          if (!byCat[cat]) { byCat[cat] = []; order.push(cat); }
+          byCat[cat].push(item);
+        });
+        list.innerHTML = order.map(cat => `
+          <div class="faq-group">
+            <h3 class="faq-group-label">${escHtml(cat)}</h3>
+            ${byCat[cat].map(item => `
+              <div class="faq-item">
+                <h3>${escHtml(item.question)}</h3>
+                <p>${escHtml(item.answer)}</p>
+              </div>`).join('')}
           </div>`).join('');
       } catch {
-        list.innerHTML = '<div style="color:var(--text-dim)">FAQ unavailable. Please try again later.</div>';
+        list.innerHTML = '<div style="color:var(--text-dim)">FAQ unavailable — reach Roman through the contact section above.</div>';
       }
     }
 

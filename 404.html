@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Romanova — Lost in the Void (404)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --bg:#02040e; --cyan:#38d9f5; --cyan-lt:#82eeff; --text:#d6e8f5; --text-dim:#4e6888; }
+    html, body { height: 100%; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center; padding: 24px; overflow: hidden;
+    }
+    /* star field */
+    body::before {
+      content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background-image:
+        radial-gradient(1px 1px at 15% 20%, rgba(255,255,255,0.6) 0%, transparent 100%),
+        radial-gradient(1px 1px at 70% 12%, rgba(130,220,255,0.6) 0%, transparent 100%),
+        radial-gradient(1px 1px at 40% 60%, rgba(255,255,255,0.45) 0%, transparent 100%),
+        radial-gradient(1px 1px at 85% 50%, rgba(180,140,255,0.5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 25% 85%, rgba(255,255,255,0.4) 0%, transparent 100%),
+        radial-gradient(2px 2px at 60% 75%, rgba(255,255,255,0.3) 0%, transparent 100%);
+    }
+    .wrap { position: relative; z-index: 1; max-width: 480px; }
+    .code {
+      font-family: 'Playfair Display', serif; font-size: clamp(4rem, 14vw, 7rem);
+      color: var(--cyan-lt); line-height: 1; margin-bottom: 12px;
+    }
+    h1 { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--text); margin-bottom: 14px; }
+    /* TODO-HUMOR: 404 page copy */
+    .humor { color: var(--text-dim); font-size: 1rem; margin-bottom: 28px; }
+    a.home {
+      display: inline-block; background: var(--cyan); color: #02040e;
+      text-decoration: none; font-weight: 600; padding: 12px 28px; border-radius: 8px;
+    }
+    a.home:hover { background: var(--cyan-lt); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="code">404</div>
+    <h1>This page drifted off into the void.</h1>
+    <p class="humor">TODO-HUMOR</p>
+    <a class="home" href="index.html">Back to Romanova</a>
+  </div>
+</body>
+</html>

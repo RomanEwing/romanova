@@ -939,13 +939,13 @@
         <!-- Tracking number input -->
         <div class="tracking-section">
           <h4>Add Tracking (Optional)</h4>
-          <p>Once you've shipped, enter your tracking number here so we can watch for your package. This is optional — you can also send it to us through the contact section.</p>
+          <p>Once you've shipped, send us your tracking number so we can watch for your package — the button opens a pre-filled email tagged with your submission ID. Optional, but it helps.</p>
           <div class="tracking-row">
             <input type="text" id="tracking-input" placeholder="e.g. 9400111899223756401498" />
-            <button class="btn-secondary" id="tracking-btn">Save Tracking Number</button>
+            <button class="btn-secondary" id="tracking-btn">Email my tracking number</button>
           </div>
           <div class="tracking-success" id="tracking-success">
-            Thanks — we've saved your tracking number and we'll watch for your package. We'll be in touch once it arrives and your cards are verified.
+            Thanks — that opens your email app addressed to us. Once your package arrives and your cards are verified, we'll be in touch with your final payout.
           </div>
         </div>
 
@@ -1076,8 +1076,7 @@
     let uploadedText   = '';
     let uploadedName   = '';
     let lastEstimate   = null;   // { value, totalMkt, priced, belowMin, unmatched, rows }
-    let submissionId   = null;
-    let submissionDbId = null;
+    let submissionId   = null;   // client-generated CB-XXXXX reference
 
     // ── Input Tabs ─────────────────────────────────────────
     document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -1591,20 +1590,19 @@
         status: 'pending'
       };
 
-      const { data, error } = await sb.from('submissions').insert([payload]).select().single();
+      // Anon role is INSERT-only (spec §8): insert without requesting the row back (no SELECT),
+      // and use the client-generated submission ID for the confirmation screen.
+      const { error } = await sb.from('submissions').insert([payload]);
 
       if (error) {
         document.getElementById('submit-msg').className = 'form-msg error';
-        document.getElementById('submit-msg').textContent = 'Submission failed: ' + error.message;
+        document.getElementById('submit-msg').textContent = 'That didn’t save (' + error.message + '). Try again, or email your list to romanova@romanova.cards.';
         document.getElementById('submit-btn').disabled = false;
         return;
       }
 
-      submissionDbId = data?.id ?? null;
       document.getElementById('submit-msg').textContent = '';
-
-      // Show confirmation
-      showConfirmation(data || payload, submissionId, name, email);
+      showConfirmation(payload, submissionId, name, email);
     }
 
     function showConfirmation(data, subId, name, email) {
@@ -1621,33 +1619,22 @@
       conf.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    // ── Tracking number (optional, informational only) ─────
-    document.getElementById('tracking-btn').addEventListener('click', submitTracking);
-
-    async function submitTracking() {
+    // ── Tracking number (optional) ─────────────────────────
+    // The anon role is INSERT-only (spec §8), so we don't do a later DB UPDATE. Instead we
+    // route the tracking number to Roman's inbox, tagged with the submission ID.
+    document.getElementById('tracking-btn').addEventListener('click', () => {
       const trackNum = document.getElementById('tracking-input').value.trim();
       if (!trackNum) {
-        alert('Enter your tracking number, or send it to us later through the contact section.');
+        alert('Enter your tracking number first, or just email it to romanova@romanova.cards.');
         return;
       }
-      if (!submissionDbId) {
-        alert('We could not find your submission. Reload the page and submit your list again.');
-        return;
-      }
-
-      const btn = document.getElementById('tracking-btn');
-      btn.disabled = true;
-      btn.textContent = 'Saving…';
-
-      // Save the tracking number to the submission only — no inventory or shop changes.
-      // Roman watches for the package; cards are paid out after they arrive and are verified.
-      await sb.from('submissions')
-        .update({ tracking_number: trackNum, status: 'shipped' })
-        .eq('id', submissionDbId);
-
-      btn.textContent = 'Saved';
+      const subject = encodeURIComponent('Tracking for ' + (submissionId || 'my Romanova submission'));
+      const body = encodeURIComponent('Submission ID: ' + (submissionId || '(unknown)') + '\nTracking number: ' + trackNum);
+      window.location.href = `mailto:romanova@romanova.cards?subject=${subject}&body=${body}`;
       document.getElementById('tracking-success').style.display = 'block';
-    }
+      const btn = document.getElementById('tracking-btn');
+      btn.disabled = true; btn.textContent = 'Sent';
+    });
 
     // ── Contact form (Formspree / Web3Forms — both work on static GitHub Pages) ──
     // [ROMAN: create the form account and paste the endpoint URL that delivers to the

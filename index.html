@@ -648,6 +648,13 @@
 
     /* ─── Misc humor-hook slots ────────────────────────── */
     .estimate-empty { color: var(--text-dim); font-size: 0.85rem; margin-top: 10px; font-style: italic; }
+    .clear-list-row { text-align: right; margin: 8px 0 2px; }
+    .link-btn {
+      background: none; border: none; color: var(--text-dim);
+      font-family: 'Outfit', sans-serif; font-size: 0.8rem; cursor: pointer;
+      text-decoration: underline; padding: 2px 4px;
+    }
+    .link-btn:hover { color: var(--cyan); }
     .confirm-signoff { margin-top: 22px; color: var(--text-dim); font-size: 0.9rem; font-style: italic; }
     .contact-form-heading { font-family: 'Playfair Display', serif; color: var(--cyan-lt); font-size: 1.2rem; margin-bottom: 16px; }
     .question-form select {
@@ -783,6 +790,10 @@
             </div>
             <div class="upload-filename" id="upload-filename"></div>
           </div>
+        </div>
+
+        <div class="clear-list-row">
+          <button type="button" class="link-btn" id="clear-list-btn">Clear my list</button>
         </div>
 
         <!-- Contact -->
@@ -1019,14 +1030,12 @@
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImloY3Rybnh4Z3ZhcWlmdnl4cm1kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5OTc2ODcsImV4cCI6MjA5MDU3MzY4N30.uUne2wdhFnAJken-K3_1Z_02X0P_Ta5QYyMsJn_iUAk'
     );
 
-    // ── localStorage persistence key ─────────────────────
-    const LS_KEY = 'cardbuyer_v2';
-
     // ── State ─────────────────────────────────────────────
     const PAYOUT_RATE  = 0.60;   // fixed 60% cash payout
     let activeTab      = 'paste';  // 'paste' | 'upload'
     let uploadedText   = '';
-    let lastEstimate   = null;   // { low, high, included, skipped, notFound }
+    let uploadedName   = '';
+    let lastEstimate   = null;   // { value, totalMkt, priced, belowMin, unmatched, rows }
     let submissionId   = null;
     let submissionDbId = null;
 
@@ -1046,6 +1055,7 @@
     document.getElementById('file-input').addEventListener('change', e => {
       const file = e.target.files[0];
       if (!file) return;
+      uploadedName = file.name;
       document.getElementById('upload-filename').textContent = file.name;
       const reader = new FileReader();
       reader.onload = ev => {
@@ -1055,48 +1065,120 @@
       reader.readAsText(file);
     });
 
-    // ── localStorage ───────────────────────────────────────
+    // ── Persistence (localStorage, namespaced romanova.*) ──
+    const NS = 'romanova.';
+    const LS = {
+      raw:      NS + 'cardList.raw',
+      parsed:   NS + 'cardList.parsed',
+      upload:   NS + 'cardList.upload',
+      tab:      NS + 'cardList.tab',
+      contact:  NS + 'contact',
+      question: NS + 'question',
+      section:  NS + 'activeSection',
+      scroll:   NS + 'scrollY',
+    };
+    // "Clear my list" wipes only these keys; contact/question/scroll stay.
+    const CARD_LIST_KEYS = [LS.raw, LS.parsed, LS.upload, LS.tab];
+
+    function lsGet(k, fb) { try { const v = localStorage.getItem(k); return v == null ? fb : JSON.parse(v); } catch { return fb; } }
+    function lsSet(k, v)  { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* quota/private mode */ } }
+
     function saveLocal() {
-      const data = {
-        cardListText: document.getElementById('card-list-text').value,
-        sellerName:   document.getElementById('seller-name').value,
-        sellerEmail:  document.getElementById('seller-email').value,
-        sellerPhone:  document.getElementById('seller-phone').value,
-        activeTab,
-        qName:    document.getElementById('q-name').value,
-        qChannel: document.getElementById('q-channel').value,
-        qHandle:  document.getElementById('q-handle').value,
-        qText:    document.getElementById('q-text').value,
-      };
-      localStorage.setItem(LS_KEY, JSON.stringify(data));
+      lsSet(LS.raw, document.getElementById('card-list-text').value);
+      lsSet(LS.upload, { name: uploadedName, text: uploadedText });
+      lsSet(LS.tab, activeTab);
+      lsSet(LS.contact, {
+        name:  document.getElementById('seller-name').value,
+        email: document.getElementById('seller-email').value,
+        phone: document.getElementById('seller-phone').value,
+      });
+      lsSet(LS.question, {
+        name:    document.getElementById('q-name').value,
+        channel: document.getElementById('q-channel').value,
+        handle:  document.getElementById('q-handle').value,
+        text:    document.getElementById('q-text').value,
+      });
     }
 
     function loadLocal() {
-      try {
-        const data = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
-        if (data.cardListText) document.getElementById('card-list-text').value = data.cardListText;
-        if (data.sellerName)   document.getElementById('seller-name').value   = data.sellerName;
-        if (data.sellerEmail)  document.getElementById('seller-email').value  = data.sellerEmail;
-        if (data.sellerPhone)  document.getElementById('seller-phone').value  = data.sellerPhone;
-        if (data.qName)    document.getElementById('q-name').value    = data.qName;
-        if (data.qChannel) document.getElementById('q-channel').value = data.qChannel;
-        if (data.qHandle)  document.getElementById('q-handle').value  = data.qHandle;
-        if (data.qText)    document.getElementById('q-text').value    = data.qText;
-        if (data.activeTab && data.activeTab !== 'paste') {
-          activeTab = data.activeTab;
-          document.querySelectorAll('.tab-btn').forEach(b => {
-            b.classList.toggle('active', b.dataset.tab === activeTab);
-          });
-          document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-          document.getElementById('panel-' + activeTab)?.classList.add('active');
-        }
-      } catch (e) { /* ignore */ }
+      const raw = lsGet(LS.raw, '');
+      if (raw) document.getElementById('card-list-text').value = raw;
+
+      const up = lsGet(LS.upload, null);
+      if (up && up.text) {
+        uploadedText = up.text; uploadedName = up.name || '';
+        if (uploadedName) document.getElementById('upload-filename').textContent = uploadedName;
+      }
+
+      const tab = lsGet(LS.tab, 'paste');
+      if (tab && tab !== 'paste') {
+        activeTab = tab;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === activeTab));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        document.getElementById('panel-' + activeTab)?.classList.add('active');
+      }
+
+      const c = lsGet(LS.contact, {});
+      if (c.name)  document.getElementById('seller-name').value  = c.name;
+      if (c.email) document.getElementById('seller-email').value = c.email;
+      if (c.phone) document.getElementById('seller-phone').value = c.phone;
+
+      const q = lsGet(LS.question, {});
+      if (q.name)    document.getElementById('q-name').value    = q.name;
+      if (q.channel) document.getElementById('q-channel').value = q.channel;
+      if (q.handle)  document.getElementById('q-handle').value  = q.handle;
+      if (q.text)    document.getElementById('q-text').value    = q.text;
+
+      // Restore the last parsed list + estimate so a refresh loses nothing.
+      const parsed = lsGet(LS.parsed, null);
+      if (parsed && Array.isArray(parsed.rows) && parsed.rows.length) {
+        lastEstimate = parsed;
+        renderEstimate(lastEstimate);
+      }
+
+      restoreScroll();
     }
 
-    // Auto-save on change
+    // Auto-save on input (q-channel is a <select>; 'input' fires on change)
     ['card-list-text','seller-name','seller-email','seller-phone','q-name','q-channel','q-handle','q-text'].forEach(id => {
       document.getElementById(id)?.addEventListener('input', saveLocal);
     });
+
+    // Clear my list — wipes card-list state + its keys only
+    document.getElementById('clear-list-btn').addEventListener('click', () => {
+      document.getElementById('card-list-text').value = '';
+      document.getElementById('file-input').value = '';
+      document.getElementById('upload-filename').textContent = '';
+      uploadedText = ''; uploadedName = ''; lastEstimate = null;
+      document.getElementById('estimate-box').style.display = 'none';
+      document.getElementById('estimate-detail').innerHTML = '';
+      document.getElementById('estimate-range').textContent = '';
+      document.getElementById('accept-row').style.display = 'none';
+      document.getElementById('submit-btn').disabled = true;
+      const ee = document.getElementById('estimate-empty'); if (ee) ee.style.display = '';
+      CARD_LIST_KEYS.forEach(k => localStorage.removeItem(k));
+      document.getElementById('clear-list-btn').blur();
+    });
+
+    // Persist scroll position + last-active section (throttled)
+    let scrollTimer = null;
+    window.addEventListener('scroll', () => {
+      if (scrollTimer) return;
+      scrollTimer = setTimeout(() => {
+        scrollTimer = null;
+        lsSet(LS.scroll, window.scrollY);
+        let active = '';
+        const mark = window.scrollY + window.innerHeight / 3;
+        document.querySelectorAll('section[id], #confirmation').forEach(s => { if (s.offsetTop <= mark) active = s.id; });
+        if (active) lsSet(LS.section, active);
+      }, 250);
+    });
+
+    function restoreScroll() {
+      if (location.hash) return;                 // let in-page anchor links win
+      const y = lsGet(LS.scroll, null);
+      if (typeof y === 'number' && y > 0) setTimeout(() => window.scrollTo(0, y), 120);
+    }
 
     // ── Minimum card value ─────────────────────────────────
     // [ROMAN: confirm minimum card value $___]  (keeping the implemented $10)
@@ -1327,6 +1409,7 @@
       const totalMkt = priced.reduce((s, r) => s + r.marketEach * r.qty, 0);
       lastEstimate = { value: totalMkt * PAYOUT_RATE, totalMkt, priced, belowMin, unmatched, rows };
       renderEstimate(lastEstimate);
+      lsSet(LS.parsed, lastEstimate);   // persist parsed list + estimate (§5)
     }
 
     function condFlag(r) {
@@ -1341,6 +1424,8 @@
     }
 
     function renderEstimate(est) {
+      const ee = document.getElementById('estimate-empty'); if (ee) ee.style.display = 'none';
+      document.getElementById('estimate-box').style.display = '';
       const value = est.totalMkt * PAYOUT_RATE;
       est.value = value;
 

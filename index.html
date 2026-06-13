@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Romanova — Sell Your Cards</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    /* ─── Reset & Base ─────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:       #02040e;
+      --bg2:      #060917;
+      --bg3:      #0a0e22;
+      --cyan:     #38d9f5;
+      --cyan-lt:  #82eeff;
+      --purple:   #b388ff;
+      --text:     #d6e8f5;
+      --text-dim: #4e6888;
+      --border:   #111c36;
+      --radius:   10px;
+      --nav-h:    50px;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ─── Star Field ───────────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        /* white stars */
+        radial-gradient(1px 1px at 5%   8%,  rgba(255,255,255,0.80) 0%, transparent 100%),
+        radial-gradient(1px 1px at 12%  18%, rgba(255,255,255,0.65) 0%, transparent 100%),
+        radial-gradient(1px 1px at 22%  44%, rgba(255,255,255,0.55) 0%, transparent 100%),
+        radial-gradient(1px 1px at 33%  72%, rgba(255,255,255,0.50) 0%, transparent 100%),
+        radial-gradient(1px 1px at 40%  28%, rgba(255,255,255,0.70) 0%, transparent 100%),
+        radial-gradient(1px 1px at 48%  90%, rgba(255,255,255,0.45) 0%, transparent 100%),
+        radial-gradient(1px 1px at 55%  12%, rgba(255,255,255,0.80) 0%, transparent 100%),
+        radial-gradient(1px 1px at 62%  58%, rgba(255,255,255,0.55) 0%, transparent 100%),
+        radial-gradient(1px 1px at 70%  38%, rgba(255,255,255,0.65) 0%, transparent 100%),
+        radial-gradient(1px 1px at 78%  82%, rgba(255,255,255,0.50) 0%, transparent 100%),
+        radial-gradient(1px 1px at 85%  22%, rgba(255,255,255,0.75) 0%, transparent 100%),
+        radial-gradient(1px 1px at 92%  64%, rgba(255,255,255,0.60) 0%, transparent 100%),
+        radial-gradient(1px 1px at 97%  48%, rgba(255,255,255,0.70) 0%, transparent 100%),
+        radial-gradient(1px 1px at 8%   55%, rgba(255,255,255,0.45) 0%, transparent 100%),
+        radial-gradient(1px 1px at 16%  80%, rgba(255,255,255,0.55) 0%, transparent 100%),
+        radial-gradient(1px 1px at 26%  35%, rgba(255,255,255,0.60) 0%, transparent 100%),
+        radial-gradient(1px 1px at 36%  95%, rgba(255,255,255,0.40) 0%, transparent 100%),
+        radial-gradient(1px 1px at 44%  50%, rgba(255,255,255,0.65) 0%, transparent 100%),
+        radial-gradient(1px 1px at 52%  74%, rgba(255,255,255,0.45) 0%, transparent 100%),
+        radial-gradient(1px 1px at 60%  20%, rgba(255,255,255,0.70) 0%, transparent 100%),
+        radial-gradient(1px 1px at 68%  45%, rgba(255,255,255,0.55) 0%, transparent 100%),
+        radial-gradient(1px 1px at 76%  68%, rgba(255,255,255,0.50) 0%, transparent 100%),
+        radial-gradient(1px 1px at 82%  92%, rgba(255,255,255,0.40) 0%, transparent 100%),
+        radial-gradient(1px 1px at 90%  15%, rgba(255,255,255,0.65) 0%, transparent 100%),
+        radial-gradient(1px 1px at 95%  85%, rgba(255,255,255,0.55) 0%, transparent 100%),
+        /* blue-tinted stars */
+        radial-gradient(1px 1px at 18%  62%, rgba(130,220,255,0.75) 0%, transparent 100%),
+        radial-gradient(1px 1px at 38%  14%, rgba(130,220,255,0.65) 0%, transparent 100%),
+        radial-gradient(1px 1px at 58%  85%, rgba(130,220,255,0.60) 0%, transparent 100%),
+        radial-gradient(1px 1px at 74%   6%, rgba(130,220,255,0.70) 0%, transparent 100%),
+        radial-gradient(1px 1px at 88%  52%, rgba(130,220,255,0.55) 0%, transparent 100%),
+        /* purple-tinted stars */
+        radial-gradient(1px 1px at 30%  92%, rgba(180,140,255,0.65) 0%, transparent 100%),
+        radial-gradient(1px 1px at 50%  40%, rgba(180,140,255,0.55) 0%, transparent 100%),
+        radial-gradient(1px 1px at 72%  75%, rgba(180,140,255,0.60) 0%, transparent 100%),
+        radial-gradient(1px 1px at 94%  28%, rgba(180,140,255,0.70) 0%, transparent 100%),
+        /* larger brighter stars */
+        radial-gradient(2px 2px at 15%  30%, rgba(255,255,255,0.55) 0%, transparent 100%),
+        radial-gradient(2px 2px at 45%  65%, rgba(255,255,255,0.45) 0%, transparent 100%),
+        radial-gradient(2px 2px at 65%  10%, rgba(255,255,255,0.50) 0%, transparent 100%),
+        radial-gradient(2px 2px at 80%  40%, rgba(200,230,255,0.50) 0%, transparent 100%),
+        radial-gradient(2px 2px at 25%  55%, rgba(200,180,255,0.45) 0%, transparent 100%),
+        radial-gradient(3px 3px at 35%  20%, rgba(255,255,255,0.35) 0%, transparent 100%),
+        radial-gradient(3px 3px at 88%  78%, rgba(180,220,255,0.30) 0%, transparent 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ─── Nebula Blurs ─────────────────────────────────── */
+    .nebula {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .nebula-1 {
+      width: 700px; height: 700px;
+      background: radial-gradient(ellipse, rgba(80,40,180,0.38) 0%, rgba(40,10,100,0.18) 50%, transparent 72%);
+      filter: blur(60px);
+      top: -160px; left: -200px;
+    }
+    .nebula-2 {
+      width: 600px; height: 500px;
+      background: radial-gradient(ellipse, rgba(0,160,220,0.30) 0%, rgba(0,80,160,0.14) 50%, transparent 72%);
+      filter: blur(70px);
+      top: 38%; right: -150px;
+    }
+    .nebula-3 {
+      width: 550px; height: 450px;
+      background: radial-gradient(ellipse, rgba(160,60,220,0.22) 0%, rgba(80,20,140,0.10) 50%, transparent 72%);
+      filter: blur(80px);
+      bottom: 10%; left: 20%;
+    }
+    .nebula-4 {
+      width: 380px; height: 380px;
+      background: radial-gradient(ellipse, rgba(0,200,200,0.18) 0%, rgba(0,100,160,0.08) 55%, transparent 72%);
+      filter: blur(55px);
+      top: 60%; left: 5%;
+    }
+
+    /* ─── Planet Orbs ──────────────────────────────────── */
+    .planet {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    /* Large ringed-glow planet — top right */
+    .planet-1 {
+      width: 120px; height: 120px;
+      background: radial-gradient(circle at 36% 38%,
+        #5e8fff 0%,
+        #2b4fc4 35%,
+        #0e1a60 65%,
+        #06102a 100%);
+      box-shadow:
+        0 0 40px 12px rgba(60,100,255,0.25),
+        0 0 80px 30px rgba(40,80,200,0.12);
+      top: 90px; right: 6%;
+      opacity: 0.85;
+    }
+    /* Ring for planet-1 */
+    .planet-1::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 190px; height: 40px;
+      border-radius: 50%;
+      border: 3px solid rgba(120,160,255,0.28);
+      box-shadow: 0 0 12px rgba(100,140,255,0.20);
+      transform: translate(-50%, -50%) rotateX(72deg);
+    }
+    /* Small moon-like planet — lower left */
+    .planet-2 {
+      width: 60px; height: 60px;
+      background: radial-gradient(circle at 38% 35%,
+        #c8b0ff 0%,
+        #7850d0 40%,
+        #2a1060 80%,
+        #100828 100%);
+      box-shadow: 0 0 24px 8px rgba(140,80,255,0.22);
+      bottom: 18%; left: 4%;
+      opacity: 0.75;
+    }
+    /* Distant small planet — mid right */
+    .planet-3 {
+      width: 34px; height: 34px;
+      background: radial-gradient(circle at 40% 35%,
+        #80f0e0 0%,
+        #20a8c0 45%,
+        #084060 80%,
+        #021020 100%);
+      box-shadow: 0 0 16px 6px rgba(0,200,210,0.20);
+      top: 52%; right: 3%;
+      opacity: 0.70;
+    }
+
+    /* ─── Nav ──────────────────────────────────────────── */
+    nav {
+      position: sticky;
+      top: 0;
+      height: var(--nav-h);
+      background: rgba(2,4,14,0.94);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 1000;
+    }
+    .nav-brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem;
+      color: var(--cyan-lt);
+      letter-spacing: 0.04em;
+      text-decoration: none;
+    }
+    .nav-links { display: flex; align-items: center; gap: 6px; }
+    .nav-links a {
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 0.85rem;
+      padding: 6px 10px;
+      border-radius: 6px;
+    }
+    .nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+    .nav-links a.active { color: var(--cyan); }
+    .nav-pill {
+      background: rgba(56,217,245,0.10);
+      color: var(--cyan) !important;
+      border: 1px solid rgba(56,217,245,0.22);
+      border-radius: 20px !important;
+      padding: 5px 14px !important;
+      font-size: 0.82rem !important;
+    }
+    .nav-pill:hover { background: rgba(56,217,245,0.18) !important; }
+    #auth-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-family: 'Outfit', sans-serif;
+      cursor: pointer;
+    }
+    #auth-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+
+    /* ─── Main ─────────────────────────────────────────── */
+    main { position: relative; z-index: 1; }
+
+    /* ─── Sections ─────────────────────────────────────── */
+    section { padding: 72px 24px; max-width: 860px; margin: 0 auto; }
+
+    /* ─── Hero ─────────────────────────────────────────── */
+    .hero {
+      text-align: center;
+      padding: 80px 24px 60px;
+    }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      color: var(--cyan-lt);
+      margin-bottom: 16px;
+      letter-spacing: 0.02em;
+    }
+    .hero p {
+      color: var(--text-dim);
+      font-size: 1.08rem;
+      max-width: 560px;
+      margin: 0 auto 28px;
+    }
+    .hero-cta {
+      display: inline-block;
+      background: var(--cyan);
+      color: #0a0c1a;
+      text-decoration: none;
+      padding: 12px 32px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      letter-spacing: 0.03em;
+    }
+    .hero-cta:hover { background: var(--cyan-lt); }
+
+    /* ─── Section Headings ─────────────────────────────── */
+    .section-heading {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      color: var(--cyan-lt);
+      margin-bottom: 28px;
+    }
+
+    /* ─── How It Works ─────────────────────────────────── */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px;
+      margin-top: 8px;
+    }
+    .step {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 20px;
+    }
+    .step-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      color: var(--cyan);
+      opacity: 0.5;
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+    .step h3 { font-size: 0.95rem; color: var(--text); margin-bottom: 6px; }
+    .step p  { font-size: 0.82rem; color: var(--text-dim); line-height: 1.5; }
+
+    /* ─── What We Buy ──────────────────────────────────── */
+    .buy-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+    }
+    .buy-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+    }
+    .buy-card h3 { font-size: 0.95rem; color: var(--cyan); margin-bottom: 6px; }
+    .buy-card p  { font-size: 0.82rem; color: var(--text-dim); line-height: 1.5; }
+
+    /* ─── Submit Form ──────────────────────────────────── */
+    .form-box {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 32px;
+    }
+
+    /* Tabs */
+    .tabs { display: flex; gap: 0; margin-bottom: 20px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); width: fit-content; }
+    .tab-btn {
+      padding: 9px 22px;
+      font-size: 0.88rem;
+      cursor: pointer;
+      background: var(--bg3);
+      color: var(--text-dim);
+      border: none;
+      font-family: 'Outfit', sans-serif;
+    }
+    .tab-btn.active { background: rgba(56,217,245,0.12); color: var(--cyan); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Textarea / inputs */
+    textarea, input[type="text"], input[type="email"], input[type="tel"] {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 11px 14px;
+      border-radius: 8px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+      resize: vertical;
+    }
+    textarea:focus, input[type="text"]:focus, input[type="email"]:focus, input[type="tel"]:focus {
+      border-color: var(--cyan);
+    }
+    textarea { min-height: 160px; line-height: 1.5; }
+
+    label { display: block; font-size: 0.85rem; color: var(--text-dim); margin-bottom: 6px; }
+    .form-row { margin-bottom: 18px; }
+    .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; }
+    @media (max-width: 560px) { .form-row-2 { grid-template-columns: 1fr; } }
+
+    /* Payout info block */
+    .payout-info {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: rgba(56,217,245,0.07);
+      border: 1px solid rgba(56,217,245,0.18);
+      border-radius: 8px;
+      padding: 13px 16px;
+    }
+    .payout-info-icon { font-size: 1.5rem; flex-shrink: 0; }
+    .payout-info-title { font-size: 0.92rem; font-weight: 600; color: var(--cyan); }
+    .payout-info-sub   { font-size: 0.80rem; color: var(--text-dim); margin-top: 2px; }
+
+    /* File upload area */
+    .upload-area {
+      border: 2px dashed var(--border);
+      border-radius: 8px;
+      padding: 36px 20px;
+      text-align: center;
+      cursor: pointer;
+      color: var(--text-dim);
+      font-size: 0.88rem;
+      position: relative;
+    }
+    .upload-area:hover { border-color: var(--cyan); color: var(--text); }
+    .upload-area input[type="file"] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+      border: none; padding: 0;
+    }
+    .upload-area input[type="file"]:focus { outline: none; }
+    .upload-filename { margin-top: 8px; font-size: 0.82rem; color: var(--cyan); }
+
+    /* Estimate box */
+    .estimate-box {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 18px 20px;
+      margin-top: 18px;
+      font-size: 0.88rem;
+    }
+    .estimate-box h4 { color: var(--cyan); margin-bottom: 10px; font-size: 0.92rem; }
+    .estimate-range { font-size: 1.1rem; font-weight: 600; color: var(--cyan-lt); margin-bottom: 10px; }
+    .estimate-detail { color: var(--text-dim); font-size: 0.82rem; line-height: 1.6; }
+    .estimate-card-row { display: flex; justify-content: space-between; padding: 3px 0; }
+    .estimate-card-row.included { color: var(--text); }
+    .estimate-card-row.skipped  { color: var(--text-dim); }
+    .estimate-card-row.notfound { color: #e06060; }
+    .estimate-loading { color: var(--text-dim); font-style: italic; }
+
+    /* Accept checkbox */
+    .accept-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin: 18px 0;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+    }
+    .accept-row input[type="checkbox"] { margin-top: 2px; accent-color: var(--cyan); flex-shrink: 0; }
+
+    /* Submit button */
+    .btn-primary {
+      background: var(--cyan);
+      color: #0a0c1a;
+      border: none;
+      padding: 12px 32px;
+      border-radius: 8px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      letter-spacing: 0.03em;
+      width: 100%;
+    }
+    .btn-primary:hover:not(:disabled) { background: var(--cyan-lt); }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ─── Confirmation Screen ──────────────────────────── */
+    #confirmation {
+      display: none;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 36px 32px;
+      margin-top: 24px;
+    }
+    #confirmation h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      color: var(--cyan-lt);
+      margin-bottom: 6px;
+    }
+    .confirm-id {
+      font-size: 1.2rem;
+      font-family: monospace;
+      color: var(--cyan);
+      background: rgba(56,217,245,0.07);
+      border: 1px solid rgba(56,217,245,0.18);
+      display: inline-block;
+      padding: 5px 14px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+    }
+    .confirm-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px 24px;
+      margin-bottom: 24px;
+      font-size: 0.88rem;
+    }
+    @media (max-width: 520px) { .confirm-grid { grid-template-columns: 1fr; } }
+    .confirm-label { color: var(--text-dim); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .confirm-value { color: var(--text); margin-top: 2px; }
+    .confirm-address {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 18px;
+      margin-bottom: 20px;
+      font-size: 0.88rem;
+      line-height: 1.7;
+    }
+    .confirm-address strong { color: var(--cyan); display: block; margin-bottom: 4px; }
+    .packing-steps { margin-bottom: 24px; }
+    .packing-steps h4 { color: var(--cyan); margin-bottom: 12px; font-size: 0.92rem; }
+    .packing-steps ol { padding-left: 20px; }
+    .packing-steps li { font-size: 0.87rem; color: var(--text-dim); margin-bottom: 8px; line-height: 1.5; }
+    .packing-steps li strong { color: var(--text); }
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 24px 0;
+    }
+    .tracking-section h4 { color: var(--cyan-lt); font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 8px; }
+    .tracking-section p  { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 14px; }
+    .tracking-row { display: flex; gap: 10px; }
+    .tracking-row input { flex: 1; }
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      padding: 11px 22px;
+      border-radius: 8px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-secondary:hover { background: rgba(56,217,245,0.10); }
+    .btn-secondary:disabled { opacity: 0.4; cursor: not-allowed; }
+    .tracking-success {
+      display: none;
+      background: rgba(72,199,142,0.08);
+      border: 1px solid rgba(72,199,142,0.25);
+      border-radius: 8px;
+      padding: 14px 16px;
+      color: #48c78e;
+      font-size: 0.88rem;
+      margin-top: 14px;
+    }
+
+    /* ─── Ask a Question ───────────────────────────────── */
+    .question-form {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 32px;
+    }
+    .form-msg { font-size: 0.85rem; margin-top: 12px; min-height: 20px; }
+    .form-msg.error   { color: #e06060; }
+    .form-msg.success { color: #48c78e; }
+
+    /* ─── FAQ ──────────────────────────────────────────── */
+    .faq-list { display: flex; flex-direction: column; gap: 18px; }
+    .faq-item {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+    }
+    .faq-item h3 {
+      font-size: 0.95rem;
+      color: var(--cyan);
+      margin-bottom: 8px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+    }
+    .faq-item p { font-size: 0.88rem; color: var(--text-dim); line-height: 1.6; }
+
+    /* ─── Auth Modal ───────────────────────────────────── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(2,3,12,0.88);
+      backdrop-filter: blur(6px);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 36px 32px;
+      width: 100%;
+      max-width: 400px;
+      position: relative;
+    }
+    .modal h2 {
+      font-family: 'Playfair Display', serif;
+      color: var(--cyan-lt);
+      margin-bottom: 22px;
+      font-size: 1.4rem;
+    }
+    .modal-close {
+      position: absolute; top: 14px; right: 18px;
+      background: none; border: none;
+      color: var(--text-dim); font-size: 1.4rem;
+      cursor: pointer; line-height: 1;
+    }
+    .modal-close:hover { color: var(--text); }
+    .modal label { display: block; font-size: 0.85rem; color: var(--text-dim); margin-bottom: 5px; }
+    .modal input {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.92rem;
+      outline: none;
+      margin-bottom: 16px;
+    }
+    .modal input:focus { border-color: var(--cyan); }
+    .modal-tabs { display: flex; gap: 0; margin-bottom: 24px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+    .modal-tab {
+      flex: 1; padding: 9px; text-align: center;
+      font-size: 0.88rem; cursor: pointer;
+      background: var(--bg3); color: var(--text-dim); border: none;
+      font-family: 'Outfit', sans-serif;
+    }
+    .modal-tab.active { background: rgba(56,217,245,0.12); color: var(--cyan); }
+    .btn-modal-submit {
+      width: 100%;
+      background: var(--cyan);
+      color: #0a0c1a;
+      border: none;
+      padding: 11px;
+      border-radius: 8px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+    .btn-modal-submit:hover { background: var(--cyan-lt); }
+    .modal-msg { font-size: 0.83rem; margin-top: 12px; text-align: center; min-height: 20px; }
+    .modal-msg.error   { color: #e06060; }
+    .modal-msg.success { color: #48c78e; }
+
+    /* ─── ManaPool Banner ──────────────────────────────── */
+    .manapool-banner {
+      background: linear-gradient(135deg, rgba(10,20,50,0.95) 0%, rgba(5,30,40,0.95) 100%);
+      border: 1px solid rgba(56,217,245,0.20);
+      border-radius: 16px;
+      padding: 28px 32px;
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+    .manapool-banner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 80% 50%, rgba(56,217,245,0.06) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .manapool-banner:hover {
+      border-color: rgba(56,217,245,0.42);
+      box-shadow: 0 0 32px rgba(56,217,245,0.10);
+    }
+    .manapool-logo {
+      width: 52px; height: 52px;
+      border-radius: 10px;
+      background: #0a1a2a;
+      border: 1px solid rgba(56,217,245,0.20);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .manapool-logo img { width: 36px; height: 36px; object-fit: contain; }
+    .manapool-text { flex: 1; }
+    .manapool-eyebrow {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--cyan);
+      margin-bottom: 3px;
+      font-weight: 600;
+    }
+    .manapool-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .manapool-sub { font-size: 0.82rem; color: var(--text-dim); }
+    .manapool-arrow {
+      font-size: 1.3rem;
+      color: var(--cyan);
+      flex-shrink: 0;
+      opacity: 0.7;
+    }
+    .manapool-banner:hover .manapool-arrow { opacity: 1; }
+    @media (max-width: 560px) {
+      .manapool-banner { flex-wrap: wrap; padding: 20px; }
+      .manapool-arrow { display: none; }
+    }
+
+    /* ─── Scroll reveal ────────────────────────────────── */
+    .reveal { opacity: 0; transform: translateY(20px); }
+    .reveal.visible { opacity: 1; transform: translateY(0); transition: opacity 0.5s ease, transform 0.5s ease; }
+
+    /* ─── Responsive ───────────────────────────────────── */
+    @media (max-width: 600px) {
+      .nav-links a:not(.nav-pill):not(#auth-btn) { display: none; }
+      .form-box, .question-form, #confirmation { padding: 22px 16px; }
+      .tracking-row { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nebula bg -->
+  <div class="nebula nebula-1"></div>
+  <div class="nebula nebula-2"></div>
+  <div class="nebula nebula-3"></div>
+  <div class="nebula nebula-4"></div>
+
+  <!-- Planet orbs -->
+  <div class="planet planet-1"></div>
+  <div class="planet planet-2"></div>
+  <div class="planet planet-3"></div>
+
+  <!-- ── Navigation ── -->
+  <nav>
+    <a class="nav-brand" href="index.html">Romanova</a>
+    <div class="nav-links">
+      <a href="#how-it-works">How It Works</a>
+      <a href="#submit">Submit List</a>
+      <a href="#faq">FAQ</a>
+      <a href="shop.html" class="nav-pill">Buy Cards</a>
+      <button id="auth-btn">Sign In</button>
+    </div>
+  </nav>
+
+  <main>
+
+    <!-- ── Hero ── -->
+    <div class="hero">
+      <h1>Sell Your Cards</h1>
+      <p>Get 60% cash for your Magic cards — paid digitally via Venmo, Zelle, or PayPal. Submit your list, ship your cards, get paid.</p>
+      <a href="#submit" class="hero-cta">Submit Your List</a>
+    </div>
+
+    <!-- ── ManaPool Referral ── -->
+    <div style="padding: 0 24px 48px; position:relative; z-index:1;">
+      <a class="manapool-banner reveal"
+         href="https://manapool.com/auth?action=signup&next=%2Fsettings%2Freferrals%3Freferrer_code%3DMP-jShpKmJcoYpfBFeANvMT6D"
+         target="_blank" rel="noopener noreferrer">
+        <div class="manapool-logo">
+          <img src="https://manapool.com/favicon.ico" alt="ManaPool"
+               onerror="this.style.display='none';this.parentElement.innerHTML='<span style=\'font-size:1.4rem\'>🌊</span>'" />
+        </div>
+        <div class="manapool-text">
+          <div class="manapool-eyebrow">Also available on</div>
+          <div class="manapool-title">Buy Cards on ManaPool</div>
+          <div class="manapool-sub">Browse thousands of cards from sellers across the marketplace — including cards from Romanova.</div>
+        </div>
+        <div class="manapool-arrow">→</div>
+      </a>
+    </div>
+
+    <!-- ── How It Works ── -->
+    <section id="how-it-works" class="reveal">
+      <h2 class="section-heading">How It Works</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <h3>Submit Your List</h3>
+          <p>Paste or upload your card list. We'll generate a live price estimate filtered to cards $10 and over.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <h3>Ship Your Cards</h3>
+          <p>Pack securely and ship with tracking — at your expense. Enter the tracking number to confirm shipment.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <h3>We Verify</h3>
+          <p>We inspect every card for quantity, condition, and identity. Typically 3–5 business days after arrival.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <h3>Get Paid</h3>
+          <p>Once we verify your cards, you get 60% of market value, paid digitally via Venmo, Zelle, or PayPal. We contact you before anything is finalized.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── What We Buy ── -->
+    <section id="what-we-buy" class="reveal">
+      <h2 class="section-heading">What We Buy</h2>
+      <div class="buy-grid">
+        <div class="buy-card">
+          <h3>Minimum Value</h3>
+          <p>We buy cards priced at $10 or more (TCGPlayer market). Cards under $10 are returned or discarded with permission.</p>
+        </div>
+        <div class="buy-card">
+          <h3>Condition</h3>
+          <p>Near Mint (NM) and Lightly Played (LP) preferred. Moderately Played (MP) at reduced rate. HP and Damaged generally declined.</p>
+        </div>
+        <div class="buy-card">
+          <h3>60% Cash</h3>
+          <p>60% of TCGPlayer market price, paid digitally via Venmo, Zelle, or PayPal once we verify your cards. No store credit — just money sent to you.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Submit Your List ── -->
+    <section id="submit" class="reveal">
+      <h2 class="section-heading">Submit Your List</h2>
+      <div class="form-box">
+
+        <!-- Input tabs -->
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="paste">Paste List</button>
+          <button class="tab-btn" data-tab="upload">Upload File</button>
+        </div>
+
+        <!-- Paste panel -->
+        <div class="tab-panel active" id="panel-paste">
+          <div class="form-row">
+            <label for="card-list-text">Card List <span style="color:var(--text-dim);font-size:0.78rem">(one per line — e.g. "4x Lightning Bolt" or "4 Lightning Bolt (M10)")</span></label>
+            <textarea id="card-list-text" placeholder="4x Lightning Bolt&#10;2 Thoughtseize (THS)&#10;1x Liliana of the Veil"></textarea>
+          </div>
+        </div>
+
+        <!-- Upload panel -->
+        <div class="tab-panel" id="panel-upload">
+          <div class="form-row">
+            <label>Upload File <span style="color:var(--text-dim);font-size:0.78rem">(.txt, .csv, .dec, .dek, or Moxfield export)</span></label>
+            <div class="upload-area" id="upload-area">
+              <div>Drop file here or click to browse</div>
+              <div style="font-size:0.78rem;margin-top:4px;opacity:0.6">.txt · .csv · .dec · .dek</div>
+              <input type="file" id="file-input" accept=".txt,.csv,.dec,.dek" />
+            </div>
+            <div class="upload-filename" id="upload-filename"></div>
+          </div>
+        </div>
+
+        <!-- Contact -->
+        <div class="form-row-2">
+          <div>
+            <label for="seller-name">Your Name</label>
+            <input type="text" id="seller-name" placeholder="Jane Smith" />
+          </div>
+          <div>
+            <label for="seller-email">Email Address</label>
+            <input type="email" id="seller-email" placeholder="you@example.com" />
+          </div>
+        </div>
+
+        <!-- Payout info -->
+        <div class="form-row">
+          <div class="payout-info">
+            <span class="payout-info-icon">📱</span>
+            <div>
+              <div class="payout-info-title">60% Cash — Paid Digitally</div>
+              <div class="payout-info-sub">Sent via Venmo, Zelle, or PayPal after Roman receives and verifies your cards. No store credit.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Estimate -->
+        <button class="btn-primary" id="estimate-btn" style="margin-top:4px">Get Price Estimate</button>
+        <div class="estimate-box" id="estimate-box" style="display:none">
+          <h4>Price Estimate</h4>
+          <div class="estimate-range" id="estimate-range"></div>
+          <div class="estimate-detail" id="estimate-detail"></div>
+        </div>
+
+        <!-- Accept checkbox -->
+        <div class="accept-row" id="accept-row" style="display:none">
+          <input type="checkbox" id="accept-check" />
+          <label for="accept-check" style="margin:0;color:var(--text-dim)">
+            I understand the number above is an <strong style="color:var(--cyan)">estimate</strong>. Roman pays a final <strong style="color:var(--cyan)">60% cash payout — paid digitally via Venmo, Zelle, or PayPal</strong> after he receives and verifies my cards.
+          </label>
+        </div>
+
+        <!-- Submit -->
+        <button class="btn-primary" id="submit-btn" disabled style="margin-top:4px">Submit Card List</button>
+        <div class="form-msg" id="submit-msg"></div>
+      </div>
+
+      <!-- ── Confirmation (post-submit) ── -->
+      <div id="confirmation">
+        <h3>Submission Received</h3>
+        <p style="color:var(--text-dim);font-size:0.88rem;margin-bottom:16px">Your submission ID is:</p>
+        <div class="confirm-id" id="confirm-id-display">CB-XXXXX</div>
+
+        <div class="confirm-grid">
+          <div>
+            <div class="confirm-label">Date</div>
+            <div class="confirm-value" id="confirm-date"></div>
+          </div>
+          <div>
+            <div class="confirm-label">Payout</div>
+            <div class="confirm-value">60% cash — paid via Venmo, Zelle, or PayPal</div>
+          </div>
+          <div>
+            <div class="confirm-label">Estimated Value</div>
+            <div class="confirm-value" id="confirm-range"></div>
+          </div>
+          <div>
+            <div class="confirm-label">Eligible Cards</div>
+            <div class="confirm-value" id="confirm-count"></div>
+          </div>
+          <div>
+            <div class="confirm-label">Confirmation Sent To</div>
+            <div class="confirm-value" id="confirm-email"></div>
+          </div>
+        </div>
+
+        <!-- Shipping address -->
+        <div class="confirm-address">
+          <strong>Ship Your Cards To:</strong>
+          <!-- ── PLACEHOLDER: Replace with Roman's real address ── -->
+          Roman [Last Name]<br />
+          [Street Address]<br />
+          [City, State ZIP]<br />
+          United States
+        </div>
+
+        <!-- Packing instructions -->
+        <div class="packing-steps">
+          <h4>Packing Instructions</h4>
+          <ol>
+            <li><strong>Sleeve every card</strong> in a penny sleeve, then place in a top loader or card saver.</li>
+            <li><strong>Organize by your list</strong> so cards are easy to verify on arrival.</li>
+            <li><strong>Wrap in bubble wrap</strong> or pad the package to prevent bending in transit.</li>
+            <li><strong>Use a rigid mailer or small box</strong> — no plain envelopes for valuable cards.</li>
+            <li><strong>Write the submission ID</strong> (<span class="confirm-id-inline"></span>) on the outside of the package.</li>
+            <li><strong>Ship with tracking</strong> (USPS, UPS, FedEx, etc.). You pay for shipping. Consider insuring the package.</li>
+            <li>Enter your tracking number below after you drop it off.</li>
+          </ol>
+        </div>
+
+        <hr class="divider" />
+
+        <!-- Tracking number input -->
+        <div class="tracking-section">
+          <h4>Add Tracking (Optional)</h4>
+          <p>Once you've shipped, enter your tracking number here so we can watch for your package. This is optional — you can also send it to us through the contact section.</p>
+          <div class="tracking-row">
+            <input type="text" id="tracking-input" placeholder="e.g. 9400111899223756401498" />
+            <button class="btn-secondary" id="tracking-btn">Save Tracking Number</button>
+          </div>
+          <div class="tracking-success" id="tracking-success">
+            Thanks — we've saved your tracking number and we'll watch for your package. We'll be in touch once it arrives and your cards are verified.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Ask a Question ── -->
+    <section id="ask" class="reveal">
+      <h2 class="section-heading">Ask a Question</h2>
+      <div class="question-form">
+        <div class="form-row-2">
+          <div>
+            <label for="q-name">Your Name</label>
+            <input type="text" id="q-name" placeholder="Jane Smith" />
+          </div>
+          <div>
+            <label for="q-email">Email Address</label>
+            <input type="email" id="q-email" placeholder="you@example.com" />
+          </div>
+        </div>
+        <div class="form-row">
+          <label for="q-text">Your Question</label>
+          <textarea id="q-text" placeholder="What would you like to know?" style="min-height:100px"></textarea>
+        </div>
+        <button class="btn-primary" id="q-submit">Send Question</button>
+        <div class="form-msg" id="q-msg"></div>
+      </div>
+    </section>
+
+    <!-- ── FAQ ── -->
+    <section id="faq" class="reveal">
+      <h2 class="section-heading">Frequently Asked Questions</h2>
+      <div class="faq-list" id="faq-list">
+        <div style="color:var(--text-dim);font-size:0.9rem">Loading…</div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── Auth Modal ── -->
+  <div class="modal-overlay" id="auth-modal">
+    <div class="modal">
+      <button class="modal-close" id="modal-close">&times;</button>
+      <h2 id="modal-title">Welcome Back</h2>
+      <div class="modal-tabs">
+        <button class="modal-tab active" data-tab="signin">Sign In</button>
+        <button class="modal-tab" data-tab="signup">Create Account</button>
+      </div>
+      <div id="tab-signin">
+        <label>Email</label>
+        <input type="email" id="signin-email" placeholder="you@example.com" />
+        <label>Password</label>
+        <input type="password" id="signin-pass" placeholder="••••••••" />
+        <button class="btn-modal-submit" id="signin-btn">Sign In</button>
+      </div>
+      <div id="tab-signup" style="display:none">
+        <label>Email</label>
+        <input type="email" id="signup-email" placeholder="you@example.com" />
+        <label>Password</label>
+        <input type="password" id="signup-pass" placeholder="At least 6 characters" />
+        <button class="btn-modal-submit" id="signup-btn">Create Account</button>
+      </div>
+      <p class="modal-msg" id="modal-msg"></p>
+    </div>
+  </div>
+
+  <script>
+    // ── Supabase ─────────────────────────────────────────
+    const { createClient } = supabase;
+    const sb = createClient(
+      'https://ihctrnxxgvaqifvyxrmd.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImloY3Rybnh4Z3ZhcWlmdnl4cm1kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5OTc2ODcsImV4cCI6MjA5MDU3MzY4N30.uUne2wdhFnAJken-K3_1Z_02X0P_Ta5QYyMsJn_iUAk'
+    );
+
+    // ── localStorage persistence key ─────────────────────
+    const LS_KEY = 'cardbuyer_v2';
+
+    // ── State ─────────────────────────────────────────────
+    const PAYOUT_RATE  = 0.60;   // fixed 60% cash payout
+    let currentUser    = null;
+    let activeTab      = 'paste';  // 'paste' | 'upload'
+    let uploadedText   = '';
+    let lastEstimate   = null;   // { low, high, included, skipped, notFound }
+    let submissionId   = null;
+    let submissionDbId = null;
+
+    // ── DOM ───────────────────────────────────────────────
+    const authBtn   = document.getElementById('auth-btn');
+    const modal     = document.getElementById('auth-modal');
+    const modalMsg  = document.getElementById('modal-msg');
+
+    // ── Auth ──────────────────────────────────────────────
+    sb.auth.onAuthStateChange((_e, session) => {
+      currentUser = session?.user ?? null;
+      updateAuthUI();
+      if (currentUser) {
+        const emailField = document.getElementById('seller-email');
+        if (emailField && !emailField.value) emailField.value = currentUser.email;
+      }
+    });
+
+    function updateAuthUI() {
+      authBtn.textContent = currentUser ? 'Sign Out' : 'Sign In';
+    }
+
+    authBtn.addEventListener('click', async () => {
+      if (currentUser) await sb.auth.signOut();
+      else openAuthModal();
+    });
+
+    // Modal tabs
+    document.querySelectorAll('.modal-tab').forEach(t => {
+      t.addEventListener('click', () => {
+        document.querySelectorAll('.modal-tab').forEach(x => x.classList.remove('active'));
+        t.classList.add('active');
+        const which = t.dataset.tab;
+        document.getElementById('tab-signin').style.display = which === 'signin' ? '' : 'none';
+        document.getElementById('tab-signup').style.display = which === 'signup' ? '' : 'none';
+        document.getElementById('modal-title').textContent = which === 'signin' ? 'Welcome Back' : 'Create Account';
+        modalMsg.textContent = '';
+      });
+    });
+
+    document.getElementById('signin-btn').addEventListener('click', async () => {
+      const email = document.getElementById('signin-email').value.trim();
+      const pass  = document.getElementById('signin-pass').value;
+      modalMsg.className = 'modal-msg';
+      modalMsg.textContent = 'Signing in…';
+      const { error } = await sb.auth.signInWithPassword({ email, password: pass });
+      if (error) { modalMsg.className = 'modal-msg error'; modalMsg.textContent = error.message; }
+      else { modal.classList.remove('open'); }
+    });
+
+    document.getElementById('signup-btn').addEventListener('click', async () => {
+      const email = document.getElementById('signup-email').value.trim();
+      const pass  = document.getElementById('signup-pass').value;
+      modalMsg.className = 'modal-msg';
+      modalMsg.textContent = 'Creating account…';
+      const { error } = await sb.auth.signUp({ email, password: pass });
+      if (error) { modalMsg.className = 'modal-msg error'; modalMsg.textContent = error.message; }
+      else { modalMsg.className = 'modal-msg success'; modalMsg.textContent = 'Check your email to confirm your account.'; }
+    });
+
+    function openAuthModal() { modal.classList.add('open'); }
+    document.getElementById('modal-close').addEventListener('click', () => modal.classList.remove('open'));
+    modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('open'); });
+
+    // ── Input Tabs ─────────────────────────────────────────
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        activeTab = btn.dataset.tab;
+        document.getElementById('panel-' + activeTab).classList.add('active');
+        saveLocal();
+      });
+    });
+
+    // ── File Upload ────────────────────────────────────────
+    document.getElementById('file-input').addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      document.getElementById('upload-filename').textContent = file.name;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        uploadedText = ev.target.result;
+        saveLocal();
+      };
+      reader.readAsText(file);
+    });
+
+    // ── localStorage ───────────────────────────────────────
+    function saveLocal() {
+      const data = {
+        cardListText: document.getElementById('card-list-text').value,
+        sellerName:   document.getElementById('seller-name').value,
+        sellerEmail:  document.getElementById('seller-email').value,
+        activeTab,
+        qName:  document.getElementById('q-name').value,
+        qEmail: document.getElementById('q-email').value,
+        qText:  document.getElementById('q-text').value,
+      };
+      localStorage.setItem(LS_KEY, JSON.stringify(data));
+    }
+
+    function loadLocal() {
+      try {
+        const data = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+        if (data.cardListText) document.getElementById('card-list-text').value = data.cardListText;
+        if (data.sellerName)   document.getElementById('seller-name').value   = data.sellerName;
+        if (data.sellerEmail)  document.getElementById('seller-email').value  = data.sellerEmail;
+        if (data.qName)        document.getElementById('q-name').value        = data.qName;
+        if (data.qEmail)       document.getElementById('q-email').value       = data.qEmail;
+        if (data.qText)        document.getElementById('q-text').value        = data.qText;
+        if (data.activeTab && data.activeTab !== 'paste') {
+          activeTab = data.activeTab;
+          document.querySelectorAll('.tab-btn').forEach(b => {
+            b.classList.toggle('active', b.dataset.tab === activeTab);
+          });
+          document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+          document.getElementById('panel-' + activeTab)?.classList.add('active');
+        }
+      } catch (e) { /* ignore */ }
+    }
+
+    // Auto-save on change
+    ['card-list-text','seller-name','seller-email','q-name','q-email','q-text'].forEach(id => {
+      document.getElementById(id)?.addEventListener('input', saveLocal);
+    });
+
+    // ── Parse card list ────────────────────────────────────
+    // Accepts: "4x Lightning Bolt", "4 Lightning Bolt", "1x Liliana of the Veil (INN)", Moxfield/MTGO formats
+    function parseCardList(rawText) {
+      const lines = rawText.split('\n').map(l => l.trim()).filter(Boolean);
+      const cards = [];
+      for (const line of lines) {
+        // Skip MTGO headers / section markers
+        if (line.startsWith('//') || line.startsWith('SB:') || line === '') continue;
+        // Pattern: optional qty + x + name + optional (SET)
+        const match = line.match(/^(\d+)[xX]?\s+(.+?)(?:\s+\(([A-Z0-9]+)\))?(?:\s+\d+)?$/);
+        if (match) {
+          const qty  = parseInt(match[1], 10);
+          const name = match[2].trim();
+          if (name) cards.push({ qty: isNaN(qty) ? 1 : qty, name });
+        } else {
+          // Try "Name (SET) #collector" or just "Name"
+          const simple = line.replace(/\s*\([^)]+\)\s*$/, '').replace(/\s*#\d+$/, '').trim();
+          if (simple) cards.push({ qty: 1, name: simple });
+        }
+      }
+      return cards;
+    }
+
+    // ── Scryfall search (by name) ──────────────────────────
+    async function fetchCardPrice(name) {
+      await delay(115);
+      try {
+        const res  = await fetch(`https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(name)}`);
+        const json = await res.json();
+        if (json.object === 'error') return null;
+        return {
+          name: json.name,
+          usd:  parseFloat(json.prices?.usd || json.prices?.usd_foil || '0') || 0
+        };
+      } catch { return null; }
+    }
+
+    function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+    // ── Estimate ───────────────────────────────────────────
+    document.getElementById('estimate-btn').addEventListener('click', runEstimate);
+
+    async function runEstimate() {
+      const rawText = activeTab === 'paste'
+        ? document.getElementById('card-list-text').value
+        : uploadedText;
+
+      if (!rawText.trim()) {
+        alert('Please enter or upload a card list first.');
+        return;
+      }
+
+      const cards = parseCardList(rawText);
+      if (!cards.length) {
+        alert('No cards found in your list. Check the format and try again.');
+        return;
+      }
+
+      const estimateBox = document.getElementById('estimate-box');
+      const estimateRange = document.getElementById('estimate-range');
+      const estimateDetail = document.getElementById('estimate-detail');
+
+      estimateBox.style.display = '';
+      estimateRange.textContent = '';
+      estimateDetail.innerHTML = '<div class="estimate-loading">Fetching prices… this may take a moment.</div>';
+      document.getElementById('estimate-btn').disabled = true;
+
+      const included = [];
+      const skipped  = [];
+      const notFound = [];
+
+      for (const card of cards) {
+        const result = await fetchCardPrice(card.name);
+        if (!result) {
+          notFound.push(card.name);
+        } else if (result.usd < 10) {
+          skipped.push({ name: result.name, usd: result.usd, qty: card.qty });
+        } else {
+          included.push({ name: result.name, usd: result.usd, qty: card.qty });
+        }
+      }
+
+      document.getElementById('estimate-btn').disabled = false;
+
+      const totalMkt = included.reduce((s, c) => s + c.usd * c.qty, 0);
+      const value    = totalMkt * PAYOUT_RATE;
+
+      lastEstimate = { value, included, skipped, notFound, totalMkt };
+      renderEstimate(lastEstimate);
+    }
+
+    function renderEstimate(est) {
+      const estimateBox    = document.getElementById('estimate-box');
+      const estimateRange  = document.getElementById('estimate-range');
+      const estimateDetail = document.getElementById('estimate-detail');
+      const acceptRow      = document.getElementById('accept-row');
+      const submitBtn      = document.getElementById('submit-btn');
+      const acceptCheck    = document.getElementById('accept-check');
+
+      // Recalculate in case this is called after payout type change (future-proof)
+      const value = est.totalMkt * PAYOUT_RATE;
+      est.value = value;
+
+      estimateBox.style.display = '';
+
+      if (est.included.length === 0) {
+        estimateRange.textContent = '$0.00';
+        estimateDetail.innerHTML  = '<div style="color:var(--text-dim)">No cards in your list met the $10 minimum. Only cards priced at $10 or more are included in our buylist.</div>';
+        acceptRow.style.display = 'none';
+        submitBtn.disabled = true;
+        return;
+      }
+
+      estimateRange.textContent = `$${value.toFixed(2)}`;
+
+      let html = `<div style="margin-bottom:8px"><strong style="color:var(--text)">${est.included.length} eligible card${est.included.length !== 1 ? 's' : ''}</strong> — market total: $${est.totalMkt.toFixed(2)} → <span style="color:var(--cyan)">estimated 60% cash payout: $${value.toFixed(2)}</span> <span style="color:var(--text-dim)">(paid via Venmo, Zelle, or PayPal)</span></div>`;
+
+      if (est.included.length) {
+        html += `<div style="color:var(--cyan);margin-bottom:4px;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.04em">Included</div>`;
+        est.included.forEach(c => {
+          html += `<div class="estimate-card-row included"><span>${c.qty > 1 ? c.qty + 'x ' : ''}${c.name}</span><span>$${(c.usd * c.qty).toFixed(2)}</span></div>`;
+        });
+      }
+      if (est.skipped.length) {
+        html += `<div style="color:var(--text-dim);margin:10px 0 4px;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.04em">Under $10 (excluded)</div>`;
+        est.skipped.forEach(c => {
+          html += `<div class="estimate-card-row skipped"><span>${c.qty > 1 ? c.qty + 'x ' : ''}${c.name}</span><span>$${c.usd.toFixed(2)}</span></div>`;
+        });
+      }
+      if (est.notFound.length) {
+        html += `<div style="color:#e06060;margin:10px 0 4px;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.04em">Not Found</div>`;
+        est.notFound.forEach(n => {
+          html += `<div class="estimate-card-row notfound">${n}</div>`;
+        });
+      }
+
+      estimateDetail.innerHTML = html;
+
+      // Show accept row
+      acceptRow.style.display = 'flex';
+      acceptCheck.checked = false;
+      submitBtn.disabled = true;
+    }
+
+    // Accept checkbox gate
+    document.getElementById('accept-check').addEventListener('change', e => {
+      document.getElementById('submit-btn').disabled = !e.target.checked;
+    });
+
+    // ── Submit ─────────────────────────────────────────────
+    document.getElementById('submit-btn').addEventListener('click', submitList);
+
+    async function submitList() {
+      const name    = document.getElementById('seller-name').value.trim();
+      const email   = document.getElementById('seller-email').value.trim();
+
+      if (!name || !email) {
+        document.getElementById('submit-msg').className = 'form-msg error';
+        document.getElementById('submit-msg').textContent = 'Please enter your name and email.';
+        return;
+      }
+      if (!lastEstimate || lastEstimate.included.length === 0) {
+        document.getElementById('submit-msg').className = 'form-msg error';
+        document.getElementById('submit-msg').textContent = 'Please run the price estimate first.';
+        return;
+      }
+
+      document.getElementById('submit-btn').disabled = true;
+      document.getElementById('submit-msg').textContent = 'Submitting…';
+      document.getElementById('submit-msg').className = 'form-msg';
+
+      // Generate submission ID
+      const randPart = Math.floor(10000 + Math.random() * 90000);
+      submissionId = `CB-${randPart}`;
+
+      const rawText = activeTab === 'paste'
+        ? document.getElementById('card-list-text').value
+        : uploadedText;
+
+      const payload = {
+        name,
+        email,
+        payout_type: 'cash',
+        estimate_low:  parseFloat(lastEstimate.value.toFixed(2)),
+        estimate_high: parseFloat(lastEstimate.value.toFixed(2)),
+        eligible_count: lastEstimate.included.length,
+        card_list: rawText.trim(),
+        status: 'pending'
+      };
+      if (currentUser) payload.user_id = currentUser.id;
+
+      const { data, error } = await sb.from('submissions').insert([payload]).select().single();
+
+      if (error) {
+        document.getElementById('submit-msg').className = 'form-msg error';
+        document.getElementById('submit-msg').textContent = 'Submission failed: ' + error.message;
+        document.getElementById('submit-btn').disabled = false;
+        return;
+      }
+
+      submissionDbId = data?.id ?? null;
+      document.getElementById('submit-msg').textContent = '';
+
+      // Show confirmation
+      showConfirmation(data || payload, submissionId, name, email);
+    }
+
+    function showConfirmation(data, subId, name, email) {
+      const conf = document.getElementById('confirmation');
+      document.getElementById('confirm-id-display').textContent = subId;
+      document.querySelectorAll('.confirm-id-inline').forEach(el => el.textContent = subId);
+      document.getElementById('confirm-date').textContent    = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+      document.getElementById('confirm-range').textContent   = `$${parseFloat(data.estimate_low).toFixed(2)}`;
+      document.getElementById('confirm-count').textContent   = `${data.eligible_count} card${data.eligible_count !== 1 ? 's' : ''}`;
+      document.getElementById('confirm-email').textContent   = email;
+      conf.style.display = 'block';
+      conf.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // ── Tracking number (optional, informational only) ─────
+    document.getElementById('tracking-btn').addEventListener('click', submitTracking);
+
+    async function submitTracking() {
+      const trackNum = document.getElementById('tracking-input').value.trim();
+      if (!trackNum) {
+        alert('Enter your tracking number, or send it to us later through the contact section.');
+        return;
+      }
+      if (!submissionDbId) {
+        alert('We could not find your submission. Reload the page and submit your list again.');
+        return;
+      }
+
+      const btn = document.getElementById('tracking-btn');
+      btn.disabled = true;
+      btn.textContent = 'Saving…';
+
+      // Save the tracking number to the submission only — no inventory or shop changes.
+      // Roman watches for the package; cards are paid out after they arrive and are verified.
+      await sb.from('submissions')
+        .update({ tracking_number: trackNum, status: 'shipped' })
+        .eq('id', submissionDbId);
+
+      btn.textContent = 'Saved';
+      document.getElementById('tracking-success').style.display = 'block';
+    }
+
+    // ── Ask a Question (Formspree) ─────────────────────────
+    document.getElementById('q-submit').addEventListener('click', async () => {
+      const name  = document.getElementById('q-name').value.trim();
+      const email = document.getElementById('q-email').value.trim();
+      const text  = document.getElementById('q-text').value.trim();
+      const msg   = document.getElementById('q-msg');
+
+      if (!name || !email || !text) {
+        msg.className = 'form-msg error';
+        msg.textContent = 'Please fill in all fields.';
+        return;
+      }
+
+      msg.className = 'form-msg';
+      msg.textContent = 'Sending…';
+
+      // ── PLACEHOLDER: Replace with your real Formspree endpoint ──
+      // const res = await fetch('https://formspree.io/f/YOUR_FORM_ID', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      //   body: JSON.stringify({ name, email, message: text })
+      // });
+
+      // Simulate success for now
+      await new Promise(r => setTimeout(r, 600));
+      msg.className = 'form-msg success';
+      msg.textContent = 'Message sent! We\'ll be in touch within 1–2 business days.';
+      document.getElementById('q-name').value  = '';
+      document.getElementById('q-email').value = '';
+      document.getElementById('q-text').value  = '';
+      saveLocal();
+    });
+
+    // ── Load FAQ ───────────────────────────────────────────
+    async function loadFaq() {
+      const list = document.getElementById('faq-list');
+      try {
+        const res  = await fetch('faq.json');
+        const faqs = await res.json();
+        list.innerHTML = faqs.map(item => `
+          <div class="faq-item">
+            <h3>${escHtml(item.question)}</h3>
+            <p>${escHtml(item.answer)}</p>
+          </div>`).join('');
+      } catch {
+        list.innerHTML = '<div style="color:var(--text-dim)">FAQ unavailable. Please try again later.</div>';
+      }
+    }
+
+    function escHtml(str) {
+      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    // ── Scroll Reveal ──────────────────────────────────────
+    const revealObserver = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); revealObserver.unobserve(e.target); }
+      });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+    // ── Boot ───────────────────────────────────────────────
+    loadLocal();
+    loadFaq();
+  </script>
+</body>
+</html>

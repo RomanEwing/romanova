@@ -1,0 +1,66 @@
+[
+  {
+    "question": "How do you determine the price you pay for my cards?",
+    "answer": "We pay 60% cash based on the current TCGPlayer market price — paid digitally via Venmo, Zelle, or PayPal. There is no store credit. The number you see on the submission page is an estimate pulled live from Scryfall; the final payout is set after we receive and verify your cards. Only cards valued at $10 or more are eligible."
+  },
+  {
+    "question": "Which cards do you buy?",
+    "answer": "We buy Magic: The Gathering cards valued at $10 or more (TCGPlayer market price). Cards must be in Near Mint (NM) or Lightly Played (LP) condition unless otherwise noted. We reserve the right to adjust or decline any card upon inspection."
+  },
+  {
+    "question": "What conditions do you accept?",
+    "answer": "We primarily accept Near Mint (NM) and Lightly Played (LP) cards. Moderately Played (MP) cards may be accepted at a reduced rate. Heavily Played (HP) and Damaged cards are generally not accepted. Condition is assessed by us upon receipt and our determination is final for pricing purposes."
+  },
+  {
+    "question": "How do I submit my card list?",
+    "answer": "Use the Submit Your List form on this page. You can paste a list in text format or upload a file (CSV, TXT, MTGO .dec/.dek, or Moxfield export). We'll generate a live price estimate, and once you confirm and submit, you'll receive a submission ID and shipping instructions."
+  },
+  {
+    "question": "What file formats do you accept for card list uploads?",
+    "answer": "We accept plain text (.txt), comma-separated values (.csv), MTGO deck files (.dec and .dek), and Moxfield export files. You can also paste your list directly into the text box using standard formats like '4x Lightning Bolt' or '4 Lightning Bolt (M10)'."
+  },
+  {
+    "question": "Who pays for shipping?",
+    "answer": "You (the seller) are responsible for shipping costs. We do not provide prepaid labels. Please ship with tracking and insurance for your protection. If we make an error — such as miscounting or misidentifying a card — we will cover return shipping. If you decline the payout for cards that match your description, return shipping is your responsibility."
+  },
+  {
+    "question": "Do I have to use tracking?",
+    "answer": "Yes. After submitting your card list, you'll be prompted to enter a tracking number before we can process your submission. This protects both parties. We strongly recommend insuring your package as well — Romanova is not responsible for lost or damaged packages in transit."
+  },
+  {
+    "question": "What happens after I ship my cards?",
+    "answer": "Once we receive your cards, we verify each one against your submission. We'll confirm quantities, condition, and identity. After verification, we'll contact you with the final payout amount. If you accept, payment is sent. If there are discrepancies, we'll explain them clearly before finalizing anything."
+  },
+  {
+    "question": "How long does the process take?",
+    "answer": "Turnaround time after we receive your package is typically 3–5 business days for verification. Payout processing time varies by method. We'll keep you informed via the email address on your submission throughout the process."
+  },
+  {
+    "question": "Do I need an account to sell cards?",
+    "answer": "No account is required to submit a card list. However, creating a free account lets you track your submission history and have your contact info pre-filled on future submissions."
+  },
+  {
+    "question": "Do I need an account to buy cards?",
+    "answer": "No account is required to purchase cards. You can check out as a guest using Stripe (credit card, debit card, Apple Pay, or Google Pay). Creating an account lets you view your order history."
+  },
+  {
+    "question": "What is a preorder?",
+    "answer": "A preorder is placed on a card that is incoming — we've verified that a seller has shipped it to us, but we haven't received it yet. You can reserve it now, but your price is locked at the TCGPlayer market price at the moment we receive and verify the card, not at the time of your preorder. Preorders may not be fulfillable if there are shipping issues with the incoming package."
+  },
+  {
+    "question": "Can my preorder be cancelled?",
+    "answer": "Yes. If the incoming card is lost, damaged in transit, or otherwise not receivable, your preorder will be cancelled and you will not be charged. We will notify you if this happens. You are also free to cancel your preorder at any time before the card is verified and your price is locked."
+  },
+  {
+    "question": "What payment methods do you accept for purchases?",
+    "answer": "We accept credit cards, debit cards, Apple Pay, and Google Pay — all processed securely through Stripe. No account is required to check out."
+  },
+  {
+    "question": "What if there is a problem with my order or submission?",
+    "answer": "Use the Ask a Question form on this page to reach us directly. Include your submission ID or order ID for the fastest response. We aim to respond within 1–2 business days."
+  },
+  {
+    "question": "Are card prices on the shop updated in real time?",
+    "answer": "Card prices in the shop are pulled from Scryfall's market data and refreshed approximately every 5 minutes. Prices reflect current TCGPlayer market values and may fluctuate. The price you see at checkout is the price you pay for in-stock cards. For preorders, price is locked at verification time."
+  }
+]

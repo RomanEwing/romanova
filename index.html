@@ -675,9 +675,46 @@
     .reveal.visible { opacity: 1; transform: translateY(0); transition: opacity 0.5s ease, transform 0.5s ease; }
 
     /* ─── Responsive ───────────────────────────────────── */
+    /* ─── Mobile (primary test width 390px) ────────────── */
+    .sticky-cta { display: none; }
     @media (max-width: 600px) {
+      .nav-links { display: none; }                 /* single-scroll funnel; the CTAs drive navigation */
       .form-box, .question-form, #confirmation { padding: 22px 16px; }
       .tracking-row { flex-direction: column; }
+
+      /* Touch targets >= 44px */
+      .btn-primary, .btn-secondary, .tab-btn,
+      textarea, input[type="text"], input[type="email"], input[type="tel"],
+      .question-form select { min-height: 44px; }
+      .tab-btn { padding: 11px 22px; }
+      .link-btn { min-height: 44px; }
+
+      /* Estimate table collapses to stacked, labeled rows */
+      .et-head { display: none; }
+      .et-row { grid-template-columns: 1fr; gap: 2px; padding: 10px 0; }
+      .et-row span { display: flex; justify-content: space-between; }
+      .et-row span::before {
+        content: attr(data-l); color: var(--text-dim); font-size: 0.72rem;
+        text-transform: uppercase; letter-spacing: 0.04em; margin-right: 12px;
+      }
+      .et-row span[data-l="Card"] { font-weight: 600; }
+      .et-row span[data-l="Card"]::before { content: ""; }
+      .et-row .num { text-align: left; }
+    }
+
+    /* Sticky estimate/submit CTA while the Submit section is in view (mobile only) */
+    @media (max-width: 720px) {
+      main { padding-bottom: 76px; }
+      .sticky-cta.in-view {
+        display: block;
+        position: fixed; left: 0; right: 0; bottom: 0;
+        padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+        background: rgba(2,4,14,0.96);
+        border-top: 1px solid var(--border);
+        backdrop-filter: blur(10px);
+        z-index: 900;
+      }
+      .sticky-cta .btn-primary { min-height: 48px; }
     }
   </style>
 </head>
@@ -1022,6 +1059,11 @@
 
   </main>
 
+  <!-- Mobile sticky CTA (shown while the Submit section is in view) -->
+  <div class="sticky-cta" id="sticky-cta">
+    <button class="btn-primary" id="sticky-cta-btn" data-action="estimate">Get my estimate</button>
+  </div>
+
   <script>
     // ── Supabase ─────────────────────────────────────────
     const { createClient } = supabase;
@@ -1157,6 +1199,7 @@
       document.getElementById('submit-btn').disabled = true;
       const ee = document.getElementById('estimate-empty'); if (ee) ee.style.display = '';
       CARD_LIST_KEYS.forEach(k => localStorage.removeItem(k));
+      updateSticky();
       document.getElementById('clear-list-btn').blur();
     });
 
@@ -1481,6 +1524,7 @@
       document.getElementById('accept-row').style.display = canSubmit ? 'flex' : 'none';
       document.getElementById('accept-check').checked = false;
       document.getElementById('submit-btn').disabled = true;
+      updateSticky();
     }
 
     // Accept checkbox gate
@@ -1574,6 +1618,8 @@
       document.getElementById('confirm-count').textContent   = `${data.eligible_count} card${data.eligible_count !== 1 ? 's' : ''}`;
       document.getElementById('confirm-email').textContent   = email;
       conf.style.display = 'block';
+      submissionDone = true;
+      document.getElementById('sticky-cta').classList.remove('in-view');
       conf.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
@@ -1695,9 +1741,40 @@
     }, { threshold: 0.08 });
     document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
+    // ── Mobile sticky CTA ──────────────────────────────────
+    const stickyCta = document.getElementById('sticky-cta');
+    const stickyBtn = document.getElementById('sticky-cta-btn');
+    let submissionDone = false;
+
+    function updateSticky() {
+      if (!stickyBtn) return;
+      const ready = !!(lastEstimate && (lastEstimate.priced.length || lastEstimate.unmatched.length));
+      stickyBtn.textContent = ready ? 'Submit my list' : 'Get my estimate';
+      stickyBtn.dataset.action = ready ? 'submit' : 'estimate';
+    }
+
+    stickyBtn.addEventListener('click', () => {
+      if (stickyBtn.dataset.action === 'submit') {
+        const accept = document.getElementById('accept-check');
+        if (accept && !accept.checked) {
+          document.getElementById('accept-row').scrollIntoView({ behavior: 'smooth', block: 'center' });
+          accept.focus();
+        } else {
+          submitList();
+        }
+      } else {
+        runEstimate();
+      }
+    });
+
+    new IntersectionObserver(entries => {
+      entries.forEach(e => stickyCta.classList.toggle('in-view', e.isIntersecting && !submissionDone));
+    }, { threshold: 0 }).observe(document.getElementById('submit'));
+
     // ── Boot ───────────────────────────────────────────────
     loadLocal();
     loadFaq();
+    updateSticky();
   </script>
 </body>
 </html>

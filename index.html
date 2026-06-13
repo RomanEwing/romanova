@@ -915,11 +915,9 @@
         <!-- Shipping address -->
         <div class="confirm-address">
           <strong>Ship Your Cards To:</strong>
-          <!-- ── PLACEHOLDER: Replace with Roman's real address ── -->
-          Roman [Last Name]<br />
-          [Street Address]<br />
-          [City, State ZIP]<br />
-          United States
+          <!-- [ROMAN: PO Box not yet acquired — drop in the full PO Box address here before launch] -->
+          A PO Box mailing address is being set up.<br />
+          We'll email it to you with your submission confirmation before you ship.
         </div>
 
         <!-- Packing instructions -->
@@ -962,16 +960,16 @@
       <p class="section-sub">Reach Roman directly through any of these — or send a question with the form below.</p>
 
       <div class="channel-grid">
-        <div class="channel-card">
+        <a class="channel-card" href="mailto:romanova@romanova.cards">
           <div class="channel-icon">✉️</div>
           <div class="channel-name">Email</div>
-          <div class="channel-value">[ROMAN: address]@romanova.cards</div>
-        </div>
+          <div class="channel-value">romanova@romanova.cards</div>
+        </a>
         <div class="channel-card">
           <div class="channel-icon">💬</div>
           <div class="channel-name">Discord — chat or call</div>
           <div class="channel-value">lombax_roman</div>
-          <div class="channel-note">[ROMAN: DM directly, or provide a server invite link?]</div>
+          <div class="channel-note">DM Roman directly — no server needed.</div>
         </div>
         <div class="channel-card">
           <div class="channel-icon">📞</div>
@@ -1224,7 +1222,7 @@
     }
 
     // ── Minimum card value ─────────────────────────────────
-    // [ROMAN: confirm minimum card value $___]  (keeping the implemented $10)
+    // Minimum card value: $10 (confirmed by Roman 2026-06-12). Change here to adjust later.
     const MIN_CARD_VALUE = 10;
 
     function delay(ms) { return new Promise(r => setTimeout(r, ms)); }

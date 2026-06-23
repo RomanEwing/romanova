@@ -1784,24 +1784,40 @@
         ? document.getElementById('card-list-text').value
         : uploadedText;
 
-      // Serialize the full parsed list (qty/name/set/collector/finish/condition/language/price/bucket).
+      // Serialize the full resolved list with exact identifiers + the per-card pricing metrics (§7/§4.6).
+      // No seller-facing market value is stored at top level — only the estimate and the internal
+      // `pricing` breakdown (sources, average, basis, outlier) that the later dashboard reads.
       // Optional phone rides along inside card_list JSON so it isn't lost (no dedicated column; adding a
       // phone column would be a §8 schema change). Anonymous insert — no accounts in the funnel (§1.1/§3.2).
-      const serializedList = JSON.stringify({
-        raw: rawText.trim(),
-        phone: document.getElementById('seller-phone').value.trim() || null,
-        cards: (lastEstimate.rows || []).map(r => ({
+      const cards = (lastEstimate.rows || []).map(r => {
+        const bucket = !isComplete(r) ? 'incomplete'
+          : (r.estimateEach == null ? 'unmatched'
+          : (r.estimateEach < MIN_CARD_VALUE ? 'below_min' : 'priced'));
+        return {
           qty: r.qty,
           name: r.resolvedName || r.name,
           set: r.resolvedSet || r.set || null,
           collector: r.collector || null,
-          finish: r.finish,
+          finish: r.finish || null,
           condition: r.condition || null,
-          language: r.language || null,
+          language: r.language || 'EN',
           scryfallId: r.scryfallId || null,
-          marketEach: r.marketEach != null ? Number(r.marketEach.toFixed(2)) : null,
-          bucket: !isComplete(r) ? 'incomplete' : (r.marketEach == null ? 'unmatched' : (r.marketEach < MIN_CARD_VALUE ? 'below_min' : 'priced'))
-        }))
+          estimate: r.estimateEach != null ? r.estimateEach : null,            // per-card unit estimate
+          lineEstimate: r.estimateEach != null ? round2(r.estimateEach * r.qty) : null,
+          bucket,
+          pricing: r._pricing || null   // §4.6: { sources:[{source,price,payout60}], average, estimate, basis, outlier }
+        };
+      });
+      const flaggedOutliers = cards
+        .filter(c => c.pricing && c.pricing.outlier && c.pricing.outlier.flagged)
+        .map(c => ({ name: c.name, set: c.set, collector: c.collector, outlier: c.pricing.outlier }));
+      const counts = cards.reduce((a, c) => { a[c.bucket] = (a[c.bucket] || 0) + 1; return a; }, {});
+      const serializedList = JSON.stringify({
+        raw: rawText.trim(),
+        phone: document.getElementById('seller-phone').value.trim() || null,
+        estimate: Number(lastEstimate.value.toFixed(2)),
+        pricing_meta: { rate: PAYOUT_RATE, min_value: MIN_CARD_VALUE, counts, flagged_outliers: flaggedOutliers },
+        cards
       });
 
       const payload = {

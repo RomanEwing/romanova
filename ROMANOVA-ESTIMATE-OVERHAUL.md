@@ -5,7 +5,7 @@ Delta spec v2 · 2026-06-21 · Scope: the estimate engine and its display only
 
 ## 0. ONE PRINCIPLE
 
-**Exact card information or bust.** The engine never guesses a card's printing and never trusts a price from an uploaded file. A card is either identified precisely enough to price, or it is routed to a section that asks the seller for the exact missing details. There is no third behavior — no cheapest-printing fallback, no price range, no "best guess."
+**Exact card information or bust.** The engine never guesses a card's printing and never trusts a price from an uploaded file. A card is either identified precisely enough to price, or it is routed to a section that asks the seller for the exact missing details. There is no third behavior — no cheapest-printing fallback, no price range, no "best guess." *(Identity only. Once a card is exactly identified, its price is a blend of multiple real sources per the amended §4 — that is pricing, not a guess at which card it is.)*
 
 ---
 
@@ -13,7 +13,7 @@ Delta spec v2 · 2026-06-21 · Scope: the estimate engine and its display only
 
 This overrides the earlier "hybrid pricing" decision and §3.1/§3.3 of the original delta spec:
 - **Old:** on-page estimate sourced from Scryfall (TCGplayer market price); ManaPool used only offline.
-- **New:** on-page estimate sourced from **ManaPool market price**, fetched live. Scryfall/TCGplayer prices are no longer shown or used for the seller-facing number.
+- **New:** on-page estimate sourced from live **ManaPool** pricing. *(Amended 2026-06-23 — see §4: the estimate now blends ManaPool low, ManaPool market, and TCGplayer market. TCGplayer is used as a price source and fallback again, but — like every component, market, and average figure — it is never **shown** to the seller.)*
 - **Old:** display showed market total → 60% figure.
 - **New:** display shows **the estimate only** (see §6). Market price is never shown to the seller.
 
@@ -53,17 +53,49 @@ Two input paths, same destination logic:
 
 ---
 
-## 4. PRICING — MANAPOOL
+## 4. PRICING — BLENDED (MANAPOOL + TCGPLAYER)
 
-1. Read the live ManaPool API docs at `https://manapool.com/api/docs/v1` and `https://manapool.com/api/docs`. Determine the pricing endpoint and its authentication requirement. **Audit and report this before implementing** — it decides the architecture.
-2. **If the pricing endpoint is public (no auth):** fetch client-side directly from the static site.
-3. **If it requires the seller API key:** the key must NOT go in client-side code (static GitHub Pages source is world-readable). Route through a **Supabase Edge Function** that holds the key server-side and returns only the market price to the client. Roman already has the Supabase project; use it.
-4. Map each complete card to its ManaPool price. Identifier mapping path: Scryfall ID or set+collector+finish → ManaPool product. (Third-party tools map via MTGJSON UUID; use whatever the ManaPool API accepts.)
-5. Pull the **Near Mint** market price for the exact finish/language.
-6. **Estimate per card = 60% × ManaPool NM market price × quantity.** This 60% figure is the only number computed for display.
-7. Respect ManaPool rate limits; batch or throttle large lists per the API docs. Report the limits you find.
+**Amended 2026-06-23.** This replaces the original "ManaPool market price only; never substitute TCGplayer" rule. The estimate is now a **blended average** of ManaPool and TCGplayer prices. Identity stays exact-or-bust (§0) — this changes only how an *already-identified* card is priced, never whether it's identified.
 
-If a complete card returns no ManaPool price (not in their catalog), list it under "couldn't price this one — we'll review it manually," excluded from the total. Do not substitute a TCGplayer price.
+### 4.0 API findings (verified live, 2026-06-23)
+- **Endpoint:** `GET https://manapool.com/api/v1/products/singles` — **public, no auth**. Identifiers are repeated bare query params, e.g. `?scryfall_ids=<uuid>&scryfall_ids=<uuid>`, **max 100 per request** (comma-joined values and `[]` brackets are rejected). No Supabase Edge Function is needed (see §8.2).
+- **ManaPool exposes a market price distinct from the lowest listing.** Per card, per finish, the response carries both, as **integer cents** (÷100):
+  - Lowest NM listing: `price_cents_nm` · foil `price_cents_nm_foil` · etched `price_cents_nm_etched`
+  - Market price: `price_market` · foil `price_market_foil`
+- **Gap — etched has no market field:** there is `price_market` / `price_market_foil` but **no `price_market_etched`**. For etched, ManaPool contributes only its low.
+- TCGplayer market is **not** in ManaPool's payload; it comes from Scryfall `usd` / `usd_foil` / `usd_etched` (TCGplayer-derived), keyed by Scryfall ID. (ManaPool also returns `tcgplayer_product_id` for cross-reference; top-level price fields are EN — non-EN lives in the `variants[]` array.)
+- No official rate limit is documented; batch ≤100 ids/request and throttle to ~10 req/s.
+
+### 4.1 Sources per complete card (NM assumed, exact finish/language)
+Gather up to three prices, in dollars:
+1. **ManaPool low** — `price_cents_nm[_foil/_etched]` ÷ 100
+2. **ManaPool market** — `price_market[_foil]` ÷ 100 *(absent for etched)*
+3. **TCGplayer market** — Scryfall `usd` / `usd_foil` / `usd_etched`
+
+### 4.2 Fallback chain
+- Card **not on ManaPool at all** (not returned, or the finish's fields are null) → use **TCGplayer market** (Scryfall) alone.
+- **Neither** source has a price for the finish → **manual-review bucket** (excluded from the total, surfaced to Roman).
+- Scryfall stays identity-validation (§5); here it doubles as the TCGplayer price source.
+
+### 4.3 The estimate
+- Average the **present** real sources (2 or 3 — **never invent a missing value**; for etched or ManaPool-absent cards the average is over whatever real sources exist).
+- **Per-card unit estimate = 0.6 × average.** Line total = unit estimate × quantity.
+- Capture, per card: **each raw source price and its 0.6 multiple**, the **average**, and **0.6 × average**. The customer sees **only 0.6 × average** (§6), described as based on the card's **"current price."** Component prices, the average, and the 0.6 multiplier are never shown.
+
+### 4.4 Outlier flag (internal only)
+- If any one present source is **≥30% below** the others, **keep it in the average anyway** (do **not** exclude it) and **flag the card for Roman's review**.
+- The estimate is computed identically whether or not a card is flagged — the customer is unaffected by the flag.
+
+### 4.5 Minimum
+- Apply the **$10 minimum to the final 0.6-average unit estimate.** A card whose unit estimate is **below $10** goes to the **below-minimum bucket**, not the offer. *(Threshold interpreted per-unit, not per-line × qty — see open note in §4.7.)*
+
+### 4.6 Captured metrics → submission record
+- Write all captured values + flags to a **clean, structured store on the submission record**, **not** in display logic — a later dashboard phase reads it.
+- Per card, store: sources present, each raw price + its 0.6 value, average, unit estimate (0.6 × avg), price basis (`manapool+tcgplayer`, `tcgplayer-only`, `manapool-only`), outlier flag (which source, the deltas), and bucket (`priced` / `below_min` / `manual_review`).
+- **Location:** a dedicated `pricing` structure **inside the existing `card_list` JSON** column — **no DB schema/RLS change**, so this stays clear of the Supabase hard stop. A dedicated column/table for the dashboard would be a schema change → pause for Roman first.
+
+### 4.7 Open note — $10 basis changed
+The original spec and the live site copy say the minimum is on **TCGplayer market price** ("cards priced at $10 or more"); this amendment moves it to the **0.6-average estimate**. That materially shifts which cards qualify (a card now needs ≈$16.67 average to clear a $10 estimate) and contradicts the public copy at `index.html` §3/§9 and the "60% of TCGPlayer market price" wording. **Reconcile the site copy when implementing §6.**
 
 ---
 
@@ -87,7 +119,7 @@ This is the core new UI. A distinct section/panel titled to the effect of **"Mor
 
 The seller sees **one number: the estimate** (what Roman pays).
 
-- **Never show ManaPool market price.** Never show the 60% math, the multiplier, or any "market value." No "market $X → you get $Y."
+- **Never show ManaPool market price.** Never show the 60% math, the multiplier, the component prices, or the average. No "market $X → you get $Y." The single estimate is described to the seller as based on the card's **"current price."**
 - Per complete card: name + the exact printing identified (set, number, finish) + quantity + that line's estimate.
 - Grand total labeled **"Your estimate"** (or equivalent). No second number beside it.
 - Required disclaimer near the total: the estimate assumes Near Mint condition and exact card match; the final amount is confirmed after the cards are received and inspected.
@@ -102,6 +134,7 @@ When the seller submits, write to the `submissions` table (INSERT-only, as alrea
 - The estimate figure (write to `estimate_low` and `estimate_high` both, per existing column mapping).
 - Incomplete/unpriceable cards may be included as notes so Roman sees the full picture.
 - No market-price fields are stored as seller-facing values.
+- Store the full per-card pricing metrics + flags described in §4.6 as a structured `pricing` object inside `card_list` JSON (internal, for the later dashboard) — never surfaced in the seller UI.
 
 ---
 

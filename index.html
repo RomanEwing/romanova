@@ -1267,8 +1267,16 @@
     function normalizeFinish(val) {
       const v = (val || '').toLowerCase().trim();
       if (v.includes('etched')) return 'etched';
-      if (v === 'true' || v === 'yes' || (v.includes('foil') && v !== 'normal')) return 'foil';
-      return 'normal';
+      if (v === 'nonfoil' || v === 'non-foil' || v === 'normal' || v === 'none' || v === 'false' || v === 'no') return 'nonfoil';
+      if (v === 'true' || v === 'yes' || v.includes('foil')) return 'foil';
+      return 'nonfoil';
+    }
+    // §2 fixed finish set; a row is "complete" when it pins exactly one printing.
+    // A Scryfall ID already encodes set+collector+finish (§3.B); otherwise we need all four.
+    const FINISHES = ['nonfoil', 'foil', 'etched'];
+    function isComplete(r) {
+      if (r && r.scryfallId) return true;
+      return !!(r && r.name && r.set && r.collector && FINISHES.includes(r.finish));
     }
 
     // ManaBox / Moxfield / TCGplayer / Deckbox / generic CSV
@@ -1296,7 +1304,7 @@
           set: at(cols, iSet),
           collector: at(cols, iColl),
           scryfallId: sfid,
-          finish: iFoil !== -1 ? normalizeFinish(cols[iFoil]) : 'normal',
+          finish: iFoil !== -1 ? normalizeFinish(cols[iFoil]) : '',
           condition: at(cols, iCond),
           language: at(cols, iLang)
         });
@@ -1304,7 +1312,7 @@
       return rows;
     }
 
-    // Plain text: "4 Bolt", "4x Bolt", "Bolt", optional "(NEO) 123" set/collector suffix
+    // Plain text: "4 Bolt", "4x Bolt", "Bolt", optional "(NEO) 123" set/collector + trailing finish.
     function parsePlainText(lines) {
       const rows = [];
       for (const line of lines) {
@@ -1312,11 +1320,16 @@
         let rest = line, qty = 1;
         const m = rest.match(/^(\d+)\s*[xX]?\s+(.+)$/);
         if (m) { qty = parseInt(m[1], 10) || 1; rest = m[2].trim(); }
+        // Optional trailing finish token, e.g. "... foil" / "... etched" (§2). Absent → unknown → incomplete.
+        let finish = '';
+        const fm = rest.match(/\s+(foil|etched|non-?foil|normal)\s*$/i);
+        if (fm) { finish = normalizeFinish(fm[1]); rest = rest.slice(0, fm.index).trim(); }
+        // Optional "(SET) COLLECTOR" suffix.
         let set = '', collector = '';
         const sm = rest.match(/\(([A-Za-z0-9]{2,5})\)\s*([A-Za-z0-9\-]+)?\s*$/);
         if (sm) { set = sm[1]; if (sm[2]) collector = sm[2]; rest = rest.slice(0, sm.index).trim(); }
         const name = rest.trim();
-        if (name) rows.push({ qty, name, set, collector, scryfallId: '', finish: 'normal', condition: '', language: '' });
+        if (name) rows.push({ qty, name, set, collector, scryfallId: '', finish, condition: '', language: '' });
       }
       return rows;
     }
@@ -1326,8 +1339,7 @@
     // Identifier priority per row: Scryfall ID → set + collector_number → exact name.
     function buildIdentifier(r) {
       if (r.scryfallId) return { id: r.scryfallId };
-      if (r.set && r.collector) return { set: r.set.toLowerCase(), collector_number: String(r.collector) };
-      return { name: r.name };
+      return { set: r.set.toLowerCase(), collector_number: String(r.collector) };
     }
     function indexCard(found, card) {
       found.byId[card.id] = card;
@@ -1341,16 +1353,7 @@
         const c = found.bySetCn[`${r.set.toLowerCase()}|${r.collector}`];
         if (c) return c;
       }
-      return found.byName[(r.name || '').toLowerCase()] || null;
-    }
-    async function fuzzyLookup(name) {
-      if (!name) return null;
-      try {
-        const res = await fetch(`https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(name)}`);
-        if (!res.ok) return null;
-        const card = await res.json();
-        return card.object === 'error' ? null : card;
-      } catch { return null; }
+      return null;   // §0: exact identifier only — never fall back to a name guess.
     }
     function applyCard(r, card) {
       r.resolvedName = card.name;
@@ -1377,19 +1380,12 @@
           });
           const json = await res.json();
           (json.data || []).forEach(card => indexCard(found, card));
-        } catch (e) { /* network error — rows fall through to fuzzy retry */ }
+        } catch (e) { /* network error — row stays unmatched */ }
         if (b < batches.length - 1) await delay(110);
       }
-
-      // Resolve from batch results; anything left gets one fuzzy-name retry.
-      const unresolved = [];
-      rows.forEach(r => { const c = resolveCard(found, r); if (c) applyCard(r, c); else unresolved.push(r); });
-      for (const r of unresolved) {
-        await delay(110);
-        const card = await fuzzyLookup(r.name);
-        if (card) applyCard(r, card);
-        else r.marketEach = null;   // truly unmatched
-      }
+      // §0: resolve only by exact identifier (Scryfall ID or set+collector). A complete card that
+      // doesn't resolve is unmatched — never guessed by name. (Incomplete cards never reach here.)
+      rows.forEach(r => { const c = resolveCard(found, r); if (c) applyCard(r, c); else r.marketEach = null; });
       return rows;
     }
 
@@ -1417,37 +1413,42 @@
         showEstimateError('Add a card list first — paste one in or upload a file, then tap "Get my estimate."');
         return;
       }
-      const rows = parseInput(rawText);
-      if (!rows.length) {
+      const allRows = parseInput(rawText);
+      if (!allRows.length) {
         showEstimateError('We couldn’t read any cards from that. Use one card per line, or a CSV export from ManaBox, Moxfield, TCGplayer, or Deckbox.');
         return;
       }
+
+      // §2/§5: only cards that pin one exact printing get priced; the rest go to "more info needed".
+      const complete   = allRows.filter(isComplete);
+      const incomplete = allRows.filter(r => !isComplete(r));
 
       const btn = document.getElementById('estimate-btn');
       document.getElementById('estimate-box').style.display = '';
       document.getElementById('estimate-range').textContent = '';
       // TODO-HUMOR: estimate loading state copy
-      document.getElementById('estimate-detail').innerHTML =
-        `<div class="estimate-loading">Looking up ${rows.length} card${rows.length !== 1 ? 's' : ''} on Scryfall…</div>`;
+      document.getElementById('estimate-detail').innerHTML = complete.length
+        ? `<div class="estimate-loading">Looking up ${complete.length} card${complete.length !== 1 ? 's' : ''}…</div>`
+        : `<div class="estimate-loading">Checking your list…</div>`;
       btn.disabled = true; btn.textContent = 'Getting estimate…';
 
       try {
-        await priceRows(rows);
+        if (complete.length) await priceRows(complete);
       } catch (e) {
-        showEstimateError('The Scryfall lookup failed. Wait a few seconds and tap "Get my estimate" again.');
+        showEstimateError('The card lookup failed. Wait a few seconds and tap "Get my estimate" again.');
         btn.disabled = false; btn.textContent = 'Get my estimate';
         return;
       }
       btn.disabled = false; btn.textContent = 'Get my estimate';
 
       const priced = [], belowMin = [], unmatched = [];
-      rows.forEach(r => {
+      complete.forEach(r => {
         if (r.marketEach == null) unmatched.push(r);
         else if (r.marketEach < MIN_CARD_VALUE) belowMin.push(r);
         else priced.push(r);
       });
       const totalMkt = priced.reduce((s, r) => s + r.marketEach * r.qty, 0);
-      lastEstimate = { value: totalMkt * PAYOUT_RATE, totalMkt, priced, belowMin, unmatched, rows };
+      lastEstimate = { value: totalMkt * PAYOUT_RATE, totalMkt, priced, belowMin, unmatched, incomplete, rows: allRows };
       renderEstimate(lastEstimate);
       lsSet(LS.parsed, lastEstimate);   // persist parsed list + estimate (§5)
     }
@@ -1471,6 +1472,21 @@
 
       let html = '';
 
+      // §5 (placeholder — interactive per-field inputs land in the next commit): cards we can't
+      // price yet because they don't pin one exact printing (missing set / collector / finish).
+      const incomplete = est.incomplete || [];
+      if (incomplete.length) {
+        html += `<div class="bucket-label warn">More info needed — ${incomplete.length}</div>`;
+        html += `<div class="bucket-note">We price an exact printing only. Add the set code, collector number, and finish for these and we'll include them.</div>`;
+        incomplete.forEach(r => {
+          const missing = [];
+          if (!r.set) missing.push('set');
+          if (!r.collector) missing.push('collector #');
+          if (!FINISHES.includes(r.finish)) missing.push('finish');
+          html += `<div class="estimate-card-row notfound"><span>${r.qty > 1 ? r.qty + '× ' : ''}${escHtml(r.name || '(unnamed)')}</span><span>need ${escHtml(missing.join(', '))}</span></div>`;
+        });
+      }
+
       // 1. Priced bucket — table
       if (est.priced.length) {
         html += `<div class="bucket-label">Priced — ${est.priced.length} card${est.priced.length !== 1 ? 's' : ''}</div>`;
@@ -1485,7 +1501,7 @@
             `</div>`;
         });
         html += `</div>`;
-      } else {
+      } else if (!incomplete.length) {
         html += `<div class="bucket-note">Nothing met the $${MIN_CARD_VALUE} minimum yet.</div>`;
       }
 
@@ -1575,7 +1591,7 @@
           language: r.language || null,
           scryfallId: r.scryfallId || null,
           marketEach: r.marketEach != null ? Number(r.marketEach.toFixed(2)) : null,
-          bucket: r.marketEach == null ? 'unmatched' : (r.marketEach < MIN_CARD_VALUE ? 'below_min' : 'priced')
+          bucket: !isComplete(r) ? 'incomplete' : (r.marketEach == null ? 'unmatched' : (r.marketEach < MIN_CARD_VALUE ? 'below_min' : 'priced'))
         }))
       });
 

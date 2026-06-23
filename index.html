@@ -400,6 +400,33 @@
     .bucket-label.warn { color: #e0a060; }
     .bucket-note { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 8px; line-height: 1.5; }
 
+    /* §5: More info needed */
+    .more-info-box {
+      margin-top: 16px; padding: 16px;
+      background: rgba(224,160,96,0.06);
+      border: 1px solid rgba(224,160,96,0.28);
+      border-radius: 10px;
+    }
+    .more-info-box h4 { color: #e0a060; margin-bottom: 6px; font-size: 0.95rem; }
+    .mi-intro { color: var(--text-dim); font-size: 0.82rem; line-height: 1.5; margin-bottom: 12px; }
+    .mi-row { padding: 12px 0; border-top: 1px solid rgba(224,160,96,0.18); }
+    .mi-row:first-child { border-top: none; padding-top: 2px; }
+    .mi-name { font-weight: 600; color: var(--text); font-size: 0.9rem; margin-bottom: 4px; }
+    .mi-reason { color: #e0a060; font-size: 0.78rem; margin-bottom: 8px; }
+    .mi-fields { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: flex-end; }
+    .mi-fields label { display: flex; flex-direction: column; gap: 4px; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-dim); }
+    .mi-fields input { width: 120px; padding: 10px 12px; }
+    .mi-fields select { width: 132px; background: var(--bg3); border: 1px solid var(--border); color: var(--text); padding: 10px 12px; border-radius: 8px; font-family: 'Outfit', sans-serif; font-size: 0.9rem; outline: none; }
+    .mi-fields input:focus, .mi-fields select:focus { border-color: var(--cyan); }
+    .mi-known { font-size: 0.82rem; color: var(--text-dim); align-self: center; }
+    .mi-known b { color: var(--text); font-weight: 600; }
+    #more-info-recheck {
+      margin-top: 16px; padding: 10px 18px; font-size: 0.86rem; font-weight: 600;
+      background: transparent; color: var(--cyan); cursor: pointer;
+      border: 1px solid var(--cyan); border-radius: 8px;
+    }
+    #more-info-recheck:hover { background: rgba(56,217,245,0.1); }
+
     /* Priced table */
     .estimate-table { display: flex; flex-direction: column; gap: 1px; }
     .et-head, .et-row {
@@ -862,6 +889,16 @@
 
         <!-- Estimate -->
         <button class="btn-primary" id="estimate-btn" style="margin-top:4px">Get my estimate</button>
+
+        <!-- §5: More info needed (interactive) -->
+        <div class="more-info-box" id="more-info-box" style="display:none">
+          <h4>More info needed to finish your estimate</h4>
+          <p class="mi-intro">We price an exact printing — no guessing. Add the missing details below and tap “Update &amp; recheck” to fold these into your estimate.</p>
+          <div id="more-info-rows"></div>
+          <button type="button" id="more-info-recheck">Update &amp; recheck</button>
+          <div class="form-msg" id="more-info-msg"></div>
+        </div>
+
         <!-- TODO-HUMOR: empty estimate state (before any cards entered) -->
         <div class="estimate-empty" id="estimate-empty">TODO-HUMOR</div>
         <div class="estimate-box" id="estimate-box" style="display:none">
@@ -1173,6 +1210,7 @@
       if (parsed && Array.isArray(parsed.rows) && parsed.rows.length) {
         lastEstimate = parsed;
         renderEstimate(lastEstimate);
+        renderMoreInfo(lastEstimate.incomplete || []);
       }
 
       restoreScroll();
@@ -1194,6 +1232,7 @@
       document.getElementById('estimate-range').textContent = '';
       document.getElementById('accept-row').style.display = 'none';
       document.getElementById('submit-btn').disabled = true;
+      renderMoreInfo([]);
       const ee = document.getElementById('estimate-empty'); if (ee) ee.style.display = '';
       CARD_LIST_KEYS.forEach(k => localStorage.removeItem(k));
       updateSticky();
@@ -1359,6 +1398,8 @@
       r.resolvedName = card.name;
       r.resolvedSet  = (card.set || '').toUpperCase();
       r.scryfallId   = r.scryfallId || card.id;
+      r._finishes    = Array.isArray(card.finishes) ? card.finishes : null;  // §5 finish validity
+      r._unresolved  = false;
       const p = card.prices || {};
       // Price by finish; fall back to usd so an identifiable card isn't dropped just for a missing foil price.
       let price = p.usd ?? null;
@@ -1385,12 +1426,13 @@
       }
       // §0: resolve only by exact identifier (Scryfall ID or set+collector). A complete card that
       // doesn't resolve is unmatched — never guessed by name. (Incomplete cards never reach here.)
-      rows.forEach(r => { const c = resolveCard(found, r); if (c) applyCard(r, c); else r.marketEach = null; });
+      rows.forEach(r => { const c = resolveCard(found, r); if (c) applyCard(r, c); else { r.marketEach = null; r._unresolved = true; } });
       return rows;
     }
 
     // ── Estimate ───────────────────────────────────────────
     document.getElementById('estimate-btn').addEventListener('click', runEstimate);
+    document.getElementById('more-info-recheck').addEventListener('click', recheckMoreInfo);
 
     function showEstimateError(msg) {
       document.getElementById('estimate-box').style.display = '';
@@ -1418,10 +1460,15 @@
         showEstimateError('We couldn’t read any cards from that. Use one card per line, or a CSV export from ManaBox, Moxfield, TCGplayer, or Deckbox.');
         return;
       }
+      await computeEstimate(allRows);
+    }
 
+    // Price + validate a full row set, sort into buckets, and render. Shared by the initial
+    // estimate and by the §5 "more info needed" re-check (which mutates rows, then re-runs this).
+    async function computeEstimate(allRows) {
       // §2/§5: only cards that pin one exact printing get priced; the rest go to "more info needed".
-      const complete   = allRows.filter(isComplete);
-      const incomplete = allRows.filter(r => !isComplete(r));
+      const complete  = allRows.filter(isComplete);
+      const needFields = allRows.filter(r => !isComplete(r));
 
       const btn = document.getElementById('estimate-btn');
       document.getElementById('estimate-box').style.display = '';
@@ -1441,8 +1488,29 @@
       }
       btn.disabled = false; btn.textContent = 'Get my estimate';
 
-      const priced = [], belowMin = [], unmatched = [];
+      // §5 second pass: a field-complete card still must resolve to a real, finish-valid printing.
+      // Identity is validated against Scryfall (the lookup above). A bad set/number or an impossible
+      // finish goes back to "more info needed" with a reason — NOT to manual review (that bucket, §4,
+      // is for valid cards we simply can't find a price for).
+      const validated = [], badIdentity = [];
       complete.forEach(r => {
+        if (r._unresolved) {
+          r._invalidFinish = false;
+          r._reason = `We couldn't find ${r.set} #${r.collector} — double-check the set code and collector number.`;
+          badIdentity.push(r);
+        } else if (r._finishes && !r._finishes.includes(r.finish)) {
+          r._invalidFinish = true;
+          r._reason = `This card has no ${r.finish} printing — pick an available finish.`;
+          badIdentity.push(r);
+        } else {
+          r._reason = ''; r._invalidFinish = false;
+          validated.push(r);
+        }
+      });
+      const incomplete = needFields.concat(badIdentity);
+
+      const priced = [], belowMin = [], unmatched = [];
+      validated.forEach(r => {
         if (r.marketEach == null) unmatched.push(r);
         else if (r.marketEach < MIN_CARD_VALUE) belowMin.push(r);
         else priced.push(r);
@@ -1450,7 +1518,73 @@
       const totalMkt = priced.reduce((s, r) => s + r.marketEach * r.qty, 0);
       lastEstimate = { value: totalMkt * PAYOUT_RATE, totalMkt, priced, belowMin, unmatched, incomplete, rows: allRows };
       renderEstimate(lastEstimate);
+      renderMoreInfo(incomplete);
       lsSet(LS.parsed, lastEstimate);   // persist parsed list + estimate (§5)
+    }
+
+    // ── §5: "More info needed" interactive section ────────
+    function escAttr(str) { return escHtml(String(str == null ? '' : str)).replace(/"/g, '&quot;'); }
+
+    // Which fields to ask for on a given incomplete / invalid row.
+    function neededFields(r) {
+      const need = new Set();
+      if (!r.set)       need.add('set');
+      if (!r.collector) need.add('collector');
+      if (!FINISHES.includes(r.finish)) need.add('finish');
+      if (r._invalidFinish) need.add('finish');
+      if (r._unresolved) { need.add('set'); need.add('collector'); }
+      return need;
+    }
+
+    function renderMoreInfo(rows) {
+      const box  = document.getElementById('more-info-box');
+      const cont = document.getElementById('more-info-rows');
+      const msg  = document.getElementById('more-info-msg');
+      if (!rows || !rows.length) { box.style.display = 'none'; cont.innerHTML = ''; if (msg) { msg.textContent = ''; msg.className = 'form-msg'; } return; }
+      box.style.display = '';
+      let html = '';
+      rows.forEach((r, i) => {
+        const need = neededFields(r);
+        html += `<div class="mi-row" data-idx="${i}">`;
+        html += `<div class="mi-name">${r.qty > 1 ? r.qty + '× ' : ''}${escHtml(r.name || '(unnamed)')}</div>`;
+        if (r._reason) html += `<div class="mi-reason">${escHtml(r._reason)}</div>`;
+        html += `<div class="mi-fields">`;
+        html += need.has('set')
+          ? `<label>Set code<input type="text" class="mi-set" value="${escAttr(r.set)}" placeholder="e.g. MH3" maxlength="6"></label>`
+          : `<span class="mi-known">Set <b>${escHtml(r.set)}</b></span>`;
+        html += need.has('collector')
+          ? `<label>Collector #<input type="text" class="mi-coll" value="${escAttr(r.collector)}" placeholder="e.g. 117" maxlength="12"></label>`
+          : `<span class="mi-known">No. <b>${escHtml(r.collector)}</b></span>`;
+        html += need.has('finish')
+          ? `<label>Finish<select class="mi-finish"><option value="">choose…</option>${FINISHES.map(f => `<option value="${f}"${r.finish === f ? ' selected' : ''}>${f}</option>`).join('')}</select></label>`
+          : `<span class="mi-known">Finish <b>${escHtml(r.finish)}</b></span>`;
+        html += `</div></div>`;
+      });
+      cont.innerHTML = html;
+    }
+
+    async function recheckMoreInfo() {
+      const incompletes = (lastEstimate && lastEstimate.incomplete) || [];
+      if (!incompletes.length) return;
+      document.getElementById('more-info-rows').querySelectorAll('.mi-row').forEach(el => {
+        const i = parseInt(el.getAttribute('data-idx'), 10);
+        const r = incompletes[i];
+        if (!r) return;
+        const setEl  = el.querySelector('.mi-set');    if (setEl)  r.set = setEl.value.trim();
+        const collEl = el.querySelector('.mi-coll');   if (collEl) r.collector = collEl.value.trim();
+        const finEl  = el.querySelector('.mi-finish'); if (finEl && finEl.value) r.finish = finEl.value;
+        // Fresh re-check: clear prior validation state. If set/number were edited, drop any cached
+        // Scryfall id so resolution uses the newly typed identifier.
+        r._unresolved = false; r._invalidFinish = false; r._reason = '';
+        if (setEl || collEl) r.scryfallId = '';
+        r.marketEach = undefined; r._finishes = undefined;
+      });
+      const msg = document.getElementById('more-info-msg');
+      msg.className = 'form-msg'; msg.textContent = 'Re-checking…';
+      await computeEstimate(lastEstimate.rows);
+      const remaining = (lastEstimate.incomplete || []).length;
+      if (remaining) { msg.className = 'form-msg'; msg.textContent = `Still need details on ${remaining} card${remaining !== 1 ? 's' : ''}.`; }
+      else { msg.className = 'form-msg success'; msg.textContent = 'All set — added to your estimate.'; }
     }
 
     function condFlag(r) {
@@ -1471,20 +1605,17 @@
       est.value = value;
 
       let html = '';
+      const incomplete = est.incomplete || [];   // rendered separately by the §5 section above
 
-      // §5 (placeholder — interactive per-field inputs land in the next commit): cards we can't
-      // price yet because they don't pin one exact printing (missing set / collector / finish).
-      const incomplete = est.incomplete || [];
-      if (incomplete.length) {
-        html += `<div class="bucket-label warn">More info needed — ${incomplete.length}</div>`;
-        html += `<div class="bucket-note">We price an exact printing only. Add the set code, collector number, and finish for these and we'll include them.</div>`;
-        incomplete.forEach(r => {
-          const missing = [];
-          if (!r.set) missing.push('set');
-          if (!r.collector) missing.push('collector #');
-          if (!FINISHES.includes(r.finish)) missing.push('finish');
-          html += `<div class="estimate-card-row notfound"><span>${r.qty > 1 ? r.qty + '× ' : ''}${escHtml(r.name || '(unnamed)')}</span><span>need ${escHtml(missing.join(', '))}</span></div>`;
-        });
+      // Only "more info needed" so far — nothing priced yet. Point the seller at that section.
+      if (!est.priced.length && !est.belowMin.length && !est.unmatched.length && incomplete.length) {
+        document.getElementById('estimate-range').textContent = '';
+        document.getElementById('estimate-detail').innerHTML =
+          `<div class="bucket-note">Fill in the missing details above and tap “Update &amp; recheck” to build your estimate.</div>`;
+        document.getElementById('accept-row').style.display = 'none';
+        document.getElementById('submit-btn').disabled = true;
+        updateSticky();
+        return;
       }
 
       // 1. Priced bucket — table

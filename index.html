@@ -431,7 +431,7 @@
     .estimate-table { display: flex; flex-direction: column; gap: 1px; }
     .et-head, .et-row {
       display: grid;
-      grid-template-columns: 38px 1fr 64px 92px 92px;
+      grid-template-columns: 38px 1fr 110px 92px;
       gap: 8px;
       align-items: center;
       padding: 6px 0;
@@ -785,7 +785,7 @@
         <div class="step">
           <div class="step-num">1</div>
           <h3>Submit Your List</h3>
-          <p>Paste or upload your card list. We'll generate a live price estimate filtered to cards $10 and over.</p>
+          <p>Paste or upload your card list. We'll generate a live estimate, filtered to cards whose estimate is $10 and over.</p>
         </div>
         <div class="step">
           <div class="step-num">2</div>
@@ -800,7 +800,7 @@
         <div class="step">
           <div class="step-num">4</div>
           <h3>Get Paid</h3>
-          <p>Once we verify your cards, you get 60% of market value, paid digitally via Venmo, Zelle, or PayPal. We contact you before anything is finalized.</p>
+          <p>Once we verify your cards, you get 60% of each card's current price, paid digitally via Venmo, Zelle, or PayPal. We contact you before anything is finalized.</p>
         </div>
       </div>
     </section>
@@ -811,7 +811,7 @@
       <div class="buy-grid">
         <div class="buy-card">
           <h3>Minimum Value</h3>
-          <p>We buy cards priced at $10 or more (TCGPlayer market). Cards under $10 are returned or discarded with permission.</p>
+          <p>We buy cards whose estimate comes to $10 or more, based on current price. Cards under that are returned or discarded with permission.</p>
         </div>
         <div class="buy-card">
           <h3>Condition</h3>
@@ -819,7 +819,7 @@
         </div>
         <div class="buy-card">
           <h3>60% Cash</h3>
-          <p>60% of TCGPlayer market price, paid digitally via Venmo, Zelle, or PayPal once we verify your cards. No store credit — just money sent to you.</p>
+          <p>60% of each card's current price, paid digitally via Venmo, Zelle, or PayPal once we verify your cards. No store credit — just money sent to you.</p>
         </div>
       </div>
     </section>
@@ -1697,17 +1697,17 @@
         return;
       }
 
-      // 1. Priced bucket — table
+      // 1. Priced — estimate only (§6: the seller never sees market price, the average, or the math)
       if (est.priced.length) {
-        html += `<div class="bucket-label">Priced — ${est.priced.length} card${est.priced.length !== 1 ? 's' : ''}</div>`;
-        html += `<div class="estimate-table"><div class="et-head"><span>Qty</span><span>Card</span><span>Set</span><span class="num">Market each</span><span class="num">Line total</span></div>`;
+        html += `<div class="bucket-label">Your cards — ${est.priced.length}</div>`;
+        html += `<div class="estimate-table"><div class="et-head"><span>Qty</span><span>Card</span><span>Printing</span><span class="num">Estimate</span></div>`;
         est.priced.forEach(r => {
+          const printing = `${escHtml(r.resolvedSet || r.set || '—')} #${escHtml(r.collector || '—')}`;
           html += `<div class="et-row">` +
             `<span data-l="Qty">${r.qty}</span>` +
             `<span data-l="Card">${escHtml(r.resolvedName || r.name)}${condFlag(r)}${finishFlag(r)}</span>` +
-            `<span data-l="Set">${escHtml(r.resolvedSet || r.set || '—')}</span>` +
-            `<span data-l="Market each" class="num">$${r.marketEach.toFixed(2)}</span>` +
-            `<span data-l="Line total" class="num">$${(r.marketEach * r.qty).toFixed(2)}</span>` +
+            `<span data-l="Printing">${printing}</span>` +
+            `<span data-l="Estimate" class="num">$${(r.estimateEach * r.qty).toFixed(2)}</span>` +
             `</div>`;
         });
         html += `</div>`;
@@ -1715,18 +1715,17 @@
         html += `<div class="bucket-note">Nothing met the $${MIN_CARD_VALUE} minimum yet.</div>`;
       }
 
-      // Totals (market → 60% cash) + required disclaimer
+      // Grand total — the single number (§6). No market value, no second figure, no 60% math.
       html += `<div class="totals-row">` +
-        `<div><span class="totals-label">Market total</span><span class="totals-val">$${est.totalMkt.toFixed(2)}</span></div>` +
-        `<div><span class="totals-label">Your estimate — 60% cash</span><span class="totals-val cyan">$${value.toFixed(2)}</span></div>` +
-        `<span class="totals-note">Paid digitally via Venmo, Zelle, or PayPal. This is an estimate and assumes Near Mint condition; your final payout is set after Roman receives and verifies your cards.</span>` +
+        `<div><span class="totals-label">Your estimate</span><span class="totals-val cyan">$${value.toFixed(2)}</span></div>` +
+        `<span class="totals-note">Based on each card's current price, assuming Near Mint and an exact card match. Paid digitally via Venmo, Zelle, or PayPal. Your final payout is confirmed after Roman receives and verifies your cards.</span>` +
         `</div>`;
 
       // 2. Below minimum
       if (est.belowMin.length) {
         html += `<div class="bucket-label dim">Below $${MIN_CARD_VALUE} minimum — not included (${est.belowMin.length})</div>`;
         est.belowMin.forEach(r => {
-          html += `<div class="estimate-card-row skipped"><span>${r.qty > 1 ? r.qty + '× ' : ''}${escHtml(r.resolvedName || r.name)}</span><span>$${r.marketEach.toFixed(2)}</span></div>`;
+          html += `<div class="estimate-card-row skipped"><span>${r.qty > 1 ? r.qty + '× ' : ''}${escHtml(r.resolvedName || r.name)}</span><span>$${r.estimateEach.toFixed(2)}</span></div>`;
         });
       }
 

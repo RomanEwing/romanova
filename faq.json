@@ -2,7 +2,7 @@
   {
     "category": "Pricing & Payouts",
     "question": "How do you determine the price you pay for my cards?",
-    "answer": "We pay 60% cash based on the current TCGPlayer market price — paid digitally via Venmo, Zelle, or PayPal. There is no store credit. The number you see on the submission page is an estimate pulled live from Scryfall; the final payout is set after we receive and verify your cards. Only cards valued at $10 or more are eligible."
+    "answer": "We pay 60% cash based on each card's current price — paid digitally via Venmo, Zelle, or PayPal. There is no store credit. The number you see on the submission page is a live estimate; the final payout is set after we receive and verify your cards. Only cards with an estimate of $10 or more are eligible."
   },
   {
     "category": "Pricing & Payouts",
@@ -12,7 +12,7 @@
   {
     "category": "What We Buy",
     "question": "Which cards do you buy?",
-    "answer": "We buy Magic: The Gathering cards valued at $10 or more (TCGPlayer market price). Cards must be in Near Mint (NM) or Lightly Played (LP) condition unless otherwise noted. We reserve the right to adjust or decline any card upon inspection."
+    "answer": "We buy Magic: The Gathering cards with an estimate of $10 or more. Cards must be in Near Mint (NM) or Lightly Played (LP) condition unless otherwise noted. We reserve the right to adjust or decline any card upon inspection."
   },
   {
     "category": "What We Buy",

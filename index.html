@@ -1401,11 +1401,10 @@
       r._finishes    = Array.isArray(card.finishes) ? card.finishes : null;  // §5 finish validity
       r._unresolved  = false;
       const p = card.prices || {};
-      // Price by finish; fall back to usd so an identifiable card isn't dropped just for a missing foil price.
-      let price = p.usd ?? null;
-      if (r.finish === 'etched')    price = p.usd_etched ?? p.usd_foil ?? p.usd ?? null;
-      else if (r.finish === 'foil') price = p.usd_foil ?? p.usd ?? null;
-      r.marketEach = price != null ? parseFloat(price) : null;   // null → Unmatched bucket
+      // TCGplayer market (§4.1 source 3) for the exact finish — no cross-finish fallback, so a
+      // source counts only when it's real. ManaPool low/market are added later in priceManaPool.
+      const usd = r.finish === 'foil' ? p.usd_foil : r.finish === 'etched' ? p.usd_etched : p.usd;
+      r._tcg = (usd != null && usd !== '') ? parseFloat(usd) : null;
     }
 
     async function priceRows(rows) {
@@ -1428,6 +1427,79 @@
       // doesn't resolve is unmatched — never guessed by name. (Incomplete cards never reach here.)
       rows.forEach(r => { const c = resolveCard(found, r); if (c) applyCard(r, c); else { r.marketEach = null; r._unresolved = true; } });
       return rows;
+    }
+
+    // ── §4: ManaPool blend ─────────────────────────────────
+    function centsToDollars(c) { return (typeof c === 'number' && c > 0) ? c / 100 : null; }
+    function round2(n) { return Math.round(n * 100) / 100; }
+    function mpLow(p, finish) {
+      if (!p) return null;
+      if (finish === 'foil')   return centsToDollars(p.price_cents_nm_foil);
+      if (finish === 'etched') return centsToDollars(p.price_cents_nm_etched);
+      return centsToDollars(p.price_cents_nm);
+    }
+    function mpMarket(p, finish) {
+      if (!p) return null;
+      if (finish === 'foil')   return centsToDollars(p.price_market_foil);
+      if (finish === 'etched') return null;   // ManaPool exposes no etched market price
+      return centsToDollars(p.price_market);
+    }
+
+    // Fetch ManaPool prices for resolved cards via the Supabase Edge Function proxy (CORS).
+    // Keyed by Scryfall ID, ≤100 per request. On any failure the cards keep null ManaPool
+    // prices and fall back to TCGplayer in computeBlend — so the engine still works pre-deploy.
+    async function priceManaPool(rows) {
+      const byId = {};
+      const withId = rows.filter(r => r.scryfallId);
+      const batches = chunk(withId, 100);
+      for (let b = 0; b < batches.length; b++) {
+        const scryfall_ids = batches[b].map(r => r.scryfallId);
+        try {
+          const { data, error } = await sb.functions.invoke('manapool-price', { body: { scryfall_ids } });
+          if (!error && data && Array.isArray(data.data)) {
+            data.data.forEach(p => { if (p && p.scryfall_id) byId[p.scryfall_id] = p; });
+          }
+        } catch (e) { /* proxy unavailable — fall back to TCGplayer */ }
+        if (b < batches.length - 1) await delay(120);
+      }
+      rows.forEach(r => {
+        const p = byId[r.scryfallId];
+        r._mpLow    = mpLow(p, r.finish);
+        r._mpMarket = mpMarket(p, r.finish);
+      });
+    }
+
+    // Estimate = 0.6 × average of the present real sources (ManaPool low, ManaPool market,
+    // TCGplayer market). Never invents a missing source. Flags — but keeps — any source ≥30%
+    // below the others. Captures full per-card metrics in r._pricing for the submission record (§7).
+    function computeBlend(r) {
+      const sources = [];
+      if (r._mpLow != null)    sources.push({ k: 'manapool_low',     v: r._mpLow });
+      if (r._mpMarket != null) sources.push({ k: 'manapool_market',  v: r._mpMarket });
+      if (r._tcg != null)      sources.push({ k: 'tcgplayer_market', v: r._tcg });
+      if (!sources.length) {
+        r._avgEach = null; r.estimateEach = null; r.marketEach = null; r._priceBasis = 'none';
+        r._pricing = { sources: [], average: null, estimate: null, basis: 'none', outlier: { flagged: false } };
+        return;
+      }
+      const avg = sources.reduce((s, x) => s + x.v, 0) / sources.length;
+      let outlier = { flagged: false };
+      if (sources.length >= 2) {
+        for (const x of sources) {
+          const others = sources.filter(o => o !== x);
+          const om = others.reduce((s, o) => s + o.v, 0) / others.length;
+          if (om > 0 && x.v <= 0.7 * om) outlier = { flagged: true, source: x.k, value: round2(x.v), others_avg: round2(om) };
+        }
+      }
+      const hasMp = (r._mpLow != null) || (r._mpMarket != null), hasTcg = r._tcg != null;
+      r._avgEach     = avg;
+      r.estimateEach = round2(0.6 * avg);
+      r.marketEach   = avg;   // display alias; the §6 commit removes market figures from the UI
+      r._priceBasis  = hasMp && hasTcg ? 'manapool+tcgplayer' : (hasMp ? 'manapool-only' : 'tcgplayer-only');
+      r._pricing = {
+        sources: sources.map(x => ({ source: x.k, price: round2(x.v), payout60: round2(0.6 * x.v) })),
+        average: round2(avg), estimate: round2(0.6 * avg), basis: r._priceBasis, outlier
+      };
     }
 
     // ── Estimate ───────────────────────────────────────────
@@ -1509,14 +1581,21 @@
       });
       const incomplete = needFields.concat(badIdentity);
 
+      // §4: price validated cards by blending ManaPool low + market (via the Edge Function proxy)
+      // with TCGplayer market (Scryfall). Falls back to TCGplayer alone when ManaPool has nothing,
+      // or to the manual-review bucket when neither source has a price.
+      if (validated.length) await priceManaPool(validated);
+      validated.forEach(computeBlend);
+
       const priced = [], belowMin = [], unmatched = [];
       validated.forEach(r => {
-        if (r.marketEach == null) unmatched.push(r);
-        else if (r.marketEach < MIN_CARD_VALUE) belowMin.push(r);
+        if (r.estimateEach == null) unmatched.push(r);              // no price anywhere → manual review (§4)
+        else if (r.estimateEach < MIN_CARD_VALUE) belowMin.push(r); // §4.5: $10 min on the estimate
         else priced.push(r);
       });
-      const totalMkt = priced.reduce((s, r) => s + r.marketEach * r.qty, 0);
-      lastEstimate = { value: totalMkt * PAYOUT_RATE, totalMkt, priced, belowMin, unmatched, incomplete, rows: allRows };
+      const totalMkt = priced.reduce((s, r) => s + (r._avgEach || 0) * r.qty, 0);  // blended-avg total (display only; reworked in §6)
+      const value    = priced.reduce((s, r) => s + (r.estimateEach || 0) * r.qty, 0);
+      lastEstimate = { value, totalMkt, priced, belowMin, unmatched, incomplete, rows: allRows };
       renderEstimate(lastEstimate);
       renderMoreInfo(incomplete);
       lsSet(LS.parsed, lastEstimate);   // persist parsed list + estimate (§5)
@@ -1601,7 +1680,7 @@
     function renderEstimate(est) {
       const ee = document.getElementById('estimate-empty'); if (ee) ee.style.display = 'none';
       document.getElementById('estimate-box').style.display = '';
-      const value = est.totalMkt * PAYOUT_RATE;
+      const value = (typeof est.value === 'number') ? est.value : est.totalMkt * PAYOUT_RATE;
       est.value = value;
 
       let html = '';

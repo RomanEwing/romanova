@@ -1,72 +1,107 @@
 [
   {
-    "category": "Pricing & Payouts",
-    "question": "How do you determine the price you pay for my cards?",
-    "answer": "We pay 60% cash based on each card's current price — paid digitally via Venmo, Zelle, or PayPal. There is no store credit. The number you see on the submission page is a live estimate; the final payout is set after we receive and verify your cards. Only cards with an estimate of $10 or more are eligible."
+    "category": "",
+    "question": "How does selling to you work, start to finish?",
+    "answer": "Submit your list, get an estimate, short dialog with me for confirmation purposes. Mail your cards and enter tracking number. I'll verify once they arrive and I'll send money through your chosen method once everything is confirmed."
   },
   {
-    "category": "Pricing & Payouts",
-    "question": "How will I actually be paid?",
-    "answer": "Digitally — via Venmo, Zelle, or PayPal, whichever you prefer. \"Cash\" means money sent to you electronically; we don't mail paper currency. Payment goes out once your cards arrive and are verified and you accept the final payout."
+    "category": "",
+    "question": "Do I need to make an account?",
+    "answer": "No."
   },
   {
-    "category": "What We Buy",
-    "question": "Which cards do you buy?",
-    "answer": "We buy Magic: The Gathering cards with an estimate of $10 or more. Cards must be in Near Mint (NM) or Lightly Played (LP) condition unless otherwise noted. We reserve the right to adjust or decline any card upon inspection."
+    "category": "",
+    "question": "How long does the process take, from submitting to getting paid?",
+    "answer": "If everything goes smoothly, the process takes however long shipping would be. I try to make you knowing how much I offer and my verification and sending payment as short and easy as possible."
   },
   {
-    "category": "What We Buy",
-    "question": "What conditions do you accept?",
-    "answer": "We primarily accept Near Mint (NM) and Lightly Played (LP) cards. Moderately Played (MP) cards may be accepted at a reduced rate. Heavily Played (HP) and Damaged cards are generally not accepted. Condition is assessed by us upon receipt and our determination is final for pricing purposes."
+    "category": "",
+    "question": "Is there a minimum or maximum number of cards I can sell?",
+    "answer": "No minimum or maximum. If the total value of cards is over $1,000 I'll pay for your shipping though. (I'd add it onto whatever I'd pay you for your cards after verification)"
   },
   {
-    "category": "Submitting Your List",
-    "question": "How do I submit my card list?",
-    "answer": "Use the Submit Your List form on this page. You can paste a list as plain text or upload a file. We'll generate a live estimate, and once you confirm and submit, you'll receive a submission ID and shipping instructions."
+    "category": "",
+    "question": "Can I sell cards from games other than Magic?",
+    "answer": "I'd like to stick to Magic however I'm open to looking at what you have and I have some friends of mine that I can connect you with that might be looking to buy them if I can't."
   },
   {
-    "category": "Submitting Your List",
-    "question": "What file formats do you accept for card list uploads?",
-    "answer": "CSV exports from ManaBox, Moxfield, TCGplayer, and Deckbox, plus generic CSVs and plain text files. You can also paste your list directly using formats like '4x Lightning Bolt' or '4 Lightning Bolt (NEO) 123'. If your export includes a Scryfall ID column, we use it for an exact match."
+    "category": "",
+    "question": "I've never mailed cards before — what do I do?",
+    "answer": "For this you'd use your intuition and also depends on what service you use or if it's in a bubble mailer or box or envelope. If you have any questions on how you should package it considering what materials for shipping you have on hand, I can walk you through the best method for your situation."
   },
   {
-    "category": "Submitting Your List",
-    "question": "Do I need an account to sell cards?",
-    "answer": "No — there's no sign-up at all. You just enter your name and contact info when you submit your list. That's everything we need to get back to you with a final payout."
+    "category": "",
+    "question": "What's the difference between the site's estimate and your actual offer?",
+    "answer": "The estimate is to give you an idea of what I'm willing to offer, however the prices of cards change during transit sometimes. I'll notice discrepancies in pricing that overinflates or undervalues certain cards, and once I check on things when everything arrives I can send the offer and explain why it is that number. This will happen after condition and card verification. It will almost always be the estimate number unless there are glaring discrepancies."
   },
   {
-    "category": "Shipping & Verification",
-    "question": "Who pays for shipping?",
-    "answer": "You (the seller) are responsible for shipping costs. We do not provide prepaid labels. Please ship with tracking and insurance for your protection. If we make an error — such as miscounting or misidentifying a card — we will cover return shipping. If you decline the payout for cards that match your description, return shipping is your responsibility."
+    "category": "",
+    "question": "Are you willing to accept any cards under $10?",
+    "answer": "Yes, but selectively. Most cards under $10 aren't worth the time to process an order around, so they're not quoted automatically. The exception is certain cards closer to $10 that sell well — those I'll buy at 50%. And some cards just under $10 I'll pay 60% for, like shock lands or other obvious, easily sellable staples."
   },
   {
-    "category": "Shipping & Verification",
-    "question": "Do I have to use tracking?",
-    "answer": "We strongly recommend it. After you submit, you can add a tracking number on the confirmation screen — or send it through the contact section — so we can watch for your package. Tracking and insurance protect you; Romanova is not responsible for packages lost or damaged in transit."
+    "category": "",
+    "question": "What if my card's condition is worse than I marked it?",
+    "answer": "We often have a different perspective on the range of card condition. I usually will accept anything between lightly played and mint condition, and some exceptions for other card conditions. I'll let you know if your condition grading varies too much and if a price adjustment is necessary."
   },
   {
-    "category": "Shipping & Verification",
-    "question": "What happens after I ship my cards?",
-    "answer": "Once we receive your cards, we verify each one against your submission — confirming quantities, condition, and identity. After verification, we'll contact you with the final payout amount. If you accept, payment is sent digitally. If there are discrepancies, we'll explain them clearly before finalizing anything."
+    "category": "",
+    "question": "Do you buy sealed product, bulk commons, or tokens?",
+    "answer": "I will buy sealed product, yes, at the same 60% rate. No to commons and tokens, given their value is almost always less than the $10 threshold."
   },
   {
-    "category": "Shipping & Verification",
-    "question": "How long does the process take?",
-    "answer": "Turnaround after we receive your package is typically 3–5 business days for verification. Payout processing time varies by method. We'll keep you informed via your contact info throughout the process."
+    "category": "",
+    "question": "Should I sort my cards before sending?",
+    "answer": "Try your best to have the cards in order so I can quickly verify all cards in the list."
   },
   {
-    "category": "Shipping & Verification",
-    "question": "What if there's a problem with my submission?",
-    "answer": "Use the contact section above to reach Roman directly. Include your submission ID for the fastest response. We aim to respond within 1–2 business days."
+    "category": "",
+    "question": "Where do I mail my cards?",
+    "answer": "I'll provide the address to send it to once everything is squared away. I don't like to have the address blindly available online, to avoid certain spam mail and other issues."
   },
   {
-    "category": "Policies",
-    "question": "TODO-CONTENT",
-    "answer": "TODO-CONTENT — policy entry to be written and dropped in here."
+    "category": "",
+    "question": "What happens if my package is lost or damaged in the mail?",
+    "answer": "I can't take any responsibility until the package actually arrives at my location. So it would be on you to purchase whichever insurance makes the most sense for you and what you're comfortable with."
   },
   {
-    "category": "Policies",
-    "question": "TODO-CONTENT",
-    "answer": "TODO-CONTENT — second policy entry to be written and dropped in here."
+    "category": "",
+    "question": "How do you pay me?",
+    "answer": "I'll use whichever payment method you feel most comfortable with. I have a preference for Venmo, however I am open to many payment forms — just let me know how you'd like to proceed."
+  },
+  {
+    "category": "",
+    "question": "When do I get paid?",
+    "answer": "You get paid as soon as verification of cards and condition is complete, which should be immediately after cards arrive in the mail. (This goes especially faster if cards are in the same top-down order as the list or CSV.)"
+  },
+  {
+    "category": "",
+    "question": "Who are you, and why should I trust you with my cards?",
+    "answer": "My name is Roman. I manage each piece of this myself; if you see something wrong here, please reach out so I can fix it or help with any potentially confusing elements. My success is contingent upon my reputation as a buyer/seller, and I strive to be as honest and transparent as I can be so you come out on the other end with full satisfaction and clarity. I like to do right by people and take as much responsibility on my end. I wouldn't be able to live with myself if I performed any coercive or manipulative actions to better myself at someone else's cost."
+  },
+  {
+    "category": "",
+    "question": "What happens once my cards reach you?",
+    "answer": "I verify your cards and their condition, then send you an offer — as close to the estimate as possible, or higher. If there's any discrepancy, I'll explain why."
+  },
+  {
+    "category": "",
+    "question": "What do you do with my personal information?",
+    "answer": "Communication with you and payment. Nothing else."
+  },
+  {
+    "category": "",
+    "question": "Can I change my mind after submitting my list?",
+    "answer": "Yes, of course — only do what you're comfortable with. You can even change your mind after you've sent the cards; I just ask that you cover return shipping."
+  },
+  {
+    "category": "",
+    "question": "How do I know you're legit — do you have ratings or reviews?",
+    "answer": "I have over 5,000 orders on TCGPlayer under the store name AlchemicKnowledge, and a newer store on ManaPool under the name Romanova with several hundred orders."
+  },
+  {
+    "category": "",
+    "question": "If there's a dispute, how is it resolved?",
+    "answer": "It is resolved so you come away from the interaction satisfied with the result. Sometimes people are not so agreeable. I've expressed my intent with this website and FAQ, so I hope what I'd do if anything should happen is clear. At worst, I'll just send the cards back to you. I'll always respond and communicate as quickly as I can and make sure I take as many steps as I can on my end to remedy any dispute."
   }
 ]

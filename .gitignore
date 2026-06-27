@@ -1,6 +1,9 @@
 # Local Claude Code / agent config
 .claude/
 
+# Supabase CLI
+supabase/.temp/
+
 # OS cruft
 .DS_Store
 Thumbs.db

@@ -494,20 +494,13 @@
     .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
 
     /* ─── Confirmation Screen ──────────────────────────── */
-    #confirmation {
-      display: none;
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 36px 32px;
-      margin-top: 24px;
-    }
-    #confirmation h3 {
+    .confirm-panel h3 {
       font-family: 'Playfair Display', serif;
       font-size: 1.5rem;
       color: var(--cyan-lt);
       margin-bottom: 6px;
     }
+    .confirm-next { color: var(--text-dim); font-size: 0.88rem; line-height: 1.6; margin: 4px 0 8px; }
     .confirm-id {
       font-size: 1.2rem;
       font-family: monospace;
@@ -743,6 +736,41 @@
       }
       .sticky-cta .btn-primary { min-height: 48px; }
     }
+
+    /* ─── Modal overlay system ───────────────────────────── */
+    body.modal-open { overflow: hidden; }
+    .modal {
+      position: fixed; inset: 0; z-index: 200;
+      display: flex; align-items: flex-start; justify-content: center;
+      padding: 48px 16px; overflow-y: auto;
+    }
+    .modal[hidden] { display: none; }
+    .modal-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(2,4,14,0.74); backdrop-filter: blur(6px);
+    }
+    .modal-panel {
+      position: relative; z-index: 1; margin: auto;
+      width: 100%; max-width: 720px;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 16px; padding: 26px 26px 32px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.55);
+      animation: modal-in 0.22s ease;
+    }
+    @keyframes modal-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+    .modal-close {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: transparent; border: 1px solid var(--border);
+      color: var(--text-dim); font-family: inherit; font-size: 0.85rem;
+      padding: 7px 14px; border-radius: 8px; cursor: pointer; margin-bottom: 18px;
+    }
+    .modal-close:hover { color: var(--text); border-color: var(--cyan); }
+    .modal-panel .section-heading,
+    .modal-panel h2 { margin-top: 0; }
+    @media (max-width: 560px) {
+      .modal { padding: 0; }
+      .modal-panel { border-radius: 0; min-height: 100%; max-width: none; }
+    }
   </style>
 </head>
 <body>
@@ -762,10 +790,9 @@
   <nav>
     <a class="nav-brand" href="index.html">Romanova</a>
     <div class="nav-links">
-      <a href="#how-it-works">How It Works</a>
       <a href="#submit">Submit List</a>
-      <a href="#ask">Contact</a>
-      <a href="#faq">FAQ</a>
+      <a href="#" data-open="modal-contact">Contact</a>
+      <a href="#" data-open="modal-faq">FAQ</a>
     </div>
   </nav>
 
@@ -777,33 +804,6 @@
       <p>Get 60% cash for your Magic cards — paid digitally via Venmo, Zelle, or PayPal. Submit your list, ship your cards, get paid.</p>
       <a href="#submit" class="hero-cta">Submit Your List</a>
     </div>
-
-    <!-- ── How It Works ── -->
-    <section id="how-it-works" class="reveal">
-      <h2 class="section-heading">How It Works</h2>
-      <div class="steps">
-        <div class="step">
-          <div class="step-num">1</div>
-          <h3>Submit Your List</h3>
-          <p>Paste or upload your card list. We'll generate a live estimate, filtered to cards whose estimate is $10 and over.</p>
-        </div>
-        <div class="step">
-          <div class="step-num">2</div>
-          <h3>Ship Your Cards</h3>
-          <p>Pack securely and ship with tracking — at your expense. Enter the tracking number to confirm shipment.</p>
-        </div>
-        <div class="step">
-          <div class="step-num">3</div>
-          <h3>We Verify</h3>
-          <p>We inspect every card for quantity, condition, and identity. Typically 3–5 business days after arrival.</p>
-        </div>
-        <div class="step">
-          <div class="step-num">4</div>
-          <h3>Get Paid</h3>
-          <p>Once we verify your cards, you get 60% of each card's current price, paid digitally via Venmo, Zelle, or PayPal. We contact you before anything is finalized.</p>
-        </div>
-      </div>
-    </section>
 
     <!-- ── What We Buy ── -->
     <section id="what-we-buy" class="reveal">
@@ -918,9 +918,13 @@
         <button class="btn-primary" id="submit-btn" disabled style="margin-top:4px">Submit my list</button>
         <div class="form-msg" id="submit-msg"></div>
       </div>
+    </section>
 
-      <!-- ── Confirmation (post-submit) ── -->
-      <div id="confirmation">
+    <!-- ── Confirmation modal (post-submit) ── -->
+    <div class="modal" id="modal-confirm" hidden>
+      <div class="modal-backdrop" data-close></div>
+      <div class="modal-panel confirm-panel">
+        <button class="modal-close" type="button" data-close>← Back</button>
         <h3>Submission Received</h3>
         <p style="color:var(--text-dim);font-size:0.88rem;margin-bottom:16px">Your submission ID is:</p>
         <div class="confirm-id" id="confirm-id-display">CB-XXXXX</div>
@@ -935,65 +939,41 @@
             <div class="confirm-value">60% cash — paid via Venmo, Zelle, or PayPal</div>
           </div>
           <div>
-            <div class="confirm-label">Estimated Value</div>
+            <div class="confirm-label">Estimated offer</div>
             <div class="confirm-value" id="confirm-range"></div>
           </div>
           <div>
             <div class="confirm-label">Eligible Cards</div>
             <div class="confirm-value" id="confirm-count"></div>
           </div>
-          <div>
-            <div class="confirm-label">Confirmation Sent To</div>
-            <div class="confirm-value" id="confirm-email"></div>
-          </div>
         </div>
 
-        <!-- Shipping address -->
-        <div class="confirm-address">
-          <strong>Ship Your Cards To:</strong>
-          <!-- [ROMAN: PO Box not yet acquired — drop in the full PO Box address here before launch] -->
-          A PO Box mailing address is being set up.<br />
-          We'll email it to you with your submission confirmation before you ship.
-        </div>
-
-        <!-- Packing instructions -->
-        <div class="packing-steps">
-          <h4>Packing Instructions</h4>
-          <ol>
-            <li><strong>Sleeve every card</strong> in a penny sleeve, then place in a top loader or card saver.</li>
-            <li><strong>Organize by your list</strong> so cards are easy to verify on arrival.</li>
-            <li><strong>Wrap in bubble wrap</strong> or pad the package to prevent bending in transit.</li>
-            <li><strong>Use a rigid mailer or small box</strong> — no plain envelopes for valuable cards.</li>
-            <li><strong>Write the submission ID</strong> (<span class="confirm-id-inline"></span>) on the outside of the package.</li>
-            <li><strong>Ship with tracking</strong> (USPS, UPS, FedEx, etc.). You pay for shipping. Consider insuring the package.</li>
-            <li>Enter your tracking number below after you drop it off.</li>
-          </ol>
-        </div>
+        <p class="confirm-next">I've got your list. I'll review it and reach out to you personally to confirm everything and walk you through the next steps — including where to ship. Nothing here is automated; you'll hear from me directly.</p>
 
         <hr class="divider" />
 
-        <!-- Tracking number input -->
+        <!-- Tracking (opens once I've confirmed the submission) -->
         <div class="tracking-section">
-          <h4>Add Tracking (Optional)</h4>
-          <p>Once you've shipped, send us your tracking number so we can watch for your package — the button opens a pre-filled email tagged with your submission ID. Optional, but it helps.</p>
+          <h4>Add Tracking</h4>
+          <p>This opens once I've confirmed your submission. I'll let you know when it's ready — then you can drop your tracking number here.</p>
           <div class="tracking-row">
-            <input type="text" id="tracking-input" placeholder="e.g. 9400111899223756401498" />
-            <button class="btn-secondary" id="tracking-btn">Email my tracking number</button>
+            <input type="text" id="tracking-input" placeholder="Available after I confirm your submission" disabled />
+            <button class="btn-secondary" id="tracking-btn" disabled>Add tracking</button>
           </div>
-          <div class="tracking-success" id="tracking-success">
-            Thanks — that opens your email app addressed to us. Once your package arrives and your cards are verified, we'll be in touch with your final payout.
-          </div>
+          <div class="tracking-success" id="tracking-success"></div>
         </div>
 
-        <!-- TODO-HUMOR: confirmation screen sign-off line -->
-        <p class="confirm-signoff">You're all set. Pack it up, ship it out, and I'll take it from here.</p>
+        <p class="confirm-signoff">You're all set. I'll take it from here.</p>
       </div>
-    </section>
+    </div>
 
-    <!-- ── Contact ── -->
-    <section id="ask" class="reveal">
-      <h2 class="section-heading">Contact</h2>
-      <p class="section-sub">Reach Roman directly through any of these — or send a question with the form below.</p>
+    <!-- ── Contact modal ── -->
+    <div class="modal" id="modal-contact" hidden>
+      <div class="modal-backdrop" data-close></div>
+      <div class="modal-panel">
+        <button class="modal-close" type="button" data-close>← Back</button>
+        <h2 class="section-heading">Contact</h2>
+        <p class="section-sub">Reach me directly through any of these — or send a question with the form below.</p>
 
       <div class="channel-grid">
         <a class="channel-card" href="mailto:romanova@romanova.cards">
@@ -1059,15 +1039,20 @@
         <button class="btn-primary" id="q-submit">Send my question</button>
         <div class="form-msg" id="q-msg"></div>
       </div>
-    </section>
-
-    <!-- ── FAQ ── -->
-    <section id="faq" class="reveal">
-      <h2 class="section-heading">Frequently Asked Questions</h2>
-      <div class="faq-list" id="faq-list">
-        <div style="color:var(--text-dim);font-size:0.9rem">Loading…</div>
       </div>
-    </section>
+    </div>
+
+    <!-- ── FAQ modal ── -->
+    <div class="modal" id="modal-faq" hidden>
+      <div class="modal-backdrop" data-close></div>
+      <div class="modal-panel">
+        <button class="modal-close" type="button" data-close>← Back</button>
+        <h2 class="section-heading">Frequently Asked Questions</h2>
+        <div class="faq-list" id="faq-list">
+          <div style="color:var(--text-dim);font-size:0.9rem">Loading…</div>
+        </div>
+      </div>
+    </div>
 
     <!-- ── ManaPool block (trust + referral, secondary weight) ── -->
     <div class="manapool-footer">
@@ -1845,17 +1830,13 @@
     }
 
     function showConfirmation(data, subId, name, email) {
-      const conf = document.getElementById('confirmation');
       document.getElementById('confirm-id-display').textContent = subId;
-      document.querySelectorAll('.confirm-id-inline').forEach(el => el.textContent = subId);
       document.getElementById('confirm-date').textContent    = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
       document.getElementById('confirm-range').textContent   = `$${parseFloat(data.estimate_low).toFixed(2)}`;
       document.getElementById('confirm-count').textContent   = `${data.eligible_count} card${data.eligible_count !== 1 ? 's' : ''}`;
-      document.getElementById('confirm-email').textContent   = email;
-      conf.style.display = 'block';
       submissionDone = true;
-      document.getElementById('sticky-cta').classList.remove('in-view');
-      conf.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const sticky = document.getElementById('sticky-cta'); if (sticky) sticky.classList.remove('in-view');
+      openModal('modal-confirm');   // post-submit confirmation is now an overlay, not an inline reveal
     }
 
     // ── Tracking number (optional) ─────────────────────────
@@ -1994,6 +1975,34 @@
     new IntersectionObserver(entries => {
       entries.forEach(e => stickyCta.classList.toggle('in-view', e.isIntersecting && !submissionDone));
     }, { threshold: 0 }).observe(document.getElementById('submit'));
+
+    // ── Modal overlay system ───────────────────────────────
+    function openModal(id) {
+      const m = document.getElementById(id);
+      if (!m) return;
+      m.hidden = false;
+      document.body.classList.add('modal-open');
+      const closer = m.querySelector('[data-close]:not(.modal-backdrop)');
+      if (closer) closer.focus();
+    }
+    function closeModal(m) {
+      if (typeof m === 'string') m = document.getElementById(m);
+      if (!m) return;
+      m.hidden = true;
+      if (!document.querySelector('.modal:not([hidden])')) document.body.classList.remove('modal-open');
+    }
+    // Delegated open/close: [data-open="modal-id"] opens, [data-close] (incl. backdrop) closes.
+    document.addEventListener('click', e => {
+      const opener = e.target.closest('[data-open]');
+      if (opener) { e.preventDefault(); openModal(opener.getAttribute('data-open')); return; }
+      const closer = e.target.closest('[data-close]');
+      if (closer) { e.preventDefault(); closeModal(closer.closest('.modal')); }
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key !== 'Escape') return;
+      const open = document.querySelector('.modal:not([hidden])');
+      if (open) closeModal(open);
+    });
 
     // ── Boot ───────────────────────────────────────────────
     loadLocal();

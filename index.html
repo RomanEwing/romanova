@@ -817,11 +817,11 @@
 
     <!-- ── What We Buy ── -->
     <section id="what-we-buy" class="reveal">
-      <h2 class="section-heading">What We Buy</h2>
+      <h2 class="section-heading">What I Buy</h2>
       <div class="buy-grid">
         <div class="buy-card">
           <h3>Minimum Value</h3>
-          <p>We buy cards whose estimate comes to $10 or more, based on current price. Cards under that are returned or discarded with permission.</p>
+          <p>I buy cards whose estimate comes to $10 or more, based on current price. Cards under that are returned or discarded with permission.</p>
         </div>
         <div class="buy-card">
           <h3>Condition</h3>
@@ -829,7 +829,7 @@
         </div>
         <div class="buy-card">
           <h3>60% Cash</h3>
-          <p>60% of each card's current price, paid digitally via Venmo, Zelle, or PayPal once we verify your cards. No store credit — just money sent to you.</p>
+          <p>60% of each card's current price, paid digitally via Venmo, Zelle, or PayPal once I verify your cards. No store credit — just money sent to you.</p>
         </div>
       </div>
     </section>
@@ -892,7 +892,7 @@
             <span class="payout-info-icon">📱</span>
             <div>
               <div class="payout-info-title">60% Cash — Paid Digitally</div>
-              <div class="payout-info-sub">Sent via Venmo, Zelle, or PayPal after Roman receives and verifies your cards. No store credit.</div>
+              <div class="payout-info-sub">Sent via Venmo, Zelle, or PayPal after I receive and verify your cards. No store credit.</div>
             </div>
           </div>
         </div>
@@ -903,7 +903,7 @@
         <!-- §5: More info needed (interactive) -->
         <div class="more-info-box" id="more-info-box" style="display:none">
           <h4>More info needed to finish your estimate</h4>
-          <p class="mi-intro">We price an exact printing — no guessing. Add the missing details below and tap “Update &amp; recheck” to fold these into your estimate.</p>
+          <p class="mi-intro">I price an exact printing — no guessing. Add the missing details below and tap “Update &amp; recheck” to fold these into your estimate.</p>
           <div id="more-info-rows"></div>
           <button type="button" id="more-info-recheck">Update &amp; recheck</button>
           <div class="form-msg" id="more-info-msg"></div>
@@ -920,7 +920,7 @@
         <div class="accept-row" id="accept-row" style="display:none">
           <input type="checkbox" id="accept-check" />
           <label for="accept-check" style="margin:0;color:var(--text-dim)">
-            I understand the number above is an <strong style="color:var(--cyan)">estimate</strong>. Roman pays a final <strong style="color:var(--cyan)">60% cash payout — paid digitally via Venmo, Zelle, or PayPal</strong> after he receives and verifies my cards.
+            I understand the number above is an <strong style="color:var(--cyan)">estimate</strong>, and that the final <strong style="color:var(--cyan)">60% cash payout — paid digitally via Venmo, Zelle, or PayPal</strong> is set after my cards are received and verified.
           </label>
         </div>
 
@@ -995,7 +995,7 @@
           <div class="channel-icon">💬</div>
           <div class="channel-name">Discord — chat or call</div>
           <div class="channel-value">lombax_roman</div>
-          <div class="channel-note">DM Roman directly — no server needed.</div>
+          <div class="channel-note">DM me directly — no server needed.</div>
         </div>
         <div class="channel-card">
           <div class="channel-icon">📞</div>
@@ -1071,7 +1071,7 @@
              onerror="this.style.visibility='hidden'" />
         <div class="mp-text">
           <div class="mp-eyebrow">On ManaPool</div>
-          <div class="mp-title">See our live inventory &amp; seller ratings</div>
+          <div class="mp-title">See my live inventory &amp; seller ratings</div>
           <div class="mp-sub">[ROMAN: store URL + QR file → assets/manapool-store-qr.png]</div>
         </div>
       </a>
@@ -1081,7 +1081,7 @@
         <div class="mp-text">
           <div class="mp-eyebrow">New to ManaPool?</div>
           <div class="mp-title">Sign up &amp; support Romanova</div>
-          <div class="mp-sub">Uses Roman's referral link. [ROMAN: QR file → assets/manapool-referral-qr.png]</div>
+          <div class="mp-sub">Uses my referral link. [ROMAN: QR file → assets/manapool-referral-qr.png]</div>
         </div>
       </a>
     </div>
@@ -1523,7 +1523,7 @@
       }
       const allRows = parseInput(rawText);
       if (!allRows.length) {
-        showEstimateError('We couldn’t read any cards from that. Use one card per line, or a CSV export from ManaBox, Moxfield, TCGplayer, or Deckbox.');
+        showEstimateError('I couldn’t read any cards from that. Use one card per line, or a CSV export from ManaBox, Moxfield, TCGplayer, or Deckbox.');
         return;
       }
       await computeEstimate(allRows);
@@ -1565,7 +1565,7 @@
       complete.forEach(r => {
         if (r._unresolved) {
           r._invalidFinish = false;
-          r._reason = `We couldn't find ${r.set} #${r.collector} — double-check the set code and collector number.`;
+          r._reason = `I couldn't find ${r.set} #${r.collector} — double-check the set code and collector number.`;
           badIdentity.push(r);
         } else if (r._finishes && !r._finishes.includes(r.finish)) {
           r._invalidFinish = true;
@@ -1727,7 +1727,7 @@
       // Grand total — the single number (§6). No market value, no second figure, no 60% math.
       html += `<div class="totals-row">` +
         `<div><span class="totals-label">Your estimate</span><span class="totals-val cyan">$${value.toFixed(2)}</span></div>` +
-        `<span class="totals-note">Based on each card's current price, assuming Near Mint and an exact card match. Paid digitally via Venmo, Zelle, or PayPal. Your final payout is confirmed after Roman receives and verifies your cards.</span>` +
+        `<span class="totals-note">Based on each card's current price, assuming Near Mint and an exact card match. Paid digitally via Venmo, Zelle, or PayPal. Your final payout is confirmed after I receive and verify your cards.</span>` +
         `</div>`;
 
       // 2. Below minimum — sub-$10 cards the seller can opt into (Stage 2)
@@ -1745,7 +1745,7 @@
       // 3. Unmatched (manual review)
       if (est.unmatched.length) {
         html += `<div class="bucket-label warn">Unmatched — ${est.unmatched.length}</div>`;
-        html += `<div class="bucket-note">We couldn’t auto-match these. We’ll review them by hand and include them in your payout if we can identify them.</div>`;
+        html += `<div class="bucket-note">I couldn’t auto-match these. I’ll review them by hand and include them in your payout if I can identify them.</div>`;
         est.unmatched.forEach(r => {
           html += `<div class="estimate-card-row notfound">${r.qty > 1 ? r.qty + '× ' : ''}${escHtml(r.name || '(unnamed)')}</div>`;
         });
@@ -1814,7 +1814,7 @@
       const includedBelow = (((lastEstimate && lastEstimate.belowMin) || []).filter(r => r._included));
       if (!lastEstimate || (lastEstimate.priced.length === 0 && includedBelow.length === 0 && lastEstimate.unmatched.length === 0)) {
         document.getElementById('submit-msg').className = 'form-msg error';
-        document.getElementById('submit-msg').textContent = 'Run "Get my estimate" first so we have your card list.';
+        document.getElementById('submit-msg').textContent = 'Run "Get my estimate" first so I have your card list.';
         return;
       }
 
@@ -1944,7 +1944,7 @@
 
       if (!FORM_ENDPOINT) {
         msg.className = 'form-msg error';
-        msg.textContent = 'The contact form isn’t connected yet — reach Roman through one of the channels above for now.';
+        msg.textContent = 'The contact form isn’t connected yet — reach me through one of the channels above for now.';
         return;
       }
 
@@ -1958,14 +1958,14 @@
         });
         if (!res.ok) throw new Error('bad status');
         msg.className = 'form-msg success';
-        msg.textContent = 'Sent. Roman will get back to you within 1–2 business days.';
+        msg.textContent = 'Sent. I’ll get back to you within 1–2 business days.';
         document.getElementById('q-name').value   = '';
         document.getElementById('q-handle').value = '';
         document.getElementById('q-text').value   = '';
         saveLocal();
       } catch (e) {
         msg.className = 'form-msg error';
-        msg.textContent = 'That didn’t go through. Try again, or reach Roman through a channel above.';
+        msg.textContent = 'That didn’t go through. Try again, or reach me through a channel above.';
       }
     });
 
@@ -1994,7 +1994,7 @@
               </div>`).join('')}
           </div>`).join('');
       } catch {
-        list.innerHTML = '<div style="color:var(--text-dim)">FAQ unavailable — reach Roman through the contact section above.</div>';
+        list.innerHTML = '<div style="color:var(--text-dim)">FAQ unavailable — reach me through the Contact link above.</div>';
       }
     }
 

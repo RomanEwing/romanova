@@ -1730,7 +1730,6 @@
 
       // 3. Unmatched (manual review)
       if (est.unmatched.length) {
-        // TODO-HUMOR: unmatched-cards bucket copy
         html += `<div class="bucket-label warn">Unmatched — ${est.unmatched.length}</div>`;
         html += `<div class="bucket-note">We couldn’t auto-match these. We’ll review them by hand and include them in your payout if we can identify them.</div>`;
         est.unmatched.forEach(r => {

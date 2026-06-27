@@ -464,6 +464,16 @@
     .totals-val { color: var(--text); font-weight: 600; }
     .totals-val.cyan { color: var(--cyan-lt); font-size: 1.05rem; }
     .totals-note { display: block !important; font-size: 0.76rem; color: var(--text-dim); margin-top: 8px; line-height: 1.5; }
+    /* Stage 2: foil toggle + sub-$10 include controls */
+    .row-finish { background: var(--bg3); border: 1px solid var(--border); color: var(--text); border-radius: 6px; font-size: 0.72rem; padding: 2px 6px; margin-left: 6px; font-family: inherit; cursor: pointer; vertical-align: middle; }
+    .incl-label { display: inline-flex; align-items: center; gap: 4px; font-size: 0.72rem; color: var(--cyan); cursor: pointer; }
+    .row-include { accent-color: var(--cyan); cursor: pointer; }
+    .update-row { display: flex; align-items: center; gap: 12px; margin: 18px 0 4px; flex-wrap: wrap; }
+    #update-estimate-btn { background: transparent; color: var(--cyan); border: 1px solid var(--cyan); border-radius: 8px; padding: 9px 18px; font-size: 0.85rem; font-weight: 600; font-family: inherit; cursor: pointer; }
+    #update-estimate-btn:hover { background: rgba(56,217,245,0.1); }
+    #update-estimate-btn.pending { background: var(--cyan); color: #0a0c1a; }
+    #update-estimate-btn:disabled { opacity: 0.5; cursor: default; }
+    .update-hint { font-size: 0.78rem; color: var(--text-dim); }
 
     /* Accept checkbox */
     .accept-row {
@@ -1521,7 +1531,10 @@
 
     // Price + validate a full row set, sort into buckets, and render. Shared by the initial
     // estimate and by the §5 "more info needed" re-check (which mutates rows, then re-runs this).
+    let _uidSeq = 0;
     async function computeEstimate(allRows) {
+      // Stable per-row id so the foil / sub-$10 controls can map a control back to its row.
+      allRows.forEach(r => { if (r._uid == null) r._uid = ++_uidSeq; });
       // §2/§5: only cards that pin one exact printing get priced; the rest go to "more info needed".
       const complete  = allRows.filter(isComplete);
       const needFields = allRows.filter(r => !isComplete(r));
@@ -1574,11 +1587,13 @@
       const priced = [], belowMin = [], unmatched = [];
       validated.forEach(r => {
         if (r.estimateEach == null) unmatched.push(r);              // no price anywhere → manual review (§4)
-        else if (r.estimateEach < MIN_CARD_VALUE) belowMin.push(r); // §4.5: $10 min on the estimate
+        else if (r.estimateEach < MIN_CARD_VALUE) belowMin.push(r); // under $10 — the seller can opt these in
         else priced.push(r);
       });
-      const totalMkt = priced.reduce((s, r) => s + (r._avgEach || 0) * r.qty, 0);  // blended-avg total (display only; reworked in §6)
-      const value    = priced.reduce((s, r) => s + (r.estimateEach || 0) * r.qty, 0);
+      // Cards that count toward the offer = all $10+ cards, plus any sub-$10 the seller ticked (Stage 2).
+      const counted  = priced.concat(belowMin.filter(r => r._included));
+      const totalMkt = counted.reduce((s, r) => s + (r._avgEach || 0) * r.qty, 0);
+      const value    = counted.reduce((s, r) => s + (r.estimateEach || 0) * r.qty, 0);
       lastEstimate = { value, totalMkt, priced, belowMin, unmatched, incomplete, rows: allRows };
       renderEstimate(lastEstimate);
       renderMoreInfo(incomplete);
@@ -1660,6 +1675,16 @@
       if (r.finish === 'etched') return ` <span class="finish-flag">Etched</span>`;
       return '';
     }
+    const FINISH_LABEL = { nonfoil: 'Non-foil', foil: 'Foil', etched: 'Etched' };
+    // Inline finish selector for a priced / sub-$10 row — lists only the finishes the card actually has.
+    // Changing it re-prices that card on the next "Update estimate" (Stage 2 foil toggle).
+    function finishControl(r) {
+      const fins = Array.isArray(r._finishes) ? r._finishes.filter(f => FINISHES.includes(f)) : [];
+      if (fins.length < 2) return finishFlag(r);   // nothing to toggle → static flag
+      return ` <select class="row-finish" data-uid="${r._uid}" aria-label="Finish">` +
+        fins.map(f => `<option value="${f}"${r.finish === f ? ' selected' : ''}>${FINISH_LABEL[f] || f}</option>`).join('') +
+        `</select>`;
+    }
 
     function renderEstimate(est) {
       const ee = document.getElementById('estimate-empty'); if (ee) ee.style.display = 'none';
@@ -1689,7 +1714,7 @@
           const printing = `${escHtml(r.resolvedSet || r.set || '—')} #${escHtml(r.collector || '—')}`;
           html += `<div class="et-row">` +
             `<span data-l="Qty">${r.qty}</span>` +
-            `<span data-l="Card">${escHtml(r.resolvedName || r.name)}${condFlag(r)}${finishFlag(r)}</span>` +
+            `<span data-l="Card">${escHtml(r.resolvedName || r.name)}${condFlag(r)}${finishControl(r)}</span>` +
             `<span data-l="Printing">${printing}</span>` +
             `<span data-l="Estimate" class="num">$${(r.estimateEach * r.qty).toFixed(2)}</span>` +
             `</div>`;
@@ -1705,11 +1730,15 @@
         `<span class="totals-note">Based on each card's current price, assuming Near Mint and an exact card match. Paid digitally via Venmo, Zelle, or PayPal. Your final payout is confirmed after Roman receives and verifies your cards.</span>` +
         `</div>`;
 
-      // 2. Below minimum
+      // 2. Below minimum — sub-$10 cards the seller can opt into (Stage 2)
       if (est.belowMin.length) {
-        html += `<div class="bucket-label dim">Below $${MIN_CARD_VALUE} minimum — not included (${est.belowMin.length})</div>`;
+        const inc = est.belowMin.filter(r => r._included).length;
+        html += `<div class="bucket-label dim">Under $${MIN_CARD_VALUE} — tick any you'd like me to take${inc ? ` (${inc} included)` : ''}</div>`;
         est.belowMin.forEach(r => {
-          html += `<div class="estimate-card-row skipped"><span>${r.qty > 1 ? r.qty + '× ' : ''}${escHtml(r.resolvedName || r.name)}</span><span>$${r.estimateEach.toFixed(2)}</span></div>`;
+          html += `<div class="estimate-card-row skipped">` +
+            `<span><label class="incl-label"><input type="checkbox" class="row-include" data-uid="${r._uid}"${r._included ? ' checked' : ''}> include</label> ` +
+            `${r.qty > 1 ? r.qty + '× ' : ''}${escHtml(r.resolvedName || r.name)}${finishControl(r)}</span>` +
+            `<span>$${r.estimateEach.toFixed(2)}</span></div>`;
         });
       }
 
@@ -1722,10 +1751,16 @@
         });
       }
 
+      // Stage 2: apply foil / sub-$10 changes on demand.
+      if (est.priced.length || est.belowMin.length) {
+        html += `<div class="update-row"><button type="button" id="update-estimate-btn">Update estimate</button><span class="update-hint" id="update-hint"></span></div>`;
+      }
+
       document.getElementById('estimate-range').textContent = `$${value.toFixed(2)}`;
       document.getElementById('estimate-detail').innerHTML = html;
 
-      const canSubmit = est.priced.length > 0 || est.unmatched.length > 0;
+      const includedBelow = (est.belowMin || []).filter(r => r._included);
+      const canSubmit = est.priced.length > 0 || includedBelow.length > 0 || est.unmatched.length > 0;
       document.getElementById('accept-row').style.display = canSubmit ? 'flex' : 'none';
       document.getElementById('accept-check').checked = false;
       document.getElementById('submit-btn').disabled = true;
@@ -1735,6 +1770,33 @@
     // Accept checkbox gate
     document.getElementById('accept-check').addEventListener('change', e => {
       document.getElementById('submit-btn').disabled = !e.target.checked;
+    });
+
+    // ── Foil toggle + sub-$10 selector (Stage 2) ───────────
+    function findRowByUid(uid) {
+      uid = String(uid);
+      return (((lastEstimate && lastEstimate.rows) || []).find(r => String(r._uid) === uid)) || null;
+    }
+    function markEstimateDirty() {
+      const hint = document.getElementById('update-hint');
+      if (hint) hint.textContent = 'Changes pending — tap Update estimate.';
+      const btn = document.getElementById('update-estimate-btn');
+      if (btn) btn.classList.add('pending');
+    }
+    async function recomputeEstimate() {
+      if (!lastEstimate || !lastEstimate.rows) return;
+      const btn = document.getElementById('update-estimate-btn');
+      if (btn) { btn.disabled = true; btn.textContent = 'Updating…'; }
+      await computeEstimate(lastEstimate.rows);   // re-prices flipped finishes; re-totals included sub-$10
+    }
+    document.addEventListener('change', e => {
+      const fin = e.target.closest('.row-finish');
+      if (fin) { const r = findRowByUid(fin.getAttribute('data-uid')); if (r) { r.finish = fin.value; markEstimateDirty(); } return; }
+      const inc = e.target.closest('.row-include');
+      if (inc) { const r = findRowByUid(inc.getAttribute('data-uid')); if (r) { r._included = inc.checked; markEstimateDirty(); } }
+    });
+    document.addEventListener('click', e => {
+      if (e.target.closest('#update-estimate-btn')) { e.preventDefault(); recomputeEstimate(); }
     });
 
     // ── Submit ─────────────────────────────────────────────
@@ -1749,7 +1811,8 @@
         document.getElementById('submit-msg').textContent = 'Please enter your name and email.';
         return;
       }
-      if (!lastEstimate || (lastEstimate.priced.length === 0 && lastEstimate.unmatched.length === 0)) {
+      const includedBelow = (((lastEstimate && lastEstimate.belowMin) || []).filter(r => r._included));
+      if (!lastEstimate || (lastEstimate.priced.length === 0 && includedBelow.length === 0 && lastEstimate.unmatched.length === 0)) {
         document.getElementById('submit-msg').className = 'form-msg error';
         document.getElementById('submit-msg').textContent = 'Run "Get my estimate" first so we have your card list.';
         return;
@@ -1775,7 +1838,7 @@
       const cards = (lastEstimate.rows || []).map(r => {
         const bucket = !isComplete(r) ? 'incomplete'
           : (r.estimateEach == null ? 'unmatched'
-          : (r.estimateEach < MIN_CARD_VALUE ? 'below_min' : 'priced'));
+          : (r.estimateEach < MIN_CARD_VALUE ? (r._included ? 'included' : 'below_min') : 'priced'));
         return {
           qty: r.qty,
           name: r.resolvedName || r.name,
@@ -1787,6 +1850,7 @@
           scryfallId: r.scryfallId || null,
           estimate: r.estimateEach != null ? r.estimateEach : null,            // per-card unit estimate
           lineEstimate: r.estimateEach != null ? round2(r.estimateEach * r.qty) : null,
+          included: !!r._included,   // sub-$10 the seller opted into
           bucket,
           pricing: r._pricing || null   // §4.6: { sources:[{source,price,payout60}], average, estimate, basis, outlier }
         };
@@ -1809,7 +1873,7 @@
         payout_type: 'cash',
         estimate_low:  parseFloat(lastEstimate.value.toFixed(2)),
         estimate_high: parseFloat(lastEstimate.value.toFixed(2)),
-        eligible_count: lastEstimate.priced.length,
+        eligible_count: lastEstimate.priced.length + includedBelow.length,
         card_list: serializedList,
         status: 'pending'
       };

@@ -899,8 +899,7 @@
           <div class="form-msg" id="more-info-msg"></div>
         </div>
 
-        <!-- TODO-HUMOR: empty estimate state (before any cards entered) -->
-        <div class="estimate-empty" id="estimate-empty">TODO-HUMOR</div>
+        <div class="estimate-empty" id="estimate-empty">This is where you see how much money you'll receive for the list you submitted.</div>
         <div class="estimate-box" id="estimate-box" style="display:none">
           <h4>Price Estimate</h4>
           <div class="estimate-range" id="estimate-range"></div>
@@ -987,7 +986,7 @@
         </div>
 
         <!-- TODO-HUMOR: confirmation screen sign-off line -->
-        <p class="confirm-signoff">TODO-HUMOR</p>
+        <p class="confirm-signoff">You're all set. Pack it up, ship it out, and I'll take it from here.</p>
       </div>
     </section>
 
@@ -1547,7 +1546,7 @@
       document.getElementById('estimate-range').textContent = '';
       // TODO-HUMOR: estimate loading state copy
       document.getElementById('estimate-detail').innerHTML = complete.length
-        ? `<div class="estimate-loading">Looking up ${complete.length} card${complete.length !== 1 ? 's' : ''}…</div>`
+        ? `<div class="estimate-loading">Currently determining the monies that you will be offered.</div>`
         : `<div class="estimate-loading">Checking your list…</div>`;
       btn.disabled = true; btn.textContent = 'Getting estimate…';
 

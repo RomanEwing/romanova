@@ -1109,7 +1109,7 @@
           set: at(cols, iSet),
           collector: at(cols, iColl),
           scryfallId: sfid,
-          finish: iFoil !== -1 ? normalizeFinish(cols[iFoil]) : '',
+          finish: iFoil !== -1 ? normalizeFinish(cols[iFoil]) : 'nonfoil',   // unspecified → non-foil
           condition: at(cols, iCond),
           language: at(cols, iLang)
         });
@@ -1125,8 +1125,8 @@
         let rest = line, qty = 1;
         const m = rest.match(/^(\d+)\s*[xX]?\s+(.+)$/);
         if (m) { qty = parseInt(m[1], 10) || 1; rest = m[2].trim(); }
-        // Optional trailing finish token, e.g. "... foil" / "... etched" (§2). Absent → unknown → incomplete.
-        let finish = '';
+        // Optional trailing finish token, e.g. "... foil" / "... etched". Absent → assume non-foil.
+        let finish = 'nonfoil';
         const fm = rest.match(/\s+(foil|etched|non-?foil|normal)\s*$/i);
         if (fm) { finish = normalizeFinish(fm[1]); rest = rest.slice(0, fm.index).trim(); }
         // Optional "(SET) COLLECTOR" suffix.

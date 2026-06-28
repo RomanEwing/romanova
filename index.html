@@ -339,8 +339,8 @@
     .totals-note { display: block !important; font-size: 0.76rem; color: var(--text-dim); margin-top: 8px; line-height: 1.5; }
     /* Stage 2: foil toggle + sub-$10 include controls */
     .row-finish { background: var(--bg3); border: 1px solid var(--border); color: var(--text); border-radius: 6px; font-size: 0.72rem; padding: 2px 6px; margin-left: 6px; font-family: inherit; cursor: pointer; vertical-align: middle; }
-    .incl-label { display: inline-flex; align-items: center; gap: 4px; font-size: 0.72rem; color: var(--cyan); cursor: pointer; }
-    .row-include { accent-color: var(--cyan); cursor: pointer; }
+    .skipped-right { display: inline-flex; align-items: center; gap: 14px; }
+    .row-include { width: 22px; height: 22px; accent-color: var(--cyan); cursor: pointer; flex-shrink: 0; }
     .update-row { display: flex; align-items: center; gap: 12px; margin: 18px 0 4px; flex-wrap: wrap; }
     #update-estimate-btn { background: transparent; color: var(--cyan); border: 1px solid var(--cyan); border-radius: 8px; padding: 9px 18px; font-size: 0.85rem; font-weight: 600; font-family: inherit; cursor: pointer; }
     #update-estimate-btn:hover { background: rgba(169,158,196,0.1); }
@@ -1492,7 +1492,7 @@
             `</div>`;
         });
         html += `</div>`;
-      } else if (!incomplete.length) {
+      } else if (!incomplete.length && !est.belowMin.length) {
         html += `<div class="bucket-note">Nothing met the $${MIN_CARD_VALUE} minimum yet.</div>`;
       }
 
@@ -1505,12 +1505,14 @@
       // 2. Below minimum — sub-$10 cards the seller can opt into (Stage 2)
       if (est.belowMin.length) {
         const inc = est.belowMin.filter(r => r._included).length;
-        html += `<div class="bucket-label dim">Under $${MIN_CARD_VALUE} — tick any you'd like me to take${inc ? ` (${inc} included)` : ''}</div>`;
+        html += `<div class="bucket-label dim">Under $${MIN_CARD_VALUE}</div>`;
+        html += `<div class="bucket-note">Check the boxes of the cards you think I should consider.${inc ? ` (${inc} added)` : ''}</div>`;
         est.belowMin.forEach(r => {
           html += `<div class="estimate-card-row skipped">` +
-            `<span><label class="incl-label"><input type="checkbox" class="row-include" data-uid="${r._uid}"${r._included ? ' checked' : ''}> include</label> ` +
-            `${r.qty > 1 ? r.qty + '× ' : ''}${escHtml(r.resolvedName || r.name)}${finishControl(r)}</span>` +
-            `<span>$${r.estimateEach.toFixed(2)}</span></div>`;
+            `<span>${r.qty > 1 ? r.qty + '× ' : ''}${escHtml(r.resolvedName || r.name)}${finishControl(r)}</span>` +
+            `<span class="skipped-right">$${r.estimateEach.toFixed(2)}` +
+            `<input type="checkbox" class="row-include" data-uid="${r._uid}"${r._included ? ' checked' : ''} aria-label="Consider ${escAttr(r.resolvedName || r.name)}"></span>` +
+            `</div>`;
         });
       }
 

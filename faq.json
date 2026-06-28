@@ -1,6 +1,16 @@
 [
   {
     "category": "",
+    "question": "Who are you, and why should I trust you with my cards?",
+    "answer": "My name is Roman. I manage each piece of this myself; if you see something wrong here, please reach out so I can fix it or help with any potentially confusing elements. My success is contingent upon my reputation as a buyer/seller, and I strive to be as honest and transparent as I can be so you come out on the other end with full satisfaction and clarity. I like to do right by people and take as much responsibility on my end. I wouldn't be able to live with myself if I performed any coercive or manipulative actions to better myself at someone else's cost."
+  },
+  {
+    "category": "",
+    "question": "How do you calculate the estimate?",
+    "answer": "It's calculated as 60% of the average of three prices — ManaPool's lowest listing, ManaPool's market price, and TCGplayer's market price — falling back to the TCGplayer market price if the others aren't available. Sometimes the lowest listing runs temporarily too low or too high; I have a backend system that catches that when there's too much discrepancy."
+  },
+  {
+    "category": "",
     "question": "How does selling to you work, start to finish?",
     "answer": "Submit your list, get an estimate, short dialog with me for confirmation purposes. Mail your cards and enter tracking number. I'll verify once they arrive and I'll send money through your chosen method once everything is confirmed."
   },
@@ -73,11 +83,6 @@
     "category": "",
     "question": "When do I get paid?",
     "answer": "You get paid as soon as verification of cards and condition is complete, which should be immediately after cards arrive in the mail. (This goes especially faster if cards are in the same top-down order as the list or CSV.)"
-  },
-  {
-    "category": "",
-    "question": "Who are you, and why should I trust you with my cards?",
-    "answer": "My name is Roman. I manage each piece of this myself; if you see something wrong here, please reach out so I can fix it or help with any potentially confusing elements. My success is contingent upon my reputation as a buyer/seller, and I strive to be as honest and transparent as I can be so you come out on the other end with full satisfaction and clarity. I like to do right by people and take as much responsibility on my end. I wouldn't be able to live with myself if I performed any coercive or manipulative actions to better myself at someone else's cost."
   },
   {
     "category": "",

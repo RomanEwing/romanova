@@ -313,7 +313,8 @@
       font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em;
       color: var(--text-dim); border-bottom: 1px solid var(--border);
     }
-    .et-row { border-bottom: 1px solid rgba(30,35,64,0.5); color: var(--text); font-size: 0.84rem; }
+    .et-row { border-bottom: 1px solid var(--border); color: var(--text); font-size: 0.84rem; }
+    .per-each { display: block; font-size: 0.72rem; color: var(--text-dim); font-weight: 400; margin-top: 2px; }
     .et-row .num, .et-head .num { text-align: right; }
     .cond-flag {
       display: inline-block; font-size: 0.66rem; font-weight: 600;
@@ -1488,7 +1489,7 @@
             `<span data-l="Qty">${r.qty}</span>` +
             `<span data-l="Card">${escHtml(r.resolvedName || r.name)}${condFlag(r)}${finishControl(r)}</span>` +
             `<span data-l="Printing">${printing}</span>` +
-            `<span data-l="Estimate" class="num">$${(r.estimateEach * r.qty).toFixed(2)}</span>` +
+            `<span data-l="Estimate" class="num">$${(r.estimateEach * r.qty).toFixed(2)}${r.qty > 1 ? `<span class="per-each">$${r.estimateEach.toFixed(2)} each</span>` : ''}</span>` +
             `</div>`;
         });
         html += `</div>`;
@@ -1747,7 +1748,7 @@
     async function loadFaq() {
       const list = document.getElementById('faq-list');
       try {
-        const res  = await fetch('faq.json');
+        const res  = await fetch('faq.json', { cache: 'no-store' });
         const faqs = await res.json();
         // Flat list of full-width cards — no category grouping, every answer expanded.
         list.innerHTML = faqs.map(item => `

@@ -47,25 +47,42 @@
       z-index: -1;
     }
 
-    /* ─── Top bar — corner page buttons + centered brand ─── */
-    nav {
-      position: relative;
-      display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
-      max-width: 1180px; margin: 0 auto;
-      padding: 22px 24px 0;
-      z-index: 1000;
+    /* ─── App bar — thin sticky header; title = current page ─ */
+    .appbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+      height: 50px;
+      display: flex; align-items: center; gap: 14px;
+      padding: 0 20px;
+      background: rgba(26,24,32,0.94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
     }
-    .nav-brand {
+    .appbar-brand {
       font-family: 'Playfair Display', serif;
-      font-size: clamp(1.7rem, 3.4vw, 2.5rem);
-      color: var(--cyan-lt);
-      letter-spacing: 0.04em;
-      text-decoration: none;
-      align-self: center;
+      font-size: 1.05rem; color: var(--text-dim); text-decoration: none;
+      letter-spacing: 0.05em; flex-shrink: 0;
+    }
+    .appbar-brand:hover { color: var(--text); }
+    .appbar-page {
+      flex: 1; text-align: center;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem; color: var(--cyan-lt); letter-spacing: 0.02em;
+    }
+    .appbar-nav { display: flex; gap: 8px; flex-shrink: 0; }
+    .appbar-nav button {
+      background: transparent; border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text-dim); font-family: inherit; font-size: 0.82rem; font-weight: 500;
+      padding: 6px 13px; cursor: pointer; transition: color .15s, border-color .15s;
+    }
+    .appbar-nav button:hover { color: var(--cyan); border-color: var(--cyan); }
+    @media (max-width: 480px) {
+      .appbar { gap: 8px; padding: 0 12px; }
+      .appbar-page { font-size: 0.98rem; }
+      .appbar-nav button { padding: 6px 10px; font-size: 0.76rem; }
     }
 
     /* ─── Main ─────────────────────────────────────────── */
-    main { position: relative; z-index: 1; }
+    main { position: relative; z-index: 1; padding-top: 50px; }
 
     /* ─── Sections ─────────────────────────────────────── */
     section { padding: 36px 24px 52px; max-width: 900px; margin: 0 auto; }
@@ -469,28 +486,26 @@
     .section-sub { color: var(--text-dim); font-size: 0.95rem; margin: -16px 0 24px; }
     .channel-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 14px;
-      margin-bottom: 36px;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
     }
     .channel-card {
-      background: var(--bg2);
+      background: var(--bg3);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 18px 20px;
+      padding: 30px 28px;
       text-decoration: none;
       display: block;
       color: inherit;
     }
-    a.channel-card:hover { border-color: rgba(169,158,196,0.35); }
-    .channel-icon { font-size: 1.4rem; margin-bottom: 8px; }
+    a.channel-card:hover { border-color: var(--cyan); }
     .channel-name {
-      font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em;
-      color: var(--cyan); font-weight: 600; margin-bottom: 4px;
+      font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--cyan); font-weight: 600; margin-bottom: 6px;
     }
-    .channel-value { font-size: 0.9rem; color: var(--text); word-break: break-word; }
-    .channel-note { font-size: 0.76rem; color: var(--text-dim); margin-top: 4px; }
-    .channel-card.pigeon { border-style: dashed; opacity: 0.85; }
+    .channel-value { font-size: 1.1rem; color: var(--text); word-break: break-word; }
+    .channel-note { font-size: 0.84rem; color: var(--text-dim); margin-top: 8px; }
 
     /* honeypot (spam trap) — visually hidden, off-screen */
     .hp-field { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
@@ -514,21 +529,13 @@
     .mp-referral:hover { color: var(--cyan); border-color: var(--cyan); }
     .mp-symbol { width: 18px; height: 18px; object-fit: contain; opacity: 0.9; }
 
-    /* ─── Square page-nav buttons (top corners + in modals) ─ */
-    .corner-btn {
-      flex-shrink: 0;
-      width: 92px; height: 92px;
-      display: inline-flex; align-items: center; justify-content: center; text-align: center;
-      background: var(--bg2); border: 1px solid var(--border); border-radius: 16px;
-      color: var(--text); font-family: inherit; font-size: 0.92rem; font-weight: 600;
-      letter-spacing: 0.02em; line-height: 1.2; cursor: pointer; text-decoration: none;
-      transition: color .15s, border-color .15s, background .15s;
+    /* ─── Small Done button (confirmation) ──────────────── */
+    .pill-btn {
+      background: transparent; border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text-dim); font-family: inherit; font-size: 0.85rem; padding: 8px 16px;
+      cursor: pointer; margin-bottom: 20px;
     }
-    .corner-btn:hover { color: var(--cyan); border-color: var(--cyan); background: var(--bg3); }
-    .page-nav { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 26px; }
-    @media (max-width: 560px) {
-      .corner-btn { width: 68px; height: 68px; font-size: 0.78rem; border-radius: 12px; }
-    }
+    .pill-btn:hover { color: var(--cyan); border-color: var(--cyan); }
 
     /* ─── Misc humor-hook slots ────────────────────────── */
     .estimate-empty { color: var(--text-dim); font-size: 0.85rem; margin-top: 10px; font-style: italic; }
@@ -606,7 +613,7 @@
     .modal {
       position: fixed; inset: 0; z-index: 200;
       display: flex; align-items: flex-start; justify-content: center;
-      padding: 48px 16px; overflow-y: auto;
+      padding: 64px 16px 28px; overflow-y: auto;
     }
     .modal[hidden] { display: none; }
     .modal-backdrop {
@@ -632,25 +639,24 @@
     .modal-panel .section-heading,
     .modal-panel h2 { margin-top: 0; }
     @media (max-width: 560px) {
-      .modal { padding: 0; }
-      .modal-panel { border-radius: 0; min-height: 100%; max-width: none; }
+      .modal { padding: 50px 0 0; }
+      .modal-panel { border-radius: 0; min-height: calc(100% - 50px); max-width: none; }
     }
   </style>
 </head>
 <body>
 
-  <!-- ── Top bar: Contact / Romanova / FAQ ── -->
-  <nav>
-    <button type="button" class="corner-btn" data-open="modal-contact">Contact</button>
-    <a class="nav-brand" href="index.html">Romanova</a>
-    <button type="button" class="corner-btn" data-open="modal-faq">FAQ</button>
-  </nav>
+  <!-- ── App bar: brand (left) · current page (center) · nav (right) ── -->
+  <header class="appbar">
+    <a class="appbar-brand" href="#" data-page="submit">Romanova</a>
+    <span class="appbar-page" id="appbar-page">Submit List</span>
+    <nav class="appbar-nav" id="appbar-nav"></nav>
+  </header>
 
   <main>
 
     <!-- ── Submit Your List (the page) ── -->
     <section id="submit" class="reveal">
-      <h2 class="section-heading">Submit your list</h2>
       <div class="form-box">
 
         <!-- Input tabs -->
@@ -737,9 +743,7 @@
     <div class="modal" id="modal-confirm" hidden>
       <div class="modal-backdrop" data-close></div>
       <div class="modal-panel confirm-panel">
-        <div class="page-nav">
-          <button type="button" class="corner-btn" data-close>Done</button>
-        </div>
+        <button type="button" class="pill-btn" data-close>Done</button>
         <h3>Submission Received</h3>
         <p style="color:var(--text-dim);font-size:0.88rem;margin-bottom:16px">Your submission ID is:</p>
         <div class="confirm-id" id="confirm-id-display">CB-XXXXX</div>
@@ -786,41 +790,17 @@
     <div class="modal" id="modal-contact" hidden>
       <div class="modal-backdrop" data-close></div>
       <div class="modal-panel">
-        <div class="page-nav">
-          <button type="button" class="corner-btn" data-close>Submit list</button>
-          <button type="button" class="corner-btn" data-open="modal-faq">FAQ</button>
-        </div>
-        <h2 class="section-heading">Contact</h2>
-        <p class="section-sub">Reach me directly through any of these — or send a question with the form below.</p>
+        <p style="color:var(--text-dim);font-size:0.95rem;margin-bottom:26px;text-align:center">Reach me directly — or send a question below.</p>
 
       <div class="channel-grid">
         <a class="channel-card" href="mailto:romanova@romanova.cards">
-          <div class="channel-icon">✉️</div>
           <div class="channel-name">Email</div>
           <div class="channel-value">romanova@romanova.cards</div>
         </a>
         <div class="channel-card">
-          <div class="channel-icon">💬</div>
           <div class="channel-name">Discord — chat or call</div>
           <div class="channel-value">lombax_roman</div>
           <div class="channel-note">DM me directly — no server needed.</div>
-        </div>
-        <div class="channel-card">
-          <div class="channel-icon">📞</div>
-          <div class="channel-name">Phone — call or text</div>
-          <div class="channel-value">[ROMAN: number]</div>
-          <div class="channel-note">[ROMAN: consider a Google Voice number instead of personal]</div>
-        </div>
-        <div class="channel-card">
-          <div class="channel-icon">🎥</div>
-          <div class="channel-name">Video call</div>
-          <div class="channel-value">[ROMAN: Discord video, or a Google Meet scheduling link]</div>
-        </div>
-        <!-- TODO-HUMOR: carrier pigeon channel card -->
-        <div class="channel-card pigeon">
-          <div class="channel-icon">🕊️</div>
-          <div class="channel-name">Carrier pigeon</div>
-          <div class="channel-value">TODO-HUMOR</div>
         </div>
       </div>
 
@@ -864,11 +844,6 @@
     <div class="modal" id="modal-faq" hidden>
       <div class="modal-backdrop" data-close></div>
       <div class="modal-panel">
-        <div class="page-nav">
-          <button type="button" class="corner-btn" data-close>Submit list</button>
-          <button type="button" class="corner-btn" data-open="modal-contact">Contact</button>
-        </div>
-        <h2 class="section-heading">Frequently Asked Questions</h2>
         <div class="faq-list" id="faq-list">
           <div style="color:var(--text-dim);font-size:0.9rem">Loading…</div>
         </div>
@@ -1841,8 +1816,9 @@
       if (!m) return;
       m.hidden = true;
       if (!document.querySelector('.modal:not([hidden])')) document.body.classList.remove('modal-open');
+      if (m.id === 'modal-contact' || m.id === 'modal-faq') setHeader('submit');
     }
-    // Delegated open/close: [data-open="modal-id"] opens, [data-close] (incl. backdrop) closes.
+    // Delegated open/close: [data-open] opens, [data-close] (incl. backdrop) closes (confirmation).
     document.addEventListener('click', e => {
       const opener = e.target.closest('[data-open]');
       if (opener) { e.preventDefault(); openModal(opener.getAttribute('data-open')); return; }
@@ -1855,7 +1831,34 @@
       if (open) closeModal(open);
     });
 
+    // ── App-bar router: Submit List / Contact / FAQ ────────
+    const PAGE_TITLE  = { submit: 'Submit List', contact: 'Contact', faq: 'FAQ' };
+    const PAGE_OTHERS = { submit: ['contact','faq'], contact: ['submit','faq'], faq: ['submit','contact'] };
+    function setHeader(page) {
+      document.getElementById('appbar-page').textContent = PAGE_TITLE[page];
+      document.getElementById('appbar-nav').innerHTML =
+        PAGE_OTHERS[page].map(p => `<button type="button" data-page="${p}">${PAGE_TITLE[p]}</button>`).join('');
+    }
+    function goPage(page) {
+      ['modal-contact','modal-faq'].forEach(id => { const m = document.getElementById(id); if (m) m.hidden = true; });
+      if (page === 'contact' || page === 'faq') {
+        const m = document.getElementById('modal-' + page);
+        m.hidden = false; m.scrollTop = 0;
+        const pnl = m.querySelector('.modal-panel'); if (pnl) pnl.scrollTop = 0;
+        document.body.classList.add('modal-open');
+      } else if (!document.querySelector('.modal:not([hidden])')) {
+        document.body.classList.remove('modal-open');
+      }
+      setHeader(page);
+    }
+    // The brand and the header nav buttons carry data-page.
+    document.addEventListener('click', e => {
+      const p = e.target.closest('[data-page]');
+      if (p) { e.preventDefault(); goPage(p.getAttribute('data-page')); }
+    });
+
     // ── Boot ───────────────────────────────────────────────
+    setHeader('submit');
     loadLocal();
     loadFaq();
     updateSticky();

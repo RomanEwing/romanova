@@ -47,43 +47,28 @@
       z-index: -1;
     }
 
-    /* ─── Nav ──────────────────────────────────────────── */
+    /* ─── Top bar — corner page buttons + centered brand ─── */
     nav {
-      position: sticky;
-      top: 0;
-      height: var(--nav-h);
-      background: rgba(26,24,32,0.86);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 24px;
+      position: relative;
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+      max-width: 1180px; margin: 0 auto;
+      padding: 22px 24px 0;
       z-index: 1000;
     }
     .nav-brand {
       font-family: 'Playfair Display', serif;
-      font-size: 1.25rem;
+      font-size: clamp(1.7rem, 3.4vw, 2.5rem);
       color: var(--cyan-lt);
       letter-spacing: 0.04em;
       text-decoration: none;
+      align-self: center;
     }
-    .nav-links { display: flex; align-items: center; gap: 6px; }
-    .nav-links a {
-      color: var(--text-dim);
-      text-decoration: none;
-      font-size: 0.85rem;
-      padding: 6px 10px;
-      border-radius: 6px;
-    }
-    .nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.05); }
-    .nav-links a.active { color: var(--cyan); }
 
     /* ─── Main ─────────────────────────────────────────── */
     main { position: relative; z-index: 1; }
 
     /* ─── Sections ─────────────────────────────────────── */
-    section { padding: 60px 24px 44px; max-width: 720px; margin: 0 auto; }
+    section { padding: 36px 24px 52px; max-width: 900px; margin: 0 auto; }
 
     /* ─── Hero ─────────────────────────────────────────── */
     .hero {
@@ -119,9 +104,10 @@
     /* ─── Section Headings ─────────────────────────────── */
     .section-heading {
       font-family: 'Playfair Display', serif;
-      font-size: clamp(1.4rem, 3vw, 2rem);
+      font-size: clamp(1.6rem, 3.2vw, 2.2rem);
       color: var(--cyan-lt);
-      margin-bottom: 34px;
+      margin-bottom: 30px;
+      text-align: center;
     }
 
     /* ─── How It Works ─────────────────────────────────── */
@@ -171,18 +157,19 @@
       padding: 38px;
     }
 
-    /* Tabs */
-    .tabs { display: flex; gap: 0; margin-bottom: 20px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); width: fit-content; }
+    /* Tabs — centered, separated */
+    .tabs { display: flex; gap: 14px; justify-content: center; margin: 0 auto 26px; }
     .tab-btn {
-      padding: 9px 22px;
-      font-size: 0.88rem;
+      padding: 11px 28px;
+      font-size: 0.9rem;
       cursor: pointer;
       background: var(--bg3);
       color: var(--text-dim);
-      border: none;
+      border: 1px solid var(--border);
+      border-radius: 10px;
       font-family: 'Outfit', sans-serif;
     }
-    .tab-btn.active { background: rgba(169,158,196,0.12); color: var(--cyan); }
+    .tab-btn.active { background: rgba(169,158,196,0.14); color: var(--cyan); border-color: var(--cyan); }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
@@ -461,28 +448,22 @@
     .form-msg.error   { color: #e06060; }
     .form-msg.success { color: #48c78e; }
 
-    /* ─── FAQ ──────────────────────────────────────────── */
-    .faq-list { display: flex; flex-direction: column; gap: 18px; }
+    /* ─── FAQ — full-width cards filling the page ───────── */
+    .faq-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 14px; }
     .faq-item {
-      background: var(--bg2);
+      background: var(--bg3);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 20px 22px;
+      padding: 22px 24px;
     }
     .faq-item h3 {
-      font-size: 0.95rem;
+      font-size: 0.98rem;
       color: var(--cyan);
       margin-bottom: 8px;
       font-family: 'Outfit', sans-serif;
       font-weight: 600;
     }
     .faq-item p { font-size: 0.88rem; color: var(--text-dim); line-height: 1.6; }
-    .faq-group { display: flex; flex-direction: column; gap: 14px; margin-bottom: 28px; }
-    .faq-group-label {
-      font-family: 'Playfair Display', serif; color: var(--cyan-lt);
-      font-size: 1.2rem; margin-bottom: 2px; padding-bottom: 6px;
-      border-bottom: 1px solid var(--border);
-    }
 
     /* ─── Contact channels ─────────────────────────────── */
     .section-sub { color: var(--text-dim); font-size: 0.95rem; margin: -16px 0 24px; }
@@ -533,21 +514,20 @@
     .mp-referral:hover { color: var(--cyan); border-color: var(--cyan); }
     .mp-symbol { width: 18px; height: 18px; object-fit: contain; opacity: 0.9; }
 
-    /* ─── Side tabs — Contact (left) / FAQ (right) ───────── */
-    .side-tab {
-      position: fixed; top: 50%; transform: translateY(-50%); z-index: 60;
-      writing-mode: vertical-rl;
-      background: var(--bg2); color: var(--text-dim);
-      border: 1px solid var(--border);
-      padding: 20px 9px; font-size: 0.78rem; letter-spacing: 0.14em;
-      text-transform: uppercase; cursor: pointer; font-family: inherit;
+    /* ─── Square page-nav buttons (top corners + in modals) ─ */
+    .corner-btn {
+      flex-shrink: 0;
+      width: 92px; height: 92px;
+      display: inline-flex; align-items: center; justify-content: center; text-align: center;
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 16px;
+      color: var(--text); font-family: inherit; font-size: 0.92rem; font-weight: 600;
+      letter-spacing: 0.02em; line-height: 1.2; cursor: pointer; text-decoration: none;
       transition: color .15s, border-color .15s, background .15s;
     }
-    .side-tab:hover { color: var(--cyan); border-color: var(--cyan); background: var(--bg3); }
-    .side-tab-left  { left: 0;  border-left: none;  border-radius: 0 12px 12px 0; }
-    .side-tab-right { right: 0; border-right: none; border-radius: 12px 0 0 12px; }
-    @media (max-width: 640px) {
-      .side-tab { padding: 13px 6px; font-size: 0.68rem; letter-spacing: 0.1em; }
+    .corner-btn:hover { color: var(--cyan); border-color: var(--cyan); background: var(--bg3); }
+    .page-nav { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 26px; }
+    @media (max-width: 560px) {
+      .corner-btn { width: 68px; height: 68px; font-size: 0.78rem; border-radius: 12px; }
     }
 
     /* ─── Misc humor-hook slots ────────────────────────── */
@@ -635,7 +615,7 @@
     }
     .modal-panel {
       position: relative; z-index: 1; margin: auto;
-      width: 100%; max-width: 720px;
+      width: 100%; max-width: 1060px;
       background: var(--bg2); border: 1px solid var(--border);
       border-radius: 16px; padding: 26px 26px 32px;
       box-shadow: 0 24px 80px rgba(0,0,0,0.55);
@@ -659,14 +639,12 @@
 </head>
 <body>
 
-  <!-- ── Navigation ── -->
+  <!-- ── Top bar: Contact / Romanova / FAQ ── -->
   <nav>
+    <button type="button" class="corner-btn" data-open="modal-contact">Contact</button>
     <a class="nav-brand" href="index.html">Romanova</a>
+    <button type="button" class="corner-btn" data-open="modal-faq">FAQ</button>
   </nav>
-
-  <!-- Side navigation — Contact (left) and FAQ (right) flank the submit page -->
-  <button type="button" class="side-tab side-tab-left"  data-open="modal-contact">Contact</button>
-  <button type="button" class="side-tab side-tab-right" data-open="modal-faq">FAQ</button>
 
   <main>
 
@@ -759,7 +737,9 @@
     <div class="modal" id="modal-confirm" hidden>
       <div class="modal-backdrop" data-close></div>
       <div class="modal-panel confirm-panel">
-        <button class="modal-close" type="button" data-close>← Back</button>
+        <div class="page-nav">
+          <button type="button" class="corner-btn" data-close>Done</button>
+        </div>
         <h3>Submission Received</h3>
         <p style="color:var(--text-dim);font-size:0.88rem;margin-bottom:16px">Your submission ID is:</p>
         <div class="confirm-id" id="confirm-id-display">CB-XXXXX</div>
@@ -806,7 +786,10 @@
     <div class="modal" id="modal-contact" hidden>
       <div class="modal-backdrop" data-close></div>
       <div class="modal-panel">
-        <button class="modal-close" type="button" data-close>← Back</button>
+        <div class="page-nav">
+          <button type="button" class="corner-btn" data-close>Submit list</button>
+          <button type="button" class="corner-btn" data-open="modal-faq">FAQ</button>
+        </div>
         <h2 class="section-heading">Contact</h2>
         <p class="section-sub">Reach me directly through any of these — or send a question with the form below.</p>
 
@@ -881,7 +864,10 @@
     <div class="modal" id="modal-faq" hidden>
       <div class="modal-backdrop" data-close></div>
       <div class="modal-panel">
-        <button class="modal-close" type="button" data-close>← Back</button>
+        <div class="page-nav">
+          <button type="button" class="corner-btn" data-close>Submit list</button>
+          <button type="button" class="corner-btn" data-open="modal-contact">Contact</button>
+        </div>
         <h2 class="section-heading">Frequently Asked Questions</h2>
         <div class="faq-list" id="faq-list">
           <div style="color:var(--text-dim);font-size:0.9rem">Loading…</div>
@@ -1786,23 +1772,11 @@
       try {
         const res  = await fetch('faq.json');
         const faqs = await res.json();
-        // Group by category (first-appearance order); entries without one fall under "General".
-        // Every question renders fully expanded — no accordion.
-        const order = [];
-        const byCat = {};
-        faqs.forEach(item => {
-          const cat = item.category || 'General';
-          if (!byCat[cat]) { byCat[cat] = []; order.push(cat); }
-          byCat[cat].push(item);
-        });
-        list.innerHTML = order.map(cat => `
-          <div class="faq-group">
-            <h3 class="faq-group-label">${escHtml(cat)}</h3>
-            ${byCat[cat].map(item => `
-              <div class="faq-item">
-                <h3>${escHtml(item.question)}</h3>
-                <p>${escHtml(item.answer)}</p>
-              </div>`).join('')}
+        // Flat list of full-width cards — no category grouping, every answer expanded.
+        list.innerHTML = faqs.map(item => `
+          <div class="faq-item">
+            <h3>${escHtml(item.question)}</h3>
+            <p>${escHtml(item.answer)}</p>
           </div>`).join('');
       } catch {
         list.innerHTML = '<div style="color:var(--text-dim)">FAQ unavailable — reach me through the Contact link above.</div>';
@@ -1855,10 +1829,12 @@
     function openModal(id) {
       const m = document.getElementById(id);
       if (!m) return;
+      // Only one page open at a time — switching Contact↔FAQ closes the other.
+      document.querySelectorAll('.modal:not([hidden])').forEach(o => { if (o !== m) o.hidden = true; });
       m.hidden = false;
       document.body.classList.add('modal-open');
-      const closer = m.querySelector('[data-close]:not(.modal-backdrop)');
-      if (closer) closer.focus();
+      m.scrollTop = 0;
+      const panel = m.querySelector('.modal-panel'); if (panel) panel.scrollTop = 0;
     }
     function closeModal(m) {
       if (typeof m === 'string') m = document.getElementById(m);

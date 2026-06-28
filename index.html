@@ -540,13 +540,14 @@
 
     /* ─── Misc humor-hook slots ────────────────────────── */
     .estimate-empty { color: var(--text-dim); font-size: 0.85rem; margin-top: 10px; font-style: italic; }
-    .clear-list-row { text-align: right; margin: 8px 0 2px; }
+    .clear-list-row { text-align: center; margin: 16px 0; }
     .link-btn {
-      background: none; border: none; color: var(--text-dim);
-      font-family: 'Outfit', sans-serif; font-size: 0.8rem; cursor: pointer;
-      text-decoration: underline; padding: 2px 4px;
+      background: var(--cyan); border: none; color: #1a1820;
+      font-family: 'Outfit', sans-serif; font-size: 0.9rem; font-weight: 600;
+      cursor: pointer; text-decoration: none; padding: 12px 28px;
+      border-radius: 12px; transition: opacity .15s;
     }
-    .link-btn:hover { color: var(--cyan); }
+    .link-btn:hover { opacity: 0.85; }
     .confirm-signoff { margin-top: 22px; color: var(--text-dim); font-size: 0.9rem; font-style: italic; }
     .contact-form-heading { font-family: 'Playfair Display', serif; color: var(--cyan-lt); font-size: 1.2rem; margin-bottom: 16px; }
     .question-form select {
@@ -669,8 +670,8 @@
         <!-- Paste panel -->
         <div class="tab-panel active" id="panel-paste">
           <div class="form-row">
-            <label for="card-list-text">Card List <span style="color:var(--text-dim);font-size:0.78rem">(one per line — e.g. "4x Lightning Bolt" or "4 Lightning Bolt (M10)")</span></label>
-            <textarea id="card-list-text" placeholder="4x Lightning Bolt&#10;2 Thoughtseize (THS)&#10;1x Liliana of the Veil"></textarea>
+            <label for="card-list-text">Card List <span style="color:var(--text-dim);font-size:0.78rem">(quantity, name, set code, and number) one per line</span></label>
+            <textarea id="card-list-text" placeholder="4x Lightning Bolt (A25) 141&#10;2 Thoughtseize (THS) 107&#10;1x Liliana of the Veil (UMA) 120"></textarea>
           </div>
         </div>
 
@@ -686,6 +687,8 @@
             <div class="upload-filename" id="upload-filename"></div>
           </div>
         </div>
+
+        <div style="color:var(--text-dim);font-size:0.9rem;text-align:center;margin:14px 0">60% for cards over $10 — some exceptions for cards under $10. See FAQ for more details.</div>
 
         <div class="clear-list-row">
           <button type="button" class="link-btn" id="clear-list-btn">Clear list</button>
@@ -709,6 +712,7 @@
 
         <!-- Estimate -->
         <button class="btn-primary" id="estimate-btn" style="margin-top:4px">Get my estimate</button>
+        <div style="color:var(--text-dim);font-size:0.82rem;text-align:center;margin-top:9px">See FAQ for exact estimate calculations</div>
 
         <!-- §5: More info needed (interactive) -->
         <div class="more-info-box" id="more-info-box" style="display:none">

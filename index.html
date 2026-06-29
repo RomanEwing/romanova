@@ -60,15 +60,15 @@
     .appbar-brand {
       font-family: 'Playfair Display', serif;
       font-size: 1.05rem; color: var(--text-dim); text-decoration: none;
-      letter-spacing: 0.05em; flex-shrink: 0;
+      letter-spacing: 0.05em; flex: 1;
     }
     .appbar-brand:hover { color: var(--text); }
     .appbar-page {
-      flex: 1; text-align: center;
+      flex: 0 0 auto; text-align: center;
       font-family: 'Playfair Display', serif;
       font-size: 1.1rem; color: var(--cyan-lt); letter-spacing: 0.02em;
     }
-    .appbar-nav { display: flex; gap: 8px; flex-shrink: 0; }
+    .appbar-nav { display: flex; gap: 8px; flex: 1; justify-content: flex-end; }
     .appbar-nav button {
       background: transparent; border: 1px solid var(--border); border-radius: 8px;
       color: var(--text-dim); font-family: inherit; font-size: 0.82rem; font-weight: 500;
@@ -512,23 +512,22 @@
     .hp-field { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 
     /* ─── ManaPool referral ──────────────────────────────── */
-    .manapool-footer {
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 22px 24px 0;
-      border-top: 1px solid var(--border);
-      display: flex;
-      justify-content: center;
+        .mp-float {
+      position: fixed; left: 18px; top: 50%; transform: translateY(-50%);
+      z-index: 250;
+      display: flex; align-items: center; justify-content: center;
+      width: 64px; height: 64px;
+      background: rgba(26,24,32,0.94);
+      border: 1px solid var(--border); border-radius: 16px;
+      backdrop-filter: blur(10px);
+      transition: border-color .15s, transform .15s;
     }
-    .mp-referral {
-      display: inline-flex; align-items: center; gap: 9px;
-      color: var(--text-dim); text-decoration: none;
-      border: 1px solid var(--border); border-radius: 999px;
-      padding: 9px 18px; font-size: 0.86rem;
-      transition: color .15s, border-color .15s;
+    .mp-float:hover { border-color: var(--cyan); transform: translateY(-50%) scale(1.05); }
+    .mp-float img { width: 40px; height: 40px; object-fit: contain; }
+    @media (max-width: 600px) {
+      .mp-float { left: 12px; top: auto; bottom: 16px; transform: none; width: 52px; height: 52px; }
+      .mp-float:hover { transform: scale(1.05); }
     }
-    .mp-referral:hover { color: var(--cyan); border-color: var(--cyan); }
-    .mp-symbol { width: 18px; height: 18px; object-fit: contain; opacity: 0.9; }
 
     /* ─── Small Done button (confirmation) ──────────────── */
     .pill-btn {
@@ -856,12 +855,9 @@
     </div>
 
     <!-- ── ManaPool referral ── -->
-    <div class="manapool-footer">
-      <a class="mp-referral" href="https://manapool.com/auth?action=signup&next=%2Fsettings%2Freferrals%3Freferrer_code%3DMP-jShpKmJcoYpfBFeANvMT6D" target="_blank" rel="noopener noreferrer" title="ManaPool — $5 referral code">
-        <img class="mp-symbol" src="assets/manapool-symbol.png" alt="ManaPool" onerror="this.remove()" />
-        <span>$5 referral code</span>
-      </a>
-    </div>
+        <a class="mp-float" href="https://manapool.com/auth?action=signup&next=%2Fsettings%2Freferrals%3Freferrer_code%3DMP-jShpKmJcoYpfBFeANvMT6D" target="_blank" rel="noopener noreferrer" title="ManaPool — $5 referral code" aria-label="ManaPool — $5 referral code">
+      <img src="assets/manapool-symbol.png" alt="ManaPool" />
+    </a>
 
   </main>
 
@@ -1672,10 +1668,7 @@
       // Send confirmation email via Edge Function
       fetch(SUPABASE_URL + '/functions/v1/send-submission-email', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImloY3Rybnh4Z3ZhcWlmdnl4cm1kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5OTc2ODcsImV4cCI6MjA5MDU3MzY4N30.uUne2wdhFnAJken-K3_1Z_02X0P_Ta5QYyMsJn_iUAk'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           submissionId,
           name,

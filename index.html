@@ -515,18 +515,24 @@
         .mp-float {
       position: fixed; left: 18px; top: 50%; transform: translateY(-50%);
       z-index: 250;
-      display: flex; align-items: center; justify-content: center;
-      width: 64px; height: 64px;
-      background: rgba(26,24,32,0.94);
-      border: 1px solid var(--border); border-radius: 16px;
-      backdrop-filter: blur(10px);
-      transition: border-color .15s, transform .15s;
+      display: flex; flex-direction: column; align-items: center; gap: 7px;
     }
-    .mp-float:hover { border-color: var(--cyan); transform: translateY(-50%) scale(1.05); }
-    .mp-float img { width: 40px; height: 40px; object-fit: contain; }
+    .mp-float-btn {
+      display: block; width: 64px; height: 64px;
+      border: 1px solid var(--border); border-radius: 16px;
+      background: rgba(26,24,32,0.94); backdrop-filter: blur(10px);
+      overflow: hidden; transition: border-color .15s, transform .15s;
+    }
+    .mp-float-btn:hover { border-color: var(--cyan); transform: scale(1.05); }
+    .mp-float-btn img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .mp-float-label {
+      font-size: 0.72rem; color: var(--text-dim); text-align: center;
+      letter-spacing: 0.02em; line-height: 1.25; max-width: 84px;
+    }
     @media (max-width: 600px) {
-      .mp-float { left: 12px; top: auto; bottom: 16px; transform: none; width: 52px; height: 52px; }
-      .mp-float:hover { transform: scale(1.05); }
+      .mp-float { left: 12px; top: auto; bottom: 16px; transform: none; }
+      .mp-float-btn { width: 52px; height: 52px; }
+      .mp-float-label { font-size: 0.66rem; max-width: 70px; }
     }
 
     /* ─── Small Done button (confirmation) ──────────────── */
@@ -806,6 +812,10 @@
           <div class="channel-value">lombax_roman</div>
           <div class="channel-note">DM me directly — no server needed.</div>
         </div>
+        <a class="channel-card" href="sms:+19712389411">
+          <div class="channel-name">Text message</div>
+          <div class="channel-value">(971) 238-9411</div>
+        </a>
       </div>
 
       <h3 class="contact-form-heading">Send a question</h3>
@@ -855,9 +865,12 @@
     </div>
 
     <!-- ── ManaPool referral ── -->
-        <a class="mp-float" href="https://manapool.com/auth?action=signup&next=%2Fsettings%2Freferrals%3Freferrer_code%3DMP-jShpKmJcoYpfBFeANvMT6D" target="_blank" rel="noopener noreferrer" title="ManaPool — $5 referral code" aria-label="ManaPool — $5 referral code">
-      <img src="assets/manapool-symbol.png" alt="ManaPool" />
-    </a>
+        <div class="mp-float">
+      <a class="mp-float-btn" href="https://manapool.com/auth?action=signup&next=%2Fsettings%2Freferrals%3Freferrer_code%3DMP-jShpKmJcoYpfBFeANvMT6D" target="_blank" rel="noopener noreferrer" aria-label="ManaPool — $5 referral code">
+        <img src="assets/manapool-symbol.png" alt="ManaPool" />
+      </a>
+      <span class="mp-float-label">↑<br>$5 Referral Code</span>
+    </div>
 
   </main>
 

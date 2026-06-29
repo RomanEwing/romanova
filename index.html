@@ -1301,7 +1301,7 @@
       }
       const allRows = parseInput(rawText);
       if (!allRows.length) {
-        showEstimateError('I couldn't read any cards from that. Use one card per line, or a CSV export from ManaBox, Moxfield, TCGplayer, or Deckbox.');
+        showEstimateError('I couldn\'t read any cards from that. Use one card per line, or a CSV export from ManaBox, Moxfield, TCGplayer, or Deckbox.');
         return;
       }
       await computeEstimate(allRows);
@@ -1664,7 +1664,7 @@
 
       if (error) {
         document.getElementById('submit-msg').className = 'form-msg error';
-        document.getElementById('submit-msg').textContent = 'That didn't save (' + error.message + '). Try again, or email your list to romanova@romanova.cards.';
+        document.getElementById('submit-msg').textContent = 'That didn\'t save (' + error.message + '). Try again, or email your list to romanova@romanova.cards.';
         document.getElementById('submit-btn').disabled = false;
         return;
       }
@@ -1738,7 +1738,7 @@
 
       if (!FORM_ENDPOINT) {
         msg.className = 'form-msg error';
-        msg.textContent = 'The contact form isn't connected yet — reach me through one of the channels above for now.';
+        msg.textContent = 'The contact form isn\'t connected yet — reach me through one of the channels above for now.';
         return;
       }
 
@@ -1752,14 +1752,14 @@
         });
         if (!res.ok) throw new Error('bad status');
         msg.className = 'form-msg success';
-        msg.textContent = 'Sent. I'll get back to you within 1–2 business days.';
+        msg.textContent = 'Sent. I\'ll get back to you within 1–2 business days.';
         document.getElementById('q-name').value   = '';
         document.getElementById('q-handle').value = '';
         document.getElementById('q-text').value   = '';
         saveLocal();
       } catch (e) {
         msg.className = 'form-msg error';
-        msg.textContent = 'That didn't go through. Try again, or reach me through a channel above.';
+        msg.textContent = 'That didn\'t go through. Try again, or reach me through a channel above.';
       }
     });
 

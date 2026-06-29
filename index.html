@@ -564,7 +564,7 @@
     .question-form select:focus { border-color: var(--cyan); }
 
     /* ─── Scroll reveal ────────────────────────────────── */
-    .reveal { opacity: 0; transform: translateY(20px); }
+    .reveal { opacity: 1; transform: translateY(0); }
     .reveal.visible { opacity: 1; transform: translateY(0); transition: opacity 0.5s ease, transform 0.5s ease; }
 
     /* ─── Responsive ───────────────────────────────────── */
@@ -873,8 +873,9 @@
   <script>
     // ── Supabase ─────────────────────────────────────────
     const { createClient } = supabase;
+    const SUPABASE_URL = 'https://ihctrnxxgvaqifvyxrmd.supabase.co';
     const sb = createClient(
-      'https://ihctrnxxgvaqifvyxrmd.supabase.co',
+      SUPABASE_URL,
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImloY3Rybnh4Z3ZhcWlmdnl4cm1kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5OTc2ODcsImV4cCI6MjA5MDU3MzY4N30.uUne2wdhFnAJken-K3_1Z_02X0P_Ta5QYyMsJn_iUAk'
     );
 
@@ -1662,13 +1663,27 @@
       const { error } = await sb.from('submissions').insert([payload]);
 
       if (error) {
-        document.getElementById('submit-msg').className = 'form-msg error';
-        document.getElementById('submit-msg').textContent = 'That didn’t save (' + error.message + '). Try again, or email your list to romanova@romanova.cards.';
-        document.getElementById('submit-btn').disabled = false;
+        document.getElementById(‘submit-msg’).className = ‘form-msg error’;
+        document.getElementById(‘submit-msg’).textContent = ‘That didn’t save (‘ + error.message + ‘). Try again, or email your list to romanova@romanova.cards.’;
+        document.getElementById(‘submit-btn’).disabled = false;
         return;
       }
 
-      document.getElementById('submit-msg').textContent = '';
+      // Send confirmation email via Edge Function
+      fetch(SUPABASE_URL + ‘/functions/v1/send-submission-email’, {
+        method: ‘POST’,
+        headers: { ‘Content-Type’: ‘application/json’ },
+        body: JSON.stringify({
+          submissionId,
+          name,
+          email,
+          estimate: payload.estimate_low,
+          eligibleCount: payload.eligible_count,
+          cardList: rawText
+        })
+      }).catch(e => console.error(‘Email error:’, e));
+
+      document.getElementById(‘submit-msg’).textContent = ‘’;
       showConfirmation(payload, submissionId, name, email);
     }
 

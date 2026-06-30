@@ -508,6 +508,16 @@
     }
     .channel-value { font-size: 1.1rem; color: var(--text); word-break: break-word; }
     .channel-note { font-size: 0.84rem; color: var(--text-dim); margin-top: 8px; }
+    .channel-actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+    .chan-btn {
+      flex: 1; min-width: 104px; text-align: center;
+      font-family: inherit; font-size: 0.84rem; font-weight: 500;
+      padding: 10px 14px; border-radius: 8px; cursor: pointer;
+      text-decoration: none; transition: border-color .15s, color .15s;
+      border: 1px solid var(--border); background: transparent; color: var(--text-dim);
+    }
+    .chan-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+    .chan-btn.copied { border-color: var(--cyan); color: var(--cyan); }
 
     /* honeypot (spam trap) — visually hidden, off-screen */
     .hp-field { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
@@ -788,19 +798,30 @@
         <p style="color:var(--text-dim);font-size:0.95rem;margin-bottom:26px;text-align:center">Reach me directly — or send a question below.</p>
 
       <div class="channel-grid">
-        <a class="channel-card" href="mailto:romanova@romanova.cards">
+        <div class="channel-card">
           <div class="channel-name">Email</div>
           <div class="channel-value">romanova@romanova.cards</div>
-        </a>
-        <div class="channel-card">
-          <div class="channel-name">Discord — chat or call</div>
-          <div class="channel-value">lombax_roman</div>
-          <div class="channel-note">DM me directly — no server needed.</div>
+          <div class="channel-actions">
+            <a class="chan-btn" href="mailto:romanova@romanova.cards">Email me</a>
+            <button type="button" class="chan-btn copy-btn" data-copy="romanova@romanova.cards">Copy</button>
+          </div>
         </div>
-        <a class="channel-card" href="sms:+19712389411">
+        <div class="channel-card">
+          <div class="channel-name">Discord</div>
+          <div class="channel-value">lombax_roman</div>
+          <div class="channel-actions">
+            <a class="chan-btn" href="https://discord.com/users/DISCORD_USER_ID" target="_blank" rel="noopener noreferrer">Message me</a>
+            <button type="button" class="chan-btn copy-btn" data-copy="lombax_roman">Copy</button>
+          </div>
+        </div>
+        <div class="channel-card">
           <div class="channel-name">Text message</div>
           <div class="channel-value">(971) 238-9411</div>
-        </a>
+          <div class="channel-actions">
+            <a class="chan-btn" href="sms:+19712389411">Text me</a>
+            <button type="button" class="chan-btn copy-btn" data-copy="(971) 238-9411">Copy</button>
+          </div>
+        </div>
       </div>
 
       <h3 class="contact-form-heading">Send a question</h3>
@@ -1767,6 +1788,25 @@
 
     // ── Mobile sticky CTA removed — the on-page buttons handle estimate/submit. ──
     function updateSticky() {}
+
+    // ── Contact: copy-to-clipboard buttons ──
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const val = btn.dataset.copy || '';
+        try { await navigator.clipboard.writeText(val); }
+        catch (e) {
+          const ta = document.createElement('textarea');
+          ta.value = val; ta.style.position = 'fixed'; ta.style.opacity = '0';
+          document.body.appendChild(ta); ta.focus(); ta.select();
+          try { document.execCommand('copy'); } catch (e2) {}
+          ta.remove();
+        }
+        const original = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 1400);
+      });
+    });
 
     // ── Modal overlay system ───────────────────────────────
     function openModal(id) {

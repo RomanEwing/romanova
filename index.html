@@ -523,9 +523,9 @@
     .hp-field { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
     /* ─── ManaPool referral ──────────────────────────────── */
-        .mp-float {
-      position: fixed; left: 18px; top: 70px;
-      z-index: 250;
+        #submit { position: relative; }
+    .mp-float {
+      position: absolute; right: calc(100% + 22px); top: 6px; z-index: 5;
       display: flex; flex-direction: column; align-items: center; gap: 7px;
     }
     .mp-float-btn {
@@ -540,10 +540,10 @@
       font-size: 0.72rem; color: var(--text-dim); text-align: center;
       letter-spacing: 0.02em; line-height: 1.25; max-width: 84px;
     }
-    @media (max-width: 600px) {
-      .mp-float { left: 10px; top: 58px; }
-      .mp-float-btn { width: 48px; height: 48px; }
-      .mp-float-label { font-size: 0.62rem; max-width: 66px; }
+    @media (max-width: 1100px) {
+      .mp-float { position: static; flex-direction: row; gap: 12px; align-items: center; margin: 0 0 18px; }
+      .mp-float-btn { width: 52px; height: 52px; }
+      .mp-float-label { max-width: none; text-align: left; }
     }
 
     /* ─── Small Done button (confirmation) ──────────────── */
@@ -599,19 +599,27 @@
 
       /* Estimate table collapses to stacked, labeled rows */
       .et-head { display: none; }
-      .et-row { grid-template-columns: 1fr; gap: 2px; padding: 10px 0; }
-      .et-row span { display: flex; justify-content: space-between; }
-      .et-row span::before {
-        content: attr(data-l); color: var(--text-dim); font-size: 0.72rem;
-        text-transform: uppercase; letter-spacing: 0.04em; margin-right: 12px;
+      .et-row {
+        grid-template-columns: 1fr; gap: 5px;
+        padding: 14px 16px; margin-bottom: 12px;
+        border: 1px solid var(--border); border-radius: 10px; background: var(--bg3);
       }
-      .et-row span[data-l="Card"] { font-weight: 600; flex-wrap: wrap; justify-content: flex-start; align-items: center; gap: 8px 10px; }
+      .et-row span { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+      .et-row span::before {
+        content: attr(data-l); order: 2; flex: none;
+        color: var(--text-dim); font-size: 0.7rem;
+        text-transform: uppercase; letter-spacing: 0.04em;
+      }
+      .et-row .num { text-align: left; }
+      .et-row span[data-l="Card"] {
+        font-weight: 600; justify-content: flex-start;
+        flex-wrap: wrap; align-items: center; gap: 7px 9px;
+      }
+      .et-row span[data-l="Card"]::before { content: ""; }
       .et-row span[data-l="Estimate"] { flex-wrap: wrap; }
-      .et-row span[data-l="Estimate"] .per-each { flex-basis: 100%; text-align: right; margin-top: 2px; }
+      .et-row span[data-l="Estimate"] .per-each { flex-basis: 100%; text-align: left; order: 3; margin-top: 2px; }
       .row-finish { font-size: 0.82rem; padding: 6px 10px; }
       .cond-flag, .finish-flag { font-size: 0.72rem; padding: 2px 7px; }
-      .et-row span[data-l="Card"]::before { content: ""; }
-      .et-row .num { text-align: left; }
     }
 
 
@@ -664,6 +672,13 @@
 
     <!-- ── Submit Your List (the page) ── -->
     <section id="submit" class="reveal">
+      <!-- ManaPool referral — sits left of the form (desktop), scrolls with the page -->
+      <div class="mp-float">
+        <a class="mp-float-btn" href="https://manapool.com/auth?action=signup&next=%2Fsettings%2Freferrals%3Freferrer_code%3DMP-jShpKmJcoYpfBFeANvMT6D" target="_blank" rel="noopener noreferrer" aria-label="ManaPool — $5 referral code">
+          <img src="assets/manapool-symbol.png" alt="ManaPool" />
+        </a>
+        <span class="mp-float-label">$5 Referral Code</span>
+      </div>
       <div class="form-box">
 
         <!-- Input tabs -->
@@ -871,12 +886,7 @@
     </div>
 
     <!-- ── ManaPool referral ── -->
-        <div class="mp-float">
-      <a class="mp-float-btn" href="https://manapool.com/auth?action=signup&next=%2Fsettings%2Freferrals%3Freferrer_code%3DMP-jShpKmJcoYpfBFeANvMT6D" target="_blank" rel="noopener noreferrer" aria-label="ManaPool — $5 referral code">
-        <img src="assets/manapool-symbol.png" alt="ManaPool" />
-      </a>
-      <span class="mp-float-label">↑<br>$5 Referral Code</span>
-    </div>
+    
 
   </main>
 

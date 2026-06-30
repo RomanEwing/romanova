@@ -33,6 +33,7 @@
       line-height: 1.65;
       overflow-x: hidden;
     }
+    html { overflow-x: hidden; }
     /* Subtle atmospheric fog — one soft, flat gradient. No stars, no orbs. */
     body::before {
       content: '';
@@ -509,11 +510,11 @@
     .channel-note { font-size: 0.84rem; color: var(--text-dim); margin-top: 8px; }
 
     /* honeypot (spam trap) — visually hidden, off-screen */
-    .hp-field { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+    .hp-field { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
     /* ─── ManaPool referral ──────────────────────────────── */
         .mp-float {
-      position: fixed; left: 18px; top: 50%; transform: translateY(-50%);
+      position: fixed; left: 18px; top: 70px;
       z-index: 250;
       display: flex; flex-direction: column; align-items: center; gap: 7px;
     }
@@ -530,9 +531,9 @@
       letter-spacing: 0.02em; line-height: 1.25; max-width: 84px;
     }
     @media (max-width: 600px) {
-      .mp-float { left: 12px; top: auto; bottom: 16px; transform: none; }
-      .mp-float-btn { width: 52px; height: 52px; }
-      .mp-float-label { font-size: 0.66rem; max-width: 70px; }
+      .mp-float { left: 10px; top: 58px; }
+      .mp-float-btn { width: 48px; height: 48px; }
+      .mp-float-label { font-size: 0.62rem; max-width: 66px; }
     }
 
     /* ─── Small Done button (confirmation) ──────────────── */
@@ -574,7 +575,6 @@
 
     /* ─── Responsive ───────────────────────────────────── */
     /* ─── Mobile (primary test width 390px) ────────────── */
-    .sticky-cta { display: none; }
     @media (max-width: 600px) {
       .nav-links { display: none; }                 /* single-scroll funnel; the CTAs drive navigation */
       .form-box, .question-form, #confirmation { padding: 22px 16px; }
@@ -595,25 +595,15 @@
         content: attr(data-l); color: var(--text-dim); font-size: 0.72rem;
         text-transform: uppercase; letter-spacing: 0.04em; margin-right: 12px;
       }
-      .et-row span[data-l="Card"] { font-weight: 600; }
+      .et-row span[data-l="Card"] { font-weight: 600; flex-wrap: wrap; justify-content: flex-start; align-items: center; gap: 8px 10px; }
+      .et-row span[data-l="Estimate"] { flex-wrap: wrap; }
+      .et-row span[data-l="Estimate"] .per-each { flex-basis: 100%; text-align: right; margin-top: 2px; }
+      .row-finish { font-size: 0.82rem; padding: 6px 10px; }
+      .cond-flag, .finish-flag { font-size: 0.72rem; padding: 2px 7px; }
       .et-row span[data-l="Card"]::before { content: ""; }
       .et-row .num { text-align: left; }
     }
 
-    /* Sticky estimate/submit CTA while the Submit section is in view (mobile only) */
-    @media (max-width: 720px) {
-      main { padding-bottom: 76px; }
-      .sticky-cta.in-view {
-        display: block;
-        position: fixed; left: 0; right: 0; bottom: 0;
-        padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
-        background: rgba(26,24,32,0.92);
-        border-top: 1px solid var(--border);
-        backdrop-filter: blur(10px);
-        z-index: 900;
-      }
-      .sticky-cta .btn-primary { min-height: 48px; }
-    }
 
     /* ─── Modal overlay system ───────────────────────────── */
     body.modal-open { overflow: hidden; }
@@ -777,7 +767,7 @@
           </div>
         </div>
 
-        <p class="confirm-next">I've got your list. I'll review it and reach out to you personally to confirm everything and walk you through the next steps — including where to ship. Nothing here is automated; you'll hear from me directly.</p>
+        <p class="confirm-next">I've got your list. I'll review it and reach out to you personally to confirm everything and walk you through the next steps — including where to ship. Nothing after here is automated; you'll hear from me directly.</p>
 
         <hr class="divider" />
 
@@ -869,10 +859,6 @@
 
   </main>
 
-  <!-- Mobile sticky CTA (shown while the Submit section is in view) -->
-  <div class="sticky-cta" id="sticky-cta">
-    <button class="btn-primary" id="sticky-cta-btn" data-action="estimate">Get my estimate</button>
-  </div>
 
   <script>
     // ── Supabase ─────────────────────────────────────────
@@ -1696,8 +1682,6 @@
       document.getElementById('confirm-date').textContent    = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
       document.getElementById('confirm-range').textContent   = `$${parseFloat(data.estimate_low).toFixed(2)}`;
       document.getElementById('confirm-count').textContent   = `${data.eligible_count} card${data.eligible_count !== 1 ? 's' : ''}`;
-      submissionDone = true;
-      const sticky = document.getElementById('sticky-cta'); if (sticky) sticky.classList.remove('in-view');
       openModal('modal-confirm');   // post-submit confirmation is now an overlay, not an inline reveal
     }
 
@@ -1781,35 +1765,8 @@
     }, { threshold: 0.08 });
     document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
-    // ── Mobile sticky CTA ──────────────────────────────────
-    const stickyCta = document.getElementById('sticky-cta');
-    const stickyBtn = document.getElementById('sticky-cta-btn');
-    let submissionDone = false;
-
-    function updateSticky() {
-      if (!stickyBtn) return;
-      const ready = !!(lastEstimate && (lastEstimate.priced.length || lastEstimate.unmatched.length));
-      stickyBtn.textContent = ready ? 'Submit my list' : 'Get my estimate';
-      stickyBtn.dataset.action = ready ? 'submit' : 'estimate';
-    }
-
-    stickyBtn.addEventListener('click', () => {
-      if (stickyBtn.dataset.action === 'submit') {
-        const accept = document.getElementById('accept-check');
-        if (accept && !accept.checked) {
-          document.getElementById('accept-row').scrollIntoView({ behavior: 'smooth', block: 'center' });
-          accept.focus();
-        } else {
-          submitList();
-        }
-      } else {
-        runEstimate();
-      }
-    });
-
-    new IntersectionObserver(entries => {
-      entries.forEach(e => stickyCta.classList.toggle('in-view', e.isIntersecting && !submissionDone));
-    }, { threshold: 0 }).observe(document.getElementById('submit'));
+    // ── Mobile sticky CTA removed — the on-page buttons handle estimate/submit. ──
+    function updateSticky() {}
 
     // ── Modal overlay system ───────────────────────────────
     function openModal(id) {

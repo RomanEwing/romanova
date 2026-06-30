@@ -781,15 +781,10 @@
 
         <hr class="divider" />
 
-        <!-- Tracking (opens once I've confirmed the submission) -->
+        <!-- Tracking: handled by replying to the confirmation email -->
         <div class="tracking-section">
-          <h4>Add Tracking</h4>
-          <p>This opens once I've confirmed your submission. I'll let you know when it's ready — then you can drop your tracking number here.</p>
-          <div class="tracking-row">
-            <input type="text" id="tracking-input" placeholder="Available after I confirm your submission" disabled />
-            <button class="btn-secondary" id="tracking-btn" disabled>Add tracking</button>
-          </div>
-          <div class="tracking-success" id="tracking-success"></div>
+          <h4>Tracking</h4>
+          <p>Once I've confirmed your submission, I'll email you the shipping address. After you ship, just reply to that email with your tracking number — that's all I need.</p>
         </div>
 
         <p class="confirm-signoff">You're all set. I'll take it from here.</p>
@@ -1706,22 +1701,7 @@
       openModal('modal-confirm');   // post-submit confirmation is now an overlay, not an inline reveal
     }
 
-    // ── Tracking number (optional) ─────────────────────────
-    // The anon role is INSERT-only (spec §8), so we don't do a later DB UPDATE. Instead we
-    // route the tracking number to Roman's inbox, tagged with the submission ID.
-    document.getElementById('tracking-btn').addEventListener('click', () => {
-      const trackNum = document.getElementById('tracking-input').value.trim();
-      if (!trackNum) {
-        alert('Enter your tracking number first, or just email it to romanova@romanova.cards.');
-        return;
-      }
-      const subject = encodeURIComponent('Tracking for ' + (submissionId || 'my Romanova submission'));
-      const body = encodeURIComponent('Submission ID: ' + (submissionId || '(unknown)') + '\nTracking number: ' + trackNum);
-      window.location.href = `mailto:romanova@romanova.cards?subject=${subject}&body=${body}`;
-      document.getElementById('tracking-success').style.display = 'block';
-      const btn = document.getElementById('tracking-btn');
-      btn.disabled = true; btn.textContent = 'Sent';
-    });
+    // ── Tracking: seller replies to the confirmation email with their tracking number. ──
 
     // ── Contact form (Formspree / Web3Forms — both work on static GitHub Pages) ──
     // [ROMAN: create the form account and paste the endpoint URL that delivers to the

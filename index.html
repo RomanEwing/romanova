@@ -84,6 +84,10 @@
 
     /* ─── Main ─────────────────────────────────────────── */
     main { position: relative; z-index: 1; padding-top: 50px; }
+    .rate-top { max-width: 900px; margin: 0 auto; padding: 22px 24px 0; text-align: center; }
+    .rate-top .rate-main { display: block; font-size: clamp(1.6rem, 5.5vw, 2.1rem); font-weight: 600; color: var(--text); line-height: 1.2; }
+    .rate-top .rate-sub  { display: block; font-size: 1.05rem; color: var(--text-dim); margin-top: 10px; }
+    .rate-top .rate-faq  { display: block; font-size: 0.95rem; color: var(--text-dim); margin-top: 6px; }
 
     /* ─── Sections ─────────────────────────────────────── */
     section { padding: 36px 24px 52px; max-width: 900px; margin: 0 auto; }
@@ -670,6 +674,13 @@
 
   <main>
 
+    <!-- Payout rate — top of page, above everything -->
+    <div class="rate-top">
+      <span class="rate-main">60% for cards over $10</span>
+      <span class="rate-sub">some exceptions for cards under $10</span>
+      <span class="rate-faq">See FAQ for more details</span>
+    </div>
+
     <!-- ── Submit Your List (the page) ── -->
     <section id="submit" class="reveal">
       <!-- ManaPool referral — sits left of the form (desktop), scrolls with the page -->
@@ -708,7 +719,6 @@
           </div>
         </div>
 
-        <div style="color:var(--text-dim);font-size:0.9rem;text-align:center;margin:14px 0">60% for cards over $10 — some exceptions for cards under $10.<br><span style="font-size:0.85rem;margin-top:6px;display:block">See FAQ for more details</span></div>
 
         <div class="clear-list-row">
           <button type="button" class="link-btn" id="clear-list-btn">Clear list</button>

@@ -31,22 +31,11 @@
       color: #ffffff;
     }
 
-    .section-label {
-      font-size: 0.7rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: #666;
-      text-align: center;
-      margin: 60px 0 40px 0;
-    }
-    .section-label:first-of-type { margin-top: 0; }
-
     .offers-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 40px;
-      margin-bottom: 20px;
+      margin-bottom: 40px;
     }
 
     .offer {
@@ -119,6 +108,22 @@
       letter-spacing: 0.2px;
     }
 
+    .receipt-section {
+      text-align: center;
+      margin: 20px 0 30px 0;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .receipt-tip {
+      font-size: 0.85rem;
+      color: #999;
+      margin-bottom: 20px;
+      font-style: italic;
+    }
+
     @media (max-width: 768px) {
       .container { padding: 32px 16px; }
       h1 { font-size: 1.6rem; margin-bottom: 40px; }
@@ -126,9 +131,10 @@
         grid-template-columns: 1fr;
         gap: 32px;
       }
-      .section-label { margin: 40px 0 32px 0; }
       .offer-button { width: 72px; height: 72px; }
       .offer-name { font-size: 1rem; }
+      .receipt-section { margin: 24px 0; padding: 12px; }
+      .receipt-tip { font-size: 0.82rem; }
     }
   </style>
 </head>
@@ -136,11 +142,8 @@
   <div class="container">
     <h1>Referral codes that help me</h1>
 
-    <!-- Section 1: $5+ bonuses -->
-    <div class="section-label">$5+ bonuses</div>
+    <!-- Cash App -->
     <div class="offers-grid">
-
-      <!-- Cash App -->
       <div class="offer">
         <div class="offer-name">Cash App</div>
         <a href="https://cash.app/refer/ZM98K9T" target="_blank" rel="noopener noreferrer" class="offer-button cashapp">
@@ -152,22 +155,7 @@
         <div class="offer-rewards">You get $5 · I get $5</div>
       </div>
 
-      <!-- Ibotta -->
-      <div class="offer">
-        <div class="offer-name">Ibotta</div>
-        <a href="#PLACEHOLDER" target="_blank" rel="noopener noreferrer" class="offer-button ibotta">
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><text x="50%" y="50%" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="bold" fill="white">i</text></svg>
-        </a>
-        <div class="offer-actions">
-          redeem 1 receipt offer
-        </div>
-        <div class="offer-rewards">You get $10 · I get $10</div>
-      </div>
-
-    </div>
-
-    <!-- Rakuten -->
-    <div class="offers-grid">
+      <!-- Rakuten -->
       <div class="offer">
         <div class="offer-name">Rakuten</div>
         <a href="#PLACEHOLDER" target="_blank" rel="noopener noreferrer" class="offer-button rakuten">
@@ -178,28 +166,41 @@
         </div>
         <div class="offer-rewards">You get a cash bonus · I get one too</div>
       </div>
-
-      <!-- Empty space to keep alignment -->
-      <div></div>
     </div>
 
-    <!-- Section 2: Smaller bonuses -->
-    <div class="section-label">smaller bonuses (still free, just click)</div>
-    <div class="offers-grid">
+    <!-- Receipt offers grouped together -->
+    <div class="receipt-section">
+      <div class="receipt-tip">Pro tip: One receipt works for both — redeem the same one on Ibotta and Fetch</div>
 
-      <!-- Fetch -->
-      <div class="offer">
-        <div class="offer-name">Fetch</div>
-        <a href="#PLACEHOLDER" target="_blank" rel="noopener noreferrer" class="offer-button fetch">
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" fill="white"/></svg>
-        </a>
-        <div class="offer-actions">
-          scan 1 receipt
+      <div class="offers-grid">
+        <!-- Ibotta -->
+        <div class="offer">
+          <div class="offer-name">Ibotta</div>
+          <a href="#PLACEHOLDER" target="_blank" rel="noopener noreferrer" class="offer-button ibotta">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><text x="50%" y="50%" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="bold" fill="white">i</text></svg>
+          </a>
+          <div class="offer-actions">
+            redeem 1 receipt offer
+          </div>
+          <div class="offer-rewards">You get $10 · I get $10</div>
         </div>
-        <div class="offer-rewards">You get points · I get points</div>
-      </div>
 
-      <!-- ManaPool -->
+        <!-- Fetch -->
+        <div class="offer">
+          <div class="offer-name">Fetch</div>
+          <a href="#PLACEHOLDER" target="_blank" rel="noopener noreferrer" class="offer-button fetch">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" fill="white"/></svg>
+          </a>
+          <div class="offer-actions">
+            scan 1 receipt
+          </div>
+          <div class="offer-rewards">You get points · I get points</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ManaPool -->
+    <div class="offers-grid">
       <div class="offer">
         <div class="offer-name">ManaPool</div>
         <a href="#PLACEHOLDER" target="_blank" rel="noopener noreferrer" class="offer-button manapool">
@@ -211,6 +212,8 @@
         <div class="offer-rewards">You get nothing extra · I get 5% of your order</div>
       </div>
 
+      <!-- Empty space to keep alignment -->
+      <div></div>
     </div>
 
   </div>

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Referral codes that help me — Romanova</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── Reset & Base ─────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:       #1a1820;
+      --bg2:      #232029;
+      --bg3:      #2a2733;
+      --cyan:     #a99ec4;
+      --cyan-lt:  #cfc6df;
+      --purple:   #b3a6c8;
+      --text:     #ece8ef;
+      --text-dim: #9d96a6;
+      --border:   #36313f;
+      --radius:   10px;
+      --nav-h:    50px;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+    html { overflow-x: hidden; }
+    /* Subtle atmospheric fog — one soft, flat gradient. No stars, no orbs. */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(70% 50% at 16% 10%, rgba(150,118,184,0.11) 0%, transparent 60%),
+        radial-gradient(64% 56% at 86% 90%, rgba(108,116,184,0.09) 0%, transparent 62%),
+        radial-gradient(120% 80% at 50% -10%, rgba(169,158,196,0.06) 0%, transparent 55%),
+        linear-gradient(180deg, #221d2c 0%, var(--bg) 46%, #14121a 100%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* ─── App bar — thin sticky header ──────────────────── */
+    .appbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+      height: 50px;
+      display: flex; align-items: center; gap: 14px;
+      padding: 0 20px;
+      background: rgba(26,24,32,0.94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+    .appbar-brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem; color: var(--text-dim); text-decoration: none;
+      letter-spacing: 0.05em; flex: 1;
+    }
+    .appbar-brand:hover { color: var(--text); }
+    .appbar-page {
+      flex: 0 0 auto; text-align: center;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem; color: var(--cyan-lt); letter-spacing: 0.02em;
+    }
+    .appbar-nav { display: flex; gap: 8px; flex: 1; justify-content: flex-end; }
+    .appbar-nav a {
+      background: transparent; border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text-dim); font-family: inherit; font-size: 0.82rem; font-weight: 500;
+      padding: 6px 13px; text-decoration: none; cursor: pointer; transition: color .15s, border-color .15s;
+    }
+    .appbar-nav a:hover { color: var(--cyan); border-color: var(--cyan); }
+    @media (max-width: 480px) {
+      .appbar { gap: 8px; padding: 0 12px; }
+      .appbar-page { font-size: 0.98rem; }
+      .appbar-nav a { padding: 6px 10px; font-size: 0.76rem; }
+    }
+
+    /* ─── Main ─────────────────────────────────────────── */
+    main { position: relative; z-index: 1; padding-top: 50px; }
+
+    /* ─── Hero ─────────────────────────────────────────── */
+    .hero {
+      text-align: center;
+      padding: 60px 24px 40px;
+    }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      color: var(--cyan-lt);
+      margin-bottom: 16px;
+      letter-spacing: 0.02em;
+    }
+    .hero p {
+      color: var(--text-dim);
+      font-size: 1.02rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* ─── Sections ─────────────────────────────────────── */
+    section { padding: 36px 24px 52px; max-width: 900px; margin: 0 auto; }
+
+    .section-heading {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      color: var(--cyan-lt);
+      margin-bottom: 28px;
+      text-align: center;
+    }
+
+    /* ─── Reward Cards Grid ────────────────────────────── */
+    .rewards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .reward-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+    }
+    .reward-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem;
+      color: var(--cyan);
+      margin-bottom: 16px;
+    }
+    .reward-detail {
+      font-size: 0.88rem;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+    .reward-detail strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+    .reward-detail label {
+      display: block;
+      color: var(--text-dim);
+      font-size: 0.82rem;
+      margin-top: 8px;
+      margin-bottom: 4px;
+    }
+    .reward-detail-value {
+      color: var(--cyan-lt);
+      font-weight: 600;
+    }
+
+    /* ─── Badge for "I get paid" ──────────────────────── */
+    .reward-badge {
+      display: inline-block;
+      background: rgba(169,158,196,0.15);
+      border: 1px solid rgba(169,158,196,0.25);
+      color: var(--cyan);
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin-bottom: 12px;
+    }
+
+    .reward-link {
+      margin-top: auto;
+      padding-top: 16px;
+    }
+    .reward-link a {
+      display: inline-block;
+      background: var(--cyan);
+      color: #1a1820;
+      text-decoration: none;
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      letter-spacing: 0.02em;
+      transition: background 0.15s;
+    }
+    .reward-link a:hover { background: var(--cyan-lt); }
+
+    /* ─── Footer ───────────────────────────────────────── */
+    footer {
+      text-align: center;
+      padding: 40px 24px;
+      color: var(--text-dim);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border);
+    }
+    footer a {
+      color: var(--cyan);
+      text-decoration: none;
+    }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 480px) {
+      .hero { padding: 40px 24px 30px; }
+      .hero h1 { font-size: 1.6rem; margin-bottom: 12px; }
+      .hero p { font-size: 0.95rem; }
+      section { padding: 28px 16px 40px; }
+      .section-heading { margin-bottom: 20px; }
+      .rewards-grid { grid-template-columns: 1fr; gap: 16px; }
+      .reward-card { padding: 20px; }
+      .reward-card h3 { font-size: 1.1rem; margin-bottom: 12px; }
+      .reward-detail { font-size: 0.82rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="appbar">
+    <a href="/" class="appbar-brand">Romanova</a>
+    <div class="appbar-page">Referral Codes</div>
+    <nav class="appbar-nav">
+      <a href="/">Submit List</a>
+      <a href="/faq">FAQ</a>
+      <a href="/contact">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="hero">
+      <h1>Referral codes that help me</h1>
+      <p>Every code below helps me out — most give you a bonus too. Here's exactly what you do, what you get, and what I get.</p>
+    </div>
+
+    <!-- Section 1: $5+ bonuses -->
+    <section>
+      <h2 class="section-heading">$5+ bonuses</h2>
+      <div class="rewards-grid">
+
+        <!-- Cash App -->
+        <div class="reward-card">
+          <h3>Cash App</h3>
+          <div class="reward-detail">
+            <label>You do</label>
+            <div>Sign up with my code, link a card, send $5 within 14 days</div>
+          </div>
+          <div class="reward-detail">
+            <label>You get</label>
+            <div class="reward-detail-value">$5</div>
+          </div>
+          <div class="reward-detail">
+            <label>I get</label>
+            <div class="reward-detail-value">Bonus varies</div>
+          </div>
+          <div class="reward-link">
+            <a href="#PLACEHOLDER">Get the code</a>
+          </div>
+        </div>
+
+        <!-- Ibotta -->
+        <div class="reward-card">
+          <h3>Ibotta</h3>
+          <div class="reward-detail">
+            <label>You do</label>
+            <div>Sign up with my link, redeem one receipt offer</div>
+          </div>
+          <div class="reward-detail">
+            <label>You get</label>
+            <div class="reward-detail-value">$10</div>
+          </div>
+          <div class="reward-detail">
+            <label>I get</label>
+            <div class="reward-detail-value">$10</div>
+          </div>
+          <div class="reward-link">
+            <a href="#PLACEHOLDER">Join with my link</a>
+          </div>
+        </div>
+
+        <!-- Rakuten -->
+        <div class="reward-card">
+          <h3>Rakuten</h3>
+          <div class="reward-detail">
+            <label>You do</label>
+            <div>Sign up with my link, make one qualifying purchase</div>
+          </div>
+          <div class="reward-detail">
+            <label>You get</label>
+            <div class="reward-detail-value">Cash-back bonus</div>
+          </div>
+          <div class="reward-detail">
+            <label>I get</label>
+            <div class="reward-detail-value">Cash-back bonus</div>
+          </div>
+          <div class="reward-link">
+            <a href="#PLACEHOLDER">Shop through my link</a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section 2: Smaller bonuses -->
+    <section>
+      <h2 class="section-heading">Smaller bonuses (still free, just click)</h2>
+      <div class="rewards-grid">
+
+        <!-- Fetch -->
+        <div class="reward-card">
+          <h3>Fetch</h3>
+          <div class="reward-detail">
+            <label>You do</label>
+            <div>Sign up with my code, scan one receipt</div>
+          </div>
+          <div class="reward-detail">
+            <label>You get</label>
+            <div class="reward-detail-value">Points for you</div>
+          </div>
+          <div class="reward-detail">
+            <label>I get</label>
+            <div class="reward-detail-value">Points for me</div>
+          </div>
+          <div class="reward-link">
+            <a href="#PLACEHOLDER">Get started</a>
+          </div>
+        </div>
+
+        <!-- ManaPool -->
+        <div class="reward-card">
+          <h3>ManaPool</h3>
+          <div class="reward-badge">I get paid, you don't</div>
+          <div class="reward-detail">
+            <label>You do</label>
+            <div>Shop MTG singles through my link</div>
+          </div>
+          <div class="reward-detail">
+            <label>You get</label>
+            <div class="reward-detail-value">Nothing extra</div>
+          </div>
+          <div class="reward-detail">
+            <label>I get</label>
+            <div class="reward-detail-value">5% of your first order</div>
+          </div>
+          <div style="font-size: 0.78rem; color: var(--text-dim); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border);">
+            Costs you nothing extra — I earn a small commission if you shop through my link.
+          </div>
+          <div class="reward-link">
+            <a href="#PLACEHOLDER">Shop MTG singles</a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p><a href="/">Romanova</a> — sell Magic cards online. © 2025</p>
+  </footer>
+
+</body>
+</html>

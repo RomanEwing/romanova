@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Redirecting…</title>
+  <meta http-equiv="refresh" content="0;url=/rewards" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { background: #1a1820; color: #ece8ef; font-family: 'Outfit', sans-serif; margin: 0; padding: 0; }
+    .container { display: flex; align-items: center; justify-content: center; min-height: 100vh; text-align: center; }
+    p { opacity: 0.6; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div>
+      <p>Redirecting…</p>
+    </div>
+  </div>
+
+  <script>
+    // Fire-and-forget: log the QR scan without delaying redirect
+    (async () => {
+      try {
+        const { createClient } = supabase;
+        const SUPABASE_URL = 'https://ihctrnxxgvaqifvyxrmd.supabase.co';
+        const sb = createClient(
+          SUPABASE_URL,
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImloY3Rybnh4Z3ZhcWlmdnl4cm1kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5OTc2ODcsImV4cCI6MjA5MDU3MzY4N30.uUne2wdhFnAJken-K3_1Z_02X0P_Ta5QYyMsJn_iUAk'
+        );
+
+        // Get batch param from URL, default to "1"
+        const params = new URLSearchParams(window.location.search);
+        const batch = params.get('b') || '1';
+
+        // Insert scan record with timestamp
+        await sb.from('qr_scans').insert([
+          {
+            scanned_at: new Date().toISOString(),
+            batch: batch
+          }
+        ]);
+      } catch (err) {
+        // Silently fail; don't let insert errors block redirect
+        console.error('QR scan log failed:', err);
+      }
+
+      // Redirect to /rewards (backup in case meta refresh fails)
+      window.location.href = '/rewards';
+    })();
+  </script>
+</body>
+</html>

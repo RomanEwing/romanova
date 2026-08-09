@@ -3,360 +3,177 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Referral codes that help me — Romanova</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <title>Referral codes that help me</title>
+  <link href="https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/cashapp.svg" rel="preload" as="image" />
+  <link href="https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/ibotta.svg" rel="preload" as="image" />
+  <link href="https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/rakuten.svg" rel="preload" as="image" />
+  <link href="https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/fetch.svg" rel="preload" as="image" />
   <style>
-    /* ─── Reset & Base ─────────────────────────────────── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg:       #1a1820;
-      --bg2:      #232029;
-      --bg3:      #2a2733;
-      --cyan:     #a99ec4;
-      --cyan-lt:  #cfc6df;
-      --purple:   #b3a6c8;
-      --text:     #ece8ef;
-      --text-dim: #9d96a6;
-      --border:   #36313f;
-      --radius:   10px;
-      --nav-h:    50px;
-    }
-    html { scroll-behavior: smooth; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; height: 100%; }
     body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Outfit', sans-serif;
+      background: #faf9f7;
+      color: #2c2c2c;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       font-size: 16px;
-      line-height: 1.65;
-      overflow-x: hidden;
-    }
-    html { overflow-x: hidden; }
-    /* Subtle atmospheric fog — one soft, flat gradient. No stars, no orbs. */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background:
-        radial-gradient(70% 50% at 16% 10%, rgba(150,118,184,0.11) 0%, transparent 60%),
-        radial-gradient(64% 56% at 86% 90%, rgba(108,116,184,0.09) 0%, transparent 62%),
-        radial-gradient(120% 80% at 50% -10%, rgba(169,158,196,0.06) 0%, transparent 55%),
-        linear-gradient(180deg, #221d2c 0%, var(--bg) 46%, #14121a 100%);
-      pointer-events: none;
-      z-index: -1;
+      line-height: 1.5;
+      padding: 0;
     }
 
-    /* ─── App bar — thin sticky header ──────────────────── */
-    .appbar {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 300;
-      height: 50px;
-      display: flex; align-items: center; gap: 14px;
-      padding: 0 20px;
-      background: rgba(26,24,32,0.94);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--border);
-    }
-    .appbar-brand {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.05rem; color: var(--text-dim); text-decoration: none;
-      letter-spacing: 0.05em; flex: 1;
-    }
-    .appbar-brand:hover { color: var(--text); }
-    .appbar-page {
-      flex: 0 0 auto; text-align: center;
-      font-family: 'Playfair Display', serif;
-      font-size: 1.1rem; color: var(--cyan-lt); letter-spacing: 0.02em;
-    }
-    .appbar-nav { display: flex; gap: 8px; flex: 1; justify-content: flex-end; }
-    .appbar-nav a {
-      background: transparent; border: 1px solid var(--border); border-radius: 8px;
-      color: var(--text-dim); font-family: inherit; font-size: 0.82rem; font-weight: 500;
-      padding: 6px 13px; text-decoration: none; cursor: pointer; transition: color .15s, border-color .15s;
-    }
-    .appbar-nav a:hover { color: var(--cyan); border-color: var(--cyan); }
-    @media (max-width: 480px) {
-      .appbar { gap: 8px; padding: 0 12px; }
-      .appbar-page { font-size: 0.98rem; }
-      .appbar-nav a { padding: 6px 10px; font-size: 0.76rem; }
-    }
+    .container { max-width: 480px; margin: 0 auto; padding: 24px 16px; }
 
-    /* ─── Main ─────────────────────────────────────────── */
-    main { position: relative; z-index: 1; padding-top: 50px; }
-
-    /* ─── Hero ─────────────────────────────────────────── */
-    .hero {
+    h1 {
+      font-size: 1.1rem;
+      font-weight: 500;
       text-align: center;
-      padding: 60px 24px 40px;
-    }
-    .hero h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(1.8rem, 5vw, 2.8rem);
-      color: var(--cyan-lt);
-      margin-bottom: 16px;
-      letter-spacing: 0.02em;
-    }
-    .hero p {
-      color: var(--text-dim);
-      font-size: 1.02rem;
-      max-width: 600px;
-      margin: 0 auto;
+      margin: 0 0 32px 0;
+      letter-spacing: 0.3px;
     }
 
-    /* ─── Sections ─────────────────────────────────────── */
-    section { padding: 36px 24px 52px; max-width: 900px; margin: 0 auto; }
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #999;
+      text-align: center;
+      margin: 28px 0 16px 0;
+    }
+    .section-label:first-of-type { margin-top: 0; }
 
-    .section-heading {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(1.5rem, 3vw, 2rem);
-      color: var(--cyan-lt);
+    .offer {
       margin-bottom: 28px;
       text-align: center;
     }
 
-    /* ─── Reward Cards Grid ────────────────────────────── */
-    .rewards-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
+    .offer-name {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #2c2c2c;
+      margin-bottom: 12px;
     }
-    .reward-card {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 24px;
+
+    .offer-button {
+      display: inline-block;
+      width: 72px;
+      height: 72px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      background-color: #000;
+      margin-bottom: 12px;
       display: flex;
-      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.2s, transform 0.15s;
+      text-decoration: none;
+      flex-shrink: 0;
     }
-    .reward-card h3 {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.25rem;
-      color: var(--cyan);
-      margin-bottom: 16px;
-    }
-    .reward-detail {
-      font-size: 0.88rem;
-      line-height: 1.6;
-      margin-bottom: 12px;
-    }
-    .reward-detail strong {
-      color: var(--text);
-      font-weight: 600;
-    }
-    .reward-detail label {
+    .offer-button:active { transform: scale(0.95); }
+    .offer-button:hover { opacity: 0.9; }
+    .offer-button img {
+      width: 40px;
+      height: 40px;
       display: block;
-      color: var(--text-dim);
-      font-size: 0.82rem;
-      margin-top: 8px;
-      margin-bottom: 4px;
-    }
-    .reward-detail-value {
-      color: var(--cyan-lt);
-      font-weight: 600;
     }
 
-    /* ─── Badge for "I get paid" ──────────────────────── */
-    .reward-badge {
-      display: inline-block;
-      background: rgba(169,158,196,0.15);
-      border: 1px solid rgba(169,158,196,0.25);
-      color: var(--cyan);
-      font-size: 0.72rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      padding: 4px 8px;
-      border-radius: 4px;
-      margin-bottom: 12px;
+    /* Brand colors */
+    .offer-button.cashapp { background-color: #00d632; }
+    .offer-button.ibotta { background-color: #1d1d1d; }
+    .offer-button.rakuten { background-color: #bf0000; }
+    .offer-button.fetch { background-color: #0066cc; }
+    .offer-button.manapool { background-color: #663399; }
+
+    .offer-actions {
+      font-size: 0.88rem;
+      color: #555;
+      margin-bottom: 8px;
+      line-height: 1.4;
     }
 
-    .reward-link {
-      margin-top: auto;
-      padding-top: 16px;
-    }
-    .reward-link a {
-      display: inline-block;
-      background: var(--cyan);
-      color: #1a1820;
-      text-decoration: none;
-      padding: 10px 24px;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 0.9rem;
-      letter-spacing: 0.02em;
-      transition: background 0.15s;
-    }
-    .reward-link a:hover { background: var(--cyan-lt); }
-
-    /* ─── Footer ───────────────────────────────────────── */
-    footer {
-      text-align: center;
-      padding: 40px 24px;
-      color: var(--text-dim);
+    .offer-rewards {
       font-size: 0.85rem;
-      border-top: 1px solid var(--border);
+      color: #2c2c2c;
+      font-weight: 500;
     }
-    footer a {
-      color: var(--cyan);
-      text-decoration: none;
-    }
-    footer a:hover { text-decoration: underline; }
 
     @media (max-width: 480px) {
-      .hero { padding: 40px 24px 30px; }
-      .hero h1 { font-size: 1.6rem; margin-bottom: 12px; }
-      .hero p { font-size: 0.95rem; }
-      section { padding: 28px 16px 40px; }
-      .section-heading { margin-bottom: 20px; }
-      .rewards-grid { grid-template-columns: 1fr; gap: 16px; }
-      .reward-card { padding: 20px; }
-      .reward-card h3 { font-size: 1.1rem; margin-bottom: 12px; }
-      .reward-detail { font-size: 0.82rem; }
+      .container { padding: 20px 12px; }
+      h1 { font-size: 1rem; margin-bottom: 28px; }
+      .offer { margin-bottom: 24px; }
     }
   </style>
 </head>
 <body>
-  <header class="appbar">
-    <a href="/" class="appbar-brand">Romanova</a>
-    <div class="appbar-page">Referral Codes</div>
-    <nav class="appbar-nav">
-      <a href="/">Submit List</a>
-      <a href="/faq">FAQ</a>
-      <a href="/contact">Contact</a>
-    </nav>
-  </header>
-
-  <main>
-    <div class="hero">
-      <h1>Referral codes that help me</h1>
-      <p>Every code below helps me out — most give you a bonus too. Here's exactly what you do, what you get, and what I get.</p>
-    </div>
+  <div class="container">
+    <h1>Referral codes that help me</h1>
 
     <!-- Section 1: $5+ bonuses -->
-    <section>
-      <h2 class="section-heading">$5+ bonuses</h2>
-      <div class="rewards-grid">
+    <div class="section-label">$5+ bonuses</div>
 
-        <!-- Cash App -->
-        <div class="reward-card">
-          <h3>Cash App</h3>
-          <div class="reward-detail">
-            <label>You do</label>
-            <div>Sign up with my code, link a card, send $5 within 14 days</div>
-          </div>
-          <div class="reward-detail">
-            <label>You get</label>
-            <div class="reward-detail-value">$5</div>
-          </div>
-          <div class="reward-detail">
-            <label>I get</label>
-            <div class="reward-detail-value">Bonus varies</div>
-          </div>
-          <div class="reward-link">
-            <a href="#PLACEHOLDER">Get the code</a>
-          </div>
-        </div>
-
-        <!-- Ibotta -->
-        <div class="reward-card">
-          <h3>Ibotta</h3>
-          <div class="reward-detail">
-            <label>You do</label>
-            <div>Sign up with my link, redeem one receipt offer</div>
-          </div>
-          <div class="reward-detail">
-            <label>You get</label>
-            <div class="reward-detail-value">$10</div>
-          </div>
-          <div class="reward-detail">
-            <label>I get</label>
-            <div class="reward-detail-value">$10</div>
-          </div>
-          <div class="reward-link">
-            <a href="#PLACEHOLDER">Join with my link</a>
-          </div>
-        </div>
-
-        <!-- Rakuten -->
-        <div class="reward-card">
-          <h3>Rakuten</h3>
-          <div class="reward-detail">
-            <label>You do</label>
-            <div>Sign up with my link, make one qualifying purchase</div>
-          </div>
-          <div class="reward-detail">
-            <label>You get</label>
-            <div class="reward-detail-value">Cash-back bonus</div>
-          </div>
-          <div class="reward-detail">
-            <label>I get</label>
-            <div class="reward-detail-value">Cash-back bonus</div>
-          </div>
-          <div class="reward-link">
-            <a href="#PLACEHOLDER">Shop through my link</a>
-          </div>
-        </div>
-
+    <!-- Cash App -->
+    <div class="offer">
+      <div class="offer-name">Cash App</div>
+      <a href="#PLACEHOLDER" class="offer-button cashapp">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.067 8.478c.492.88.556 2.014.3 3.327-.74 3.806-3.276 5.12-6.514 5.12h-.5a.805.805 0 0 0-.794.68l-.04.22-.63 3.993-.028.15a.806.806 0 0 1-.795.68h-2.61a.63.63 0 0 1-.619-.726l.04-.22.03-.15c.095-.534.535-.9 1.073-.9h1.47l.75-4.77H8.97a.806.806 0 0 1-.795-.68l-.04-.22-.03-.15a.806.806 0 0 1 .795-.9h1.385l.17-1.01H7.93a.806.806 0 0 1-.795-.68l-.04-.22-.03-.15a.806.806 0 0 1 .795-.9h1.305l1.03-6.543c.095-.534.535-.9 1.073-.9h2.61a.63.63 0 0 1 .618.726l-.04.22-.03.15c-.095.534-.535.9-1.073.9h-1.47l-.75 4.77h2.12a.806.806 0 0 1 .795.68l.04.22.03.15c.094.534-.19.95-.629.95h-1.305l-.17 1.01h2.314c.538 0 .978.366 1.073.9l.04.22.03.15c.094.534-.19.95-.629.95h-2.234c3.237 0 5.774-1.314 6.514-5.12.256-1.313.192-2.447-.3-3.327-.53-.947-1.53-1.552-2.86-1.73a5.66 5.66 0 0 0-1.08-.1h-2.315l-.17 1.01h2.405c.528 0 .971.31 1.075.82l.033.18z" fill="white"/></svg>
+      </a>
+      <div class="offer-actions">
+        link a card<br>send $5 within 14 days
       </div>
-    </section>
+      <div class="offer-rewards">You get $5 · I get $5</div>
+    </div>
+
+    <!-- Ibotta -->
+    <div class="offer">
+      <div class="offer-name">Ibotta</div>
+      <a href="#PLACEHOLDER" class="offer-button ibotta">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><text x="50%" y="50%" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="bold" fill="white">i</text></svg>
+      </a>
+      <div class="offer-actions">
+        redeem 1 receipt offer
+      </div>
+      <div class="offer-rewards">You get $10 · I get $10</div>
+    </div>
+
+    <!-- Rakuten -->
+    <div class="offer">
+      <div class="offer-name">Rakuten</div>
+      <a href="#PLACEHOLDER" class="offer-button rakuten">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z" fill="white"/></svg>
+      </a>
+      <div class="offer-actions">
+        make 1 qualifying purchase
+      </div>
+      <div class="offer-rewards">You get a cash bonus · I get one too</div>
+    </div>
 
     <!-- Section 2: Smaller bonuses -->
-    <section>
-      <h2 class="section-heading">Smaller bonuses (still free, just click)</h2>
-      <div class="rewards-grid">
+    <div class="section-label">smaller bonuses (still free, just click)</div>
 
-        <!-- Fetch -->
-        <div class="reward-card">
-          <h3>Fetch</h3>
-          <div class="reward-detail">
-            <label>You do</label>
-            <div>Sign up with my code, scan one receipt</div>
-          </div>
-          <div class="reward-detail">
-            <label>You get</label>
-            <div class="reward-detail-value">Points for you</div>
-          </div>
-          <div class="reward-detail">
-            <label>I get</label>
-            <div class="reward-detail-value">Points for me</div>
-          </div>
-          <div class="reward-link">
-            <a href="#PLACEHOLDER">Get started</a>
-          </div>
-        </div>
-
-        <!-- ManaPool -->
-        <div class="reward-card">
-          <h3>ManaPool</h3>
-          <div class="reward-badge">I get paid, you don't</div>
-          <div class="reward-detail">
-            <label>You do</label>
-            <div>Shop MTG singles through my link</div>
-          </div>
-          <div class="reward-detail">
-            <label>You get</label>
-            <div class="reward-detail-value">Nothing extra</div>
-          </div>
-          <div class="reward-detail">
-            <label>I get</label>
-            <div class="reward-detail-value">5% of your first order</div>
-          </div>
-          <div style="font-size: 0.78rem; color: var(--text-dim); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border);">
-            Costs you nothing extra — I earn a small commission if you shop through my link.
-          </div>
-          <div class="reward-link">
-            <a href="#PLACEHOLDER">Shop MTG singles</a>
-          </div>
-        </div>
-
+    <!-- Fetch -->
+    <div class="offer">
+      <div class="offer-name">Fetch</div>
+      <a href="#PLACEHOLDER" class="offer-button fetch">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" fill="white"/></svg>
+      </a>
+      <div class="offer-actions">
+        scan 1 receipt
       </div>
-    </section>
+      <div class="offer-rewards">You get points · I get points</div>
+    </div>
 
-  </main>
+    <!-- ManaPool -->
+    <div class="offer">
+      <div class="offer-name">ManaPool</div>
+      <a href="#PLACEHOLDER" class="offer-button manapool">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><text x="50%" y="50%" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="bold" fill="white">M</text></svg>
+      </a>
+      <div class="offer-actions">
+        buy MTG singles
+      </div>
+      <div class="offer-rewards">You get nothing extra · I get 5% of your order</div>
+    </div>
 
-  <footer>
-    <p><a href="/">Romanova</a> — sell Magic cards online. © 2025</p>
-  </footer>
-
+  </div>
 </body>
 </html>
